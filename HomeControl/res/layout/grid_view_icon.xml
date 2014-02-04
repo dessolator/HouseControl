@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical" >
+	
+	<ImageView
+	    android:id="@+id/gridItemImage"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:src="@drawable/house" 
+	    android:contentDescription="TODO">
+		
+	</ImageView>
+	
+	<TextView
+	    android:id="@+id/gridItemText"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:lines="2"
+	    android:maxLines="2" 
+		android:gravity="center_horizontal"	>
+	</TextView>
+</LinearLayout>

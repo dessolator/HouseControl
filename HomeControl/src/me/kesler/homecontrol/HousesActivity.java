@@ -62,10 +62,12 @@ public class HousesActivity extends Activity {
 		SQLiteDatabase db = new DBHandler(this).getReadableDatabase();//grab a database
 		Cursor c=db.rawQuery("SELECT * FROM house",null);//run query getting all the houses
 		ArrayList<String> houseList=new ArrayList<String>();//initialize the arraylist
+		ArrayList<String> houseImageList=new ArrayList<String>();//initialize the arraylist
 		if(c!=null){//if the query got anything
 			if(c.moveToFirst()){//start from the beginning
 				do{
 					houseList.add(c.getString(c.getColumnIndex("house_name")));//add the names
+					houseImageList.add(c.getString(c.getColumnIndex("house_image_name")));
 				}while(c.moveToNext());//and iterate as far as possible
 			}
 		}
@@ -73,7 +75,7 @@ public class HousesActivity extends Activity {
 		
 		db.close();
 		GridView myGrid = (GridView) findViewById(R.id.houseGrid);//grab the gridview
-		myGrid.setAdapter(new GridAdapter(this,houseList));//attach adapter to gridview
+		myGrid.setAdapter(new GridAdapter(this,houseList,houseImageList));//attach adapter to gridview
 		
 		myGrid.setOnItemClickListener(new OnItemClickListener() {
             @Override
@@ -106,7 +108,7 @@ public class HousesActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		//being as the only menu item is Add A House
 		SQLiteDatabase db = new DBHandler(this).getWritableDatabase();//grab database
-		db.execSQL("INSERT INTO house(house_name,house_wifi_name,house_wifi_type,house_wifi_pass) VALUES('"+getString(R.string.newHouseName)+"','kesler','WPA','12345678')");//add a blank house
+		db.execSQL("INSERT INTO house(house_name,house_wifi_name,house_wifi_type,house_wifi_pass,house_image_name) VALUES('"+getString(R.string.newHouseName)+"','kesler','WPA','12345678','house')");//add a blank house
 		Intent i = new Intent(getApplicationContext(), EditHouseActivity.class);//create intent
 		i.putExtra("houseName", getString(R.string.newHouseName));//give info about the house
 		startActivity(i);//start the activity

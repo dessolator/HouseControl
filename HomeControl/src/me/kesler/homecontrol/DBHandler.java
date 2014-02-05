@@ -17,6 +17,7 @@ public class DBHandler extends SQLiteOpenHelper {
 				+ "house_name STRING PRIMARY KEY,"
 				+ " house_wifi_name STRING NOT NULL,"
 				+ " house_wifi_type STRING NOT NULL,"
+				+ " house_image_name STRING NOT NULL,"
 				+ " house_wifi_pass STRING NOT NULL"
 				+ ")");
 
@@ -24,6 +25,7 @@ public class DBHandler extends SQLiteOpenHelper {
 				+ "room_name STRING NOT NULL,"
 				+ " controler_ip STRING NOT NULL,"
 				+ " house_name STRING NOT NULL,"
+				+ " room_image_name STRING NOT NULL,"
 				+ " FOREIGN KEY(house_name) REFERENCES house(house_name) ON DELETE CASCADE ON UPDATE CASCADE,"
 				+ " PRIMARY KEY (house_name,room_name)"
 				+ ")");
@@ -35,6 +37,7 @@ public class DBHandler extends SQLiteOpenHelper {
 				+ " control_pin1_number INTEGER NOT NULL,"
 				+ " house_name STRING NOT NULL,"
 				+ " controler_type STRING NOT NULL,"
+				+ " controler_image_name STRING NOT NULL,"
 				+ " room_name STRING NOT NULL,"
 				+ " UNIQUE(controler_ip,control_pin1_number),"
 				+ " FOREIGN KEY(room_name,house_name) REFERENCES room(room_name,house_name) ON DELETE CASCADE ON UPDATE CASCADE,"
@@ -56,7 +59,6 @@ public class DBHandler extends SQLiteOpenHelper {
 	public void onOpen(SQLiteDatabase db) {
 	    super.onOpen(db);
 	    if (!db.isReadOnly()) {
-	        // Enable foreign key constraints
 	        db.execSQL("PRAGMA foreign_keys=ON;");
 	    }
 	}

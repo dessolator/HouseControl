@@ -44,6 +44,7 @@ public class ControlersActivity extends Activity {
 		setContentView(R.layout.activity_controlers);
 		Intent startIntent=getIntent();
 		ArrayList<String> controlerList=new ArrayList<String>();
+		ArrayList<String> controlerImageList=new ArrayList<String>();
 		houseName=startIntent.getExtras().getString("houseName");
 		roomName=startIntent.getExtras().getString("roomName");
 		setupActionBar();
@@ -54,6 +55,7 @@ public class ControlersActivity extends Activity {
 			if(c.moveToFirst()){//start from the beginning
 				do{
 					controlerList.add(c.getString(c.getColumnIndex("controler_interface_name")));//add the names
+					controlerImageList.add(c.getString(c.getColumnIndex("controler_image_name")));//add the names
 				}while(c.moveToNext());//and iterate as far as possible
 			}
 		}
@@ -82,7 +84,7 @@ public class ControlersActivity extends Activity {
 		
 
 		GridView myGrid = (GridView) findViewById(R.id.controlerGrid);//grab the gridview
-		myGrid.setAdapter(new GridAdapter(this,controlerList));//attach adapter to gridview
+		myGrid.setAdapter(new GridAdapter(this,controlerList,controlerImageList));//attach adapter to gridview 
 		myGrid.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -151,7 +153,7 @@ public class ControlersActivity extends Activity {
 				public boolean onMenuItemClick(MenuItem item) {
 					if(item.getTitle().equals(getString(R.string.action_addLightSwitch))){
 						SQLiteDatabase db = new DBHandler(getApplicationContext()).getWritableDatabase();//grab database
-						db.execSQL("INSERT INTO controler_interface(controler_interface_name,controler_ip,control_pin1_number,house_name,controler_type,room_name) VALUES('"+getString(R.string.newLightSwitchName)+"','"+roomIp+"',0,'"+houseName+"','lightSwitch','"+roomName+"')");
+						db.execSQL("INSERT INTO controler_interface(controler_interface_name,controler_ip,control_pin1_number,house_name,controler_type,controler_image_name,room_name) VALUES('"+getString(R.string.newLightSwitchName)+"','"+roomIp+"',0,'"+houseName+"','lightSwitch','"+"house"+"','"+roomName+"')");
 						db.close();
 						Intent i=new Intent(getApplicationContext(),EditLightSwitchActivity.class);
 						i.putExtra("lightSwitchName", getString(R.string.newLightSwitchName));

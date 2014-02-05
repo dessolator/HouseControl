@@ -1,13 +1,11 @@
 package me.kesler.homecontrol;
 
 import java.util.ArrayList;
-
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -62,6 +60,7 @@ public class RoomsActivity extends Activity {
 		// Show the Up button in the action bar.
 		
 		ArrayList<String> roomList=new ArrayList<String>();
+		ArrayList<String> roomImageList=new ArrayList<String>();
 		houseName=getIntent().getExtras().getString("houseName");
 		setupActionBar();
 		SQLiteDatabase db = new DBHandler(this).getReadableDatabase();//grab a database
@@ -69,6 +68,7 @@ public class RoomsActivity extends Activity {
 		if(c!=null){//if the query got anything
 			if(c.moveToFirst()){//start from the beginning
 				do{
+					roomImageList.add(c.getString(c.getColumnIndex("room_image_name")));//add the names
 					roomList.add(c.getString(c.getColumnIndex("room_name")));//add the names
 				}while(c.moveToNext());//and iterate as far as possible
 			}
@@ -78,7 +78,7 @@ public class RoomsActivity extends Activity {
 		db.close();
 				
 		GridView myGrid = (GridView) findViewById(R.id.roomGrid);//grab the gridview
-		myGrid.setAdapter(new GridAdapter(this,roomList));//attach adapter to gridview
+		myGrid.setAdapter(new GridAdapter(this,roomList, roomImageList));//attach adapter to gridview
 		myGrid.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -121,7 +121,7 @@ public class RoomsActivity extends Activity {
 			return true;
 		case R.id.action_addRoom:
 			SQLiteDatabase db = new DBHandler(this).getWritableDatabase();//grab database
-			db.execSQL("INSERT INTO room(room_name,controler_ip,house_name) VALUES('"+getString(R.string.newRoomName)+"','','"+getIntent().getExtras().getString("houseName")+"')");//add a blank house
+			db.execSQL("INSERT INTO room(room_name,controler_ip,house_name,room_image_name) VALUES('"+getString(R.string.newRoomName)+"','','"+getIntent().getExtras().getString("houseName")+"','bed')");//add a blank house
 			Intent i = new Intent(getApplicationContext(), EditRoomActivity.class);//create intent
 			i.putExtra("roomName", getString(R.string.newRoomName));//give info about the house
 			i.putExtra("houseName", houseName);

@@ -10,12 +10,10 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 public class GridAdapter extends BaseAdapter {
-//	private Context myContext;
 	private List<String> houseNames;
 	private LayoutInflater inflater;
 
 	public GridAdapter(Context myContext, List<String> houseNames) {
-//		this.myContext=myContext;
 		this.houseNames=houseNames;
 		this.inflater=LayoutInflater.from(myContext);
 		}

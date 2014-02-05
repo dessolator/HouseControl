@@ -32,8 +32,6 @@ public class EditHouseActivity extends Activity {
 				((EditText)findViewById(R.id.houseWifiField)).setText(c.getString(c.getColumnIndex("house_wifi_name")));//add the names
 			}
 		}
-		
-		
 		db.close();
 		
 		saveButton.setOnClickListener(new OnClickListener(){

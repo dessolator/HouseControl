@@ -7,13 +7,11 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,11 +26,11 @@ import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.support.v4.app.NavUtils;
 
 public class ControlersActivity extends Activity {
-	private String houseName;
-	private String roomName;
-	private String roomIp;
-	private PopupMenu addPopup;
-	private Socket mySocket;
+	private String houseName;//name of the house these controllers belong to
+	private String roomName;//name of the room these controllers belong to
+	private String roomIp;//the ip of the server these controllers belong to
+	private PopupMenu addPopup;//the popup menu that picks the type of controller
+	private Socket mySocket;//the socket used to communicate with the server
 	private DataOutputStream outToServer;//output stream to server
 	private DataInputStream inFromServer;//input stream from server
 	
@@ -44,15 +42,11 @@ public class ControlersActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_controlers);
-		// Show the Up button in the action bar.
-		setupActionBar();
-		
-		
 		Intent startIntent=getIntent();
 		ArrayList<String> controlerList=new ArrayList<String>();
 		houseName=startIntent.getExtras().getString("houseName");
 		roomName=startIntent.getExtras().getString("roomName");
-		
+		setupActionBar();
 		
 		SQLiteDatabase db = new DBHandler(this).getReadableDatabase();//grab a database
 		Cursor c=db.rawQuery("SELECT * FROM controler_interface WHERE house_name='"+houseName+"'AND room_name='"+roomName+"'",null);//run query getting all the houses
@@ -63,16 +57,12 @@ public class ControlersActivity extends Activity {
 				}while(c.moveToNext());//and iterate as far as possible
 			}
 		}
-//		Log.v("ROOMACTIVITY","roomName="+roomName);
-//		Log.v("ROOMACTIVITY","houseName="+houseName);
 		c=db.rawQuery("SELECT * FROM room WHERE house_name='"+houseName+"' AND room_name='"+roomName+"'", null);
 		if(c!=null){
 			if(c.moveToFirst()){
-//				Log.v("ROOMACTIVITY","Found the roomColumn");
 				roomIp=c.getString(c.getColumnIndex("controler_ip"));
 			}
 		}
-//		Log.v("ROOMACTIVITY","roomIp="+roomIp);
 		
 		db.close();
 		
@@ -90,8 +80,7 @@ public class ControlersActivity extends Activity {
 			}
 		}.start();
 		
-		//TODO read what house it was from the intent
-		//toss the house name into the nav bar?
+
 		GridView myGrid = (GridView) findViewById(R.id.controlerGrid);//grab the gridview
 		myGrid.setAdapter(new GridAdapter(this,controlerList));//attach adapter to gridview
 		myGrid.setOnItemClickListener(new OnItemClickListener() {
@@ -103,23 +92,20 @@ public class ControlersActivity extends Activity {
                 Cursor c=db.rawQuery("SELECT * FROM controler_interface WHERE house_name='"+houseName+"' AND room_name='"+roomName+"'AND controler_interface_name='"+((TextView)v.findViewById(R.id.gridItemText)).getText().toString()+"'", null);
         		if(c!=null){
         			if(c.moveToFirst()){
-//        				Log.v("ROOMACTIVITY","Found the roomColumn");
         				controlerType=c.getString(c.getColumnIndex("controler_type"));
         				controlerPin1=c.getInt(c.getColumnIndex("control_pin1_number"));
         			}
         		}
-        		Log.v("ROOMACTIVITY","controlerType="+controlerType);
-        		Log.v("ROOMACTIVITY","controlerPin="+controlerPin1);
         		db.close();
         		if(controlerType==null) return;
         		if(controlerType.equals("lightSwitch")){
-        			Log.v("ROOMACTIVITY","SUCCESS");
 		        	try {
 						outToServer.writeUTF("FLIP"+'_'+controlerPin1);
 						outToServer.flush();//flush the stream
 					} catch (IOException e) {
 						e.printStackTrace();
 					}//send the FLIP command to the server
+		        	return;
         		}
             	//do some controler spesific thing here
             }
@@ -131,7 +117,8 @@ public class ControlersActivity extends Activity {
 	 * Set up the {@link android.app.ActionBar}.
 	 */
 	private void setupActionBar() {
-
+		getActionBar().setTitle("Controllers");
+		getActionBar().setSubtitle(houseName+" > "+roomName);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 	}
@@ -155,19 +142,19 @@ public class ControlersActivity extends Activity {
 				temp=findViewById(R.id.controlersView);
 			}
 			addPopup=new PopupMenu(this, temp);
-			addPopup.getMenu().add("Add LightSwitch");//TODO hardcoded string
-			addPopup.getMenu().add("Add OutletSwitch");//TODO hardcoded string
-			addPopup.getMenu().add("Add SomeOtherSwitch");//TODO hardcoded string
+			addPopup.getMenu().add(R.string.action_addLightSwitch);
+			addPopup.getMenu().add(R.string.action_addOutletSwitch);
+			addPopup.getMenu().add(R.string.action_addSomeOtherSwitch);
 			addPopup.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 				
 				@Override
 				public boolean onMenuItemClick(MenuItem item) {
-					if(item.getTitle().equals("Add LightSwitch")){
+					if(item.getTitle().equals(getString(R.string.action_addLightSwitch))){
 						SQLiteDatabase db = new DBHandler(getApplicationContext()).getWritableDatabase();//grab database
-						db.execSQL("INSERT INTO controler_interface(controler_interface_name,controler_ip,control_pin1_number,house_name,controler_type,room_name) VALUES('New Lightswitch','"+roomIp+"',0,'"+houseName+"','lightSwitch','"+roomName+"')");
+						db.execSQL("INSERT INTO controler_interface(controler_interface_name,controler_ip,control_pin1_number,house_name,controler_type,room_name) VALUES('"+getString(R.string.newLightSwitchName)+"','"+roomIp+"',0,'"+houseName+"','lightSwitch','"+roomName+"')");
 						db.close();
-						Intent i=new Intent(getApplicationContext(),EditLightSwitchActivity.class);//TODO fix hardcode
-						i.putExtra("lightSwitchName", "New Lightswitch");
+						Intent i=new Intent(getApplicationContext(),EditLightSwitchActivity.class);
+						i.putExtra("lightSwitchName", getString(R.string.newLightSwitchName));
 						i.putExtra("houseName", houseName);
 						i.putExtra("roomName", roomName);
 						i.putExtra("roomIp", roomIp);
@@ -175,26 +162,18 @@ public class ControlersActivity extends Activity {
 						return true;
 						
 					}
-					if(item.getTitle().equals("Add OutletSwitch")){
+					if(item.getTitle().equals(getString(R.string.action_addOutletSwitch))){
 						return true;
 						
 					}
-					if(item.getTitle().equals("Add SomeOtherSwitch")){
+					if(item.getTitle().equals(getString(R.string.action_addSomeOtherSwitch))){
 						return true;
 						
 					}
-					Log.v("POPUP","addSomethingElse");
 					return false;
 				}
 			});
 			addPopup.show();
-//			SQLiteDatabase db = new DBHandler(this).getWritableDatabase();//grab database
-//			db.execSQL("INSERT INTO room(room_name,controler_ip,house_name) VALUES('NewRoom','','"+getIntent().getExtras().getString("houseName")+"')");//add a blank house
-//			Intent i = new Intent(getApplicationContext(), EditRoomActivity.class);//create intent
-//			i.putExtra("roomName", "NewRoom");//give info about the house
-//			i.putExtra("houseName", houseName);
-//			startActivity(i);//start the activity
-//			db.close();
 	        return true;
 			
 		}
@@ -203,24 +182,42 @@ public class ControlersActivity extends Activity {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		menu.add(0, v.getId(), 0, "Edit");
-		menu.add(0, v.getId(), 0, "Delete");
+		menu.add(0, v.getId(), 0, R.string.action_Edit);
+		menu.add(0, v.getId(), 0, R.string.action_Delete);
 	}
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();//yank the context menu's info
-		if(item.getTitle().equals("Edit")){
-			Intent i = new Intent(getApplicationContext(), EditLightSwitchActivity.class);//TODO fix hardcodecreate intent
+		if(item.getTitle().equals(getString(R.string.action_Edit))){
+			String selectedType=null;
+			Intent i=null;
+			SQLiteDatabase db = new DBHandler(this).getReadableDatabase();//grab a database
+			Cursor c=db.rawQuery("SELECT * FROM controler_interface WHERE house_name='"+houseName+"' AND room_name='"+roomName+"' AND controler_interface_name='"+(String)((GridView)findViewById(R.id.controlerGrid)).getAdapter().getItem(info.position)+"'", null);
+			if(c!=null){
+				if(c.moveToFirst()){
+					selectedType=c.getString(c.getColumnIndex("controler_type"));
+				}
+			}
+			
+			db.close();
+			
+			if(selectedType.equals("lightSwitch")){
+				i = new Intent(getApplicationContext(), EditLightSwitchActivity.class);
+			}else
+			if(selectedType.equals("outletSwitch")){
+//				Intent i = new Intent(getApplicationContext(), EditOutletSwitchActivity.class);
+			}else
+			if(selectedType.equals("someSwitch")){
+//				Intent i = new Intent(getApplicationContext(), EditSomeSwitchActivity.class);	
+			}
+			
 			i.putExtra("roomName", roomName);//give info about the house
 			i.putExtra("houseName", houseName);
 			i.putExtra("lightSwitchName", (String)((GridView)findViewById(R.id.controlerGrid)).getAdapter().getItem(info.position));
-			Log.v("CALLINGEDIT","houseName="+houseName);
-			Log.v("CALLINGEDIT","roomName="+roomName);
-			Log.v("CALLINGEDIT","lightSwitchName="+(String)((GridView)findViewById(R.id.controlerGrid)).getAdapter().getItem(info.position));
 			startActivity(i);//start the activity	   		
 	   		return true;
 	   	}
-	   	if(item.getTitle().equals("Delete")){
+	   	if(item.getTitle().equals(getString(R.string.action_Delete))){
 	   		SQLiteDatabase db = new DBHandler(this).getWritableDatabase();//grab a database
 	   		db.execSQL("DELETE FROM controler_interface WHERE controler_interface_name='"+(String)((GridView)findViewById(R.id.controlerGrid)).getAdapter().getItem(info.position)+"' AND room_name='"+roomName+"' AND house_name='"+houseName+"'");
 	   		db.close();

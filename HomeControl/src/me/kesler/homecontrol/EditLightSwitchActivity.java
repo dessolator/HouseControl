@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,11 +28,8 @@ public class EditLightSwitchActivity extends Activity {
 		roomName=startIntent.getExtras().getString("roomName");
 		houseName=startIntent.getExtras().getString("houseName");
 		lightSwitchName=startIntent.getExtras().getString("lightSwitchName");
-//		Log.v("ROOMACTIVITY","roomName="+roomName);
 		Button saveButton=(Button)findViewById(R.id.saveLightSwitchButton);
-		Log.v("EDIT","starting field inject: "+lightSwitchName);
 		((EditText)findViewById(R.id.lightSwitchNameField)).setText(lightSwitchName);
-		Log.v("EDIT","ending field inject");
 		SQLiteDatabase db = new DBHandler(this).getReadableDatabase();//grab a database
 		Cursor c=db.rawQuery("SELECT * FROM controler_interface WHERE room_name='"+roomName+"' AND house_name='"+houseName+"' AND controler_interface_name='"+lightSwitchName+"'",null);//run query getting all the houses
 		if(c!=null){//if the query got anything
@@ -50,9 +46,6 @@ public class EditLightSwitchActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				SQLiteDatabase db=new DBHandler(getApplicationContext()).getWritableDatabase();
-				Log.v("EDITLIGHTSWITCH","houseName="+houseName);
-				Log.v("EDITLIGHTSWITCH","roomName="+roomName);
-				Log.v("EDITLIGHTSWITCH","lightSwitchName="+lightSwitchName);
 				db.execSQL("UPDATE controler_interface SET "
 						+ "controler_interface_name='"+((EditText)findViewById(R.id.lightSwitchNameField)).getText().toString()+"',"
 								+ "control_pin1_number='"+((EditText)findViewById(R.id.lightSwitchPinField)).getText().toString()+"'"
@@ -70,7 +63,6 @@ public class EditLightSwitchActivity extends Activity {
 	 * Set up the {@link android.app.ActionBar}.
 	 */
 	private void setupActionBar() {
-
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 	}

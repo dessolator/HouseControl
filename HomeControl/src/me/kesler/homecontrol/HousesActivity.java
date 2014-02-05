@@ -21,20 +21,20 @@ public class HousesActivity extends Activity {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		menu.add(0, v.getId(), 0, "Edit");
-		menu.add(0, v.getId(), 0, "Delete");
+		menu.add(0, v.getId(), 0, R.string.action_Edit);
+		menu.add(0, v.getId(), 0, R.string.action_Delete);
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();//yank the context menu's info
-		if(item.getTitle().equals("Edit")){
+		if(item.getTitle().equals(getString(R.string.action_Edit))){
 			Intent i = new Intent(getApplicationContext(), EditHouseActivity.class);//create intent
 			i.putExtra("houseName", (String)((GridView)findViewById(R.id.houseGrid)).getAdapter().getItem(info.position));//give info about the house
 			startActivity(i);//start the activity	   		
 	   		return true;
 	   	}
-	   	if(item.getTitle().equals("Delete")){
+	   	if(item.getTitle().equals(getString(R.string.action_Delete))){
 	   		SQLiteDatabase db = new DBHandler(this).getWritableDatabase();//grab a database
 	   		db.execSQL("DELETE FROM house WHERE house_name='"+(String)((GridView)findViewById(R.id.houseGrid)).getAdapter().getItem(info.position)+"'");
 	   		db.close();
@@ -57,6 +57,7 @@ public class HousesActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);//default on create
+		setupActionBar();
 		setContentView(R.layout.activity_houses);//inflate the layout
 		SQLiteDatabase db = new DBHandler(this).getReadableDatabase();//grab a database
 		Cursor c=db.rawQuery("SELECT * FROM house",null);//run query getting all the houses
@@ -88,7 +89,12 @@ public class HousesActivity extends Activity {
 
 	}
 	
-	
+	/**
+	 * Set up the {@link android.app.ActionBar}.
+	 */
+	private void setupActionBar() {
+		getActionBar().setTitle("Houses");
+	}
 	
 
 	@Override
@@ -100,9 +106,9 @@ public class HousesActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		//being as the only menu item is Add A House
 		SQLiteDatabase db = new DBHandler(this).getWritableDatabase();//grab database
-		db.execSQL("INSERT INTO house(house_name,house_wifi_name,house_wifi_type,house_wifi_pass) VALUES('NewHouse4','kesler','WPA','12345678')");//add a blank house
+		db.execSQL("INSERT INTO house(house_name,house_wifi_name,house_wifi_type,house_wifi_pass) VALUES('"+getString(R.string.newHouseName)+"','kesler','WPA','12345678')");//add a blank house
 		Intent i = new Intent(getApplicationContext(), EditHouseActivity.class);//create intent
-		i.putExtra("houseName", "NewHouse4");//give info about the house
+		i.putExtra("houseName", getString(R.string.newHouseName));//give info about the house
 		startActivity(i);//start the activity
 		db.close();
         return true;

@@ -6,6 +6,19 @@
     <string name="action_addHouse">Add a House</string>
     <string name="action_addRoom">Add a Room</string>
     <string name="action_addControler">Add a Controler</string>
+    <string name="action_addLightSwitch">Add a Lightswitch</string>
+    <string name="action_addOutletSwitch">Add a Outletswitch</string>
+    <string name="action_addSomeOtherSwitch">Add some other switch</string>
+    <string name="action_Edit">Edit</string>
+    <string name="action_Delete">Delete</string>
+    
+    
+    <string name="newHouseName">New House</string>
+    <string name="newRoomName">New Room</string>
+    <string name="newLightSwitchName">New Lightswitch</string>
+    <string name="newOutletSwitchName">New Outletswitch</string>
+    <string name="newSomeSwitchName">New SomeOtherSwitch</string>
+    
     
     <string name="housesView">Houses:</string>
     <string name="roomsView">Rooms:</string>

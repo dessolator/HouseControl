@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,7 +26,6 @@ public class EditRoomActivity extends Activity {
 		Intent startIntent=getIntent();
 		roomName=startIntent.getExtras().getString("roomName");
 		houseName=startIntent.getExtras().getString("houseName");
-		Log.v("ROOMACTIVITY","roomName="+roomName);
 		Button saveButton=(Button)findViewById(R.id.saveRoomButton);
 		((EditText)findViewById(R.id.roomNameField)).setText(roomName);
 		SQLiteDatabase db = new DBHandler(this).getReadableDatabase();//grab a database

@@ -1,4 +1,4 @@
-package me.kesler.homecontrol;
+package me.kesler.homecontrol.activities;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -8,6 +8,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import me.kesler.homecontrol.R;
+import me.kesler.homecontrol.activities.edit_activities.EditLightSwitchActivity;
 import me.kesler.homecontrol.database_manager.DBHandler;
 import me.kesler.homecontrol.displayable.GridAdapter;
 import me.kesler.homecontrol.displayable.Listable;
@@ -16,7 +18,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.ContextMenu;

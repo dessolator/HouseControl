@@ -20,7 +20,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="me.kesler.homecontrol.HousesActivity"
+            android:name="me.kesler.homecontrol.activities.HousesActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,62 +29,46 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="me.kesler.homecontrol.RoomsActivity"
+            android:name="me.kesler.homecontrol.activities.RoomsActivity"
             android:label="@string/title_activity_rooms"
             android:launchMode="singleTop"
-            android:parentActivityName="me.kesler.homecontrol.HousesActivity" >
+            android:parentActivityName="me.kesler.homecontrol.activities.HousesActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="me.kesler.homecontrol.HousesActivity" />
+                android:value="me.kesler.homecontrol.activities.HousesActivity" />
         </activity>
         <activity
-            android:name="me.kesler.homecontrol.ControlersActivity"
+            android:name="me.kesler.homecontrol.activities.ControlersActivity"
             android:label="@string/title_activity_controlers"
             android:launchMode="singleTop"
-            android:parentActivityName="me.kesler.homecontrol.RoomsActivity" >
+            android:parentActivityName="me.kesler.homecontrol.activities.RoomsActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="me.kesler.homecontrol.RoomsActivity" />
+                android:value="me.kesler.homecontrol.activities.RoomsActivity" />
         </activity>
         <activity
-            android:name="me.kesler.homecontrol.EditHouseActivity"
+            android:name="me.kesler.homecontrol.activities.edit_activities.EditHouseActivity"
             android:label="@string/title_activity_edit_house"
-            android:parentActivityName="me.kesler.homecontrol.HousesActivity" >
+            android:parentActivityName="me.kesler.homecontrol.activities.HousesActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="me.kesler.homecontrol.HousesActivity" />
+                android:value="me.kesler.homecontrol.activities.HousesActivity" />
         </activity>
         <activity
-            android:name="me.kesler.homecontrol.EditRoomActivity"
+            android:name="me.kesler.homecontrol.activities.edit_activities.EditRoomActivity"
             android:label="@string/title_activity_edit_room"
-            android:parentActivityName="me.kesler.homecontrol.RoomsActivity" >
+            android:parentActivityName="me.kesler.homecontrol.activities.RoomsActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="me.kesler.homecontrol.RoomsActivity" />
+                android:value="me.kesler.homecontrol.activities.RoomsActivity" />
         </activity>
         <activity
-            android:name="me.kesler.homecontrol.EditLightSwitchActivity"
+            android:name="me.kesler.homecontrol.activities.edit_activities.EditLightSwitchActivity"
             android:label="@string/title_activity_edit_light_switch"
-            android:parentActivityName="me.kesler.homecontrol.ControlersActivity" >
+            android:parentActivityName="me.kesler.homecontrol.activities.ControlersActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="me.kesler.homecontrol.ControlersActivity" />
-        </activity>
-        <activity
-            android:name="me.kesler.homecontrol.RoomListActivity"
-            android:label="@string/title_room_list"
-            android:parentActivityName="me.kesler.homecontrol.HousesActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="me.kesler.homecontrol.HousesActivity" />
-        </activity>
-        <activity
-            android:name="me.kesler.homecontrol.RoomDetailActivity"
-            android:label="@string/title_room_detail"
-            android:parentActivityName="me.kesler.homecontrol.RoomListActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="me.kesler.homecontrol.RoomListActivity" />
+                android:value="me.kesler.homecontrol.activities.ControlersActivity" />
         </activity>
     </application>
 

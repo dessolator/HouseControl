@@ -1,5 +1,6 @@
-package me.kesler.homecontrol;
+package me.kesler.homecontrol.activities.edit_activities;
 
+import me.kesler.homecontrol.R;
 import me.kesler.homecontrol.database_manager.DBHandler;
 import android.os.Bundle;
 import android.app.Activity;
@@ -14,36 +15,43 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.support.v4.app.NavUtils;
 
-public class EditHouseActivity extends Activity {
+public class EditLightSwitchActivity extends Activity {
 
+	String houseName;
+	String roomName;
+	String lightSwitchName;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_edit_house);
+		setContentView(R.layout.activity_edit_light_switch);
 		// Show the Up button in the action bar.
 		setupActionBar();
 		Intent startIntent=getIntent();
-		final String houseName=startIntent.getExtras().getString("houseName");
-		Button saveButton=(Button)findViewById(R.id.saveHouseButton);
-		((EditText)findViewById(R.id.houseNameField)).setText(houseName);
+		roomName=startIntent.getExtras().getString("roomName");
+		houseName=startIntent.getExtras().getString("houseName");
+		lightSwitchName=startIntent.getExtras().getString("lightSwitchName");
+		Button saveButton=(Button)findViewById(R.id.saveLightSwitchButton);
+		((EditText)findViewById(R.id.lightSwitchNameField)).setText(lightSwitchName);
 		SQLiteDatabase db = new DBHandler(this).getReadableDatabase();//grab a database
-		Cursor c=db.rawQuery("SELECT * FROM house WHERE house_name='"+houseName+"'",null);//run query getting all the houses
+		Cursor c=db.rawQuery("SELECT * FROM controler_interface WHERE room_name='"+roomName+"' AND house_name='"+houseName+"' AND controler_interface_name='"+lightSwitchName+"'",null);//run query getting all the houses
 		if(c!=null){//if the query got anything
 			if(c.moveToFirst()){//start from the begining
-				((EditText)findViewById(R.id.houseWifiField)).setText(c.getString(c.getColumnIndex("house_wifi_name")));//add the names
+				((EditText)findViewById(R.id.lightSwitchPinField)).setText(Integer.toString(c.getInt(c.getColumnIndex("control_pin1_number"))));//add the names
 			}
 		}
+		
+		
 		db.close();
 		
 		saveButton.setOnClickListener(new OnClickListener(){
 
 			@Override
 			public void onClick(View v) {
-				SQLiteDatabase db=new DBHandler(EditHouseActivity.this).getWritableDatabase();
-				db.execSQL("UPDATE house SET "
-						+ "house_name='"+((EditText)findViewById(R.id.houseNameField)).getText().toString()+"',"
-								+ "house_wifi_name='"+((EditText)findViewById(R.id.houseWifiField)).getText().toString()+"'"
-								+ " WHERE house_name='"+houseName+"'");
+				SQLiteDatabase db=new DBHandler(getApplicationContext()).getWritableDatabase();
+				db.execSQL("UPDATE controler_interface SET "
+						+ "controler_interface_name='"+((EditText)findViewById(R.id.lightSwitchNameField)).getText().toString()+"',"
+								+ "control_pin1_number='"+((EditText)findViewById(R.id.lightSwitchPinField)).getText().toString()+"'"
+								+ " WHERE room_name='"+roomName+"' AND house_name='"+houseName+"' AND controler_interface_name='"+lightSwitchName+"'");
 				onBackPressed();
 				db.close();
 				
@@ -57,7 +65,6 @@ public class EditHouseActivity extends Activity {
 	 * Set up the {@link android.app.ActionBar}.
 	 */
 	private void setupActionBar() {
-
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 	}
@@ -65,7 +72,7 @@ public class EditHouseActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.edit_house, menu);
+		getMenuInflater().inflate(R.menu.edit_light_switch, menu);
 		return true;
 	}
 

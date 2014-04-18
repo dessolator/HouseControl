@@ -3,15 +3,13 @@ package me.kesler.homecontrol.displayable;
 import java.util.List;
 
 import me.kesler.homecontrol.R;
-import me.kesler.homecontrol.R.id;
-import me.kesler.homecontrol.R.layout;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.TextView;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class ListAdapter extends BaseAdapter {
 	private List<Listable> objects;

@@ -1,7 +1,9 @@
-package me.kesler.homecontrol;
+package me.kesler.homecontrol.activities;
 
 import java.util.ArrayList;
 
+import me.kesler.homecontrol.R;
+import me.kesler.homecontrol.activities.edit_activities.EditHouseActivity;
 import me.kesler.homecontrol.database_manager.DBHandler;
 import me.kesler.homecontrol.displayable.ListAdapter;
 import me.kesler.homecontrol.displayable.Listable;
@@ -18,7 +20,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
 

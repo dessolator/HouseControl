@@ -1,4 +1,4 @@
-package me.kesler.homecontrol;
+package me.kesler.homecontrol.database_manager;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

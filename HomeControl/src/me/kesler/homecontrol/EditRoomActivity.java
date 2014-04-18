@@ -1,5 +1,6 @@
 package me.kesler.homecontrol;
 
+import me.kesler.homecontrol.database_manager.DBHandler;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;

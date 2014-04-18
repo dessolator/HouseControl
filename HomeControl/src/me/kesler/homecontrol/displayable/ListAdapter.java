@@ -1,7 +1,10 @@
-package me.kesler.homecontrol;
+package me.kesler.homecontrol.displayable;
 
 import java.util.List;
 
+import me.kesler.homecontrol.R;
+import me.kesler.homecontrol.R.id;
+import me.kesler.homecontrol.R.layout;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;

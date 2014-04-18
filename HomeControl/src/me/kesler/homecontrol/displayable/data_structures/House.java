@@ -1,4 +1,6 @@
-package me.kesler.homecontrol;
+package me.kesler.homecontrol.displayable.data_structures;
+
+import me.kesler.homecontrol.displayable.Listable;
 
 public class House implements Listable {
 	String name;

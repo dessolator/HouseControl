@@ -2,7 +2,6 @@
 <resources>
 
     <string name="app_name">HomeControl</string>
-    
     <string name="action_addHouse">Add a House</string>
     <string name="action_addRoom">Add a Room</string>
     <string name="action_addControler">Add a Controler</string>
@@ -11,15 +10,11 @@
     <string name="action_addSomeOtherSwitch">Add some other switch</string>
     <string name="action_Edit">Edit</string>
     <string name="action_Delete">Delete</string>
-    
-    
     <string name="newHouseName">New House</string>
     <string name="newRoomName">New Room</string>
     <string name="newLightSwitchName">New Lightswitch</string>
     <string name="newOutletSwitchName">New Outletswitch</string>
     <string name="newSomeSwitchName">New SomeOtherSwitch</string>
-    
-    
     <string name="housesView">Houses:</string>
     <string name="roomsView">Rooms:</string>
     <string name="controlersView">Controlers:</string>
@@ -29,17 +24,15 @@
     <string name="roomIpView">Room Controler IP:</string>
     <string name="lightSwitchNameView">Lightswitch Name:</string>
     <string name="lightSwitchPinView">Lightswitch Pin:</string>
-    
-    
-    
     <string name="saveButton">Save</string>
-    
-    
+
     <!-- TODO These need to be dynamic -->
     <string name="title_activity_rooms">RoomsActivity</string>
     <string name="title_activity_controlers">ControlersActivity</string>
     <string name="title_activity_edit_house">EditHouseActivity</string>
     <string name="title_activity_edit_room">EditRoomActivity</string>
     <string name="title_activity_edit_light_switch">EditLightSwitchActivity</string>
+    <string name="title_room_list">Rooms</string>
+    <string name="title_room_detail">Room Detail</string>
 
 </resources>

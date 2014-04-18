@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="11"
-        android:targetSdkVersion="18" />
+        android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -69,6 +69,22 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="me.kesler.homecontrol.ControlersActivity" />
+        </activity>
+        <activity
+            android:name="me.kesler.homecontrol.RoomListActivity"
+            android:label="@string/title_room_list"
+            android:parentActivityName="me.kesler.homecontrol.HousesActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="me.kesler.homecontrol.HousesActivity" />
+        </activity>
+        <activity
+            android:name="me.kesler.homecontrol.RoomDetailActivity"
+            android:label="@string/title_room_detail"
+            android:parentActivityName="me.kesler.homecontrol.RoomListActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="me.kesler.homecontrol.RoomListActivity" />
         </activity>
     </application>
 

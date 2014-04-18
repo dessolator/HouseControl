@@ -7,23 +7,25 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import android.os.Bundle;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
-import android.widget.GridView;
-import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.GridView;
 import android.widget.PopupMenu;
 import android.widget.PopupMenu.OnMenuItemClickListener;
-import android.support.v4.app.NavUtils;
+import android.widget.TextView;
 
 public class ControlersActivity extends Activity {
 	private String houseName;//name of the house these controllers belong to
@@ -33,7 +35,7 @@ public class ControlersActivity extends Activity {
 	private Socket mySocket;//the socket used to communicate with the server
 	private DataOutputStream outToServer;//output stream to server
 	private DataInputStream inFromServer;//input stream from server
-	
+	private ArrayList<Listable> controlerList;
 	
 	
 	
@@ -43,8 +45,7 @@ public class ControlersActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_controlers);
 		Intent startIntent=getIntent();
-		ArrayList<String> controlerList=new ArrayList<String>();
-		ArrayList<String> controlerImageList=new ArrayList<String>();
+		controlerList=new ArrayList<Listable>();
 		houseName=startIntent.getExtras().getString("houseName");
 		roomName=startIntent.getExtras().getString("roomName");
 		setupActionBar();
@@ -53,9 +54,8 @@ public class ControlersActivity extends Activity {
 		Cursor c=db.rawQuery("SELECT * FROM controler_interface WHERE house_name='"+houseName+"'AND room_name='"+roomName+"'",null);//run query getting all the houses
 		if(c!=null){//if the query got anything
 			if(c.moveToFirst()){//start from the beginning
-				do{
-					controlerList.add(c.getString(c.getColumnIndex("controler_interface_name")));//add the names
-					controlerImageList.add(c.getString(c.getColumnIndex("controler_image_name")));//add the names
+				do{//TODO switch case
+					controlerList.add(new BasicControler(c.getString(c.getColumnIndex("controler_interface_name")),c.getString(c.getColumnIndex("controler_image_name")),c.getString(c.getColumnIndex("controler_image_name")),c.getInt(c.getColumnIndex("control_pin1_number")),true));// TODO on and off image supportadd the names
 				}while(c.moveToNext());//and iterate as far as possible
 			}
 		}
@@ -67,7 +67,7 @@ public class ControlersActivity extends Activity {
 		}
 		
 		db.close();
-		
+				
 		new Thread(){
 			public void run(){
 				try {
@@ -81,10 +81,9 @@ public class ControlersActivity extends Activity {
 				}
 			}
 		}.start();
-		
 
 		GridView myGrid = (GridView) findViewById(R.id.controlerGrid);//grab the gridview
-		myGrid.setAdapter(new GridAdapter(this,controlerList,controlerImageList));//attach adapter to gridview 
+		myGrid.setAdapter(new GridAdapter(this,controlerList));//attach adapter to gridview 
 		myGrid.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -194,7 +193,7 @@ public class ControlersActivity extends Activity {
 			String selectedType=null;
 			Intent i=null;
 			SQLiteDatabase db = new DBHandler(this).getReadableDatabase();//grab a database
-			Cursor c=db.rawQuery("SELECT * FROM controler_interface WHERE house_name='"+houseName+"' AND room_name='"+roomName+"' AND controler_interface_name='"+(String)((GridView)findViewById(R.id.controlerGrid)).getAdapter().getItem(info.position)+"'", null);
+			Cursor c=db.rawQuery("SELECT * FROM controler_interface WHERE house_name='"+houseName+"' AND room_name='"+roomName+"' AND controler_interface_name='"+((Listable)((GridView)findViewById(R.id.controlerGrid)).getAdapter().getItem(info.position)).getName()+"'", null);
 			if(c!=null){
 				if(c.moveToFirst()){
 					selectedType=c.getString(c.getColumnIndex("controler_type"));
@@ -215,13 +214,13 @@ public class ControlersActivity extends Activity {
 			
 			i.putExtra("roomName", roomName);//give info about the house
 			i.putExtra("houseName", houseName);
-			i.putExtra("lightSwitchName", (String)((GridView)findViewById(R.id.controlerGrid)).getAdapter().getItem(info.position));
+			i.putExtra("lightSwitchName", ((Listable)((GridView)findViewById(R.id.controlerGrid)).getAdapter().getItem(info.position)).getName());
 			startActivity(i);//start the activity	   		
 	   		return true;
 	   	}
 	   	if(item.getTitle().equals(getString(R.string.action_Delete))){
 	   		SQLiteDatabase db = new DBHandler(this).getWritableDatabase();//grab a database
-	   		db.execSQL("DELETE FROM controler_interface WHERE controler_interface_name='"+(String)((GridView)findViewById(R.id.controlerGrid)).getAdapter().getItem(info.position)+"' AND room_name='"+roomName+"' AND house_name='"+houseName+"'");
+	   		db.execSQL("DELETE FROM controler_interface WHERE controler_interface_name='"+((Listable)((GridView)findViewById(R.id.controlerGrid)).getAdapter().getItem(info.position)).getName()+"' AND room_name='"+roomName+"' AND house_name='"+houseName+"'");
 	   		db.close();
 	   		onResume();
 	   		return true;

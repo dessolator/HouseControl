@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">HouseRemote</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_add_a_house">Add a house</string>
+    <string name="action_add_a_room">Add a room</string>
+    <string name="action_add_a_controller">Add a controller</string>
+    <string name="houses_textview">Houses:</string>
+    <string name="rooms_textview">Rooms:</string>
+    <string name="controllers_textview">Controllers:</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+	<string name="houseNameView">House Name:</string>
+    <string name="roomNameView">Room Name:</string>
+    <string name="houseWifiView">House Wifi Name:</string>
+    <string name="roomIpView">Room Controler IP:</string>
+    <string name="lightSwitchNameView">Lightswitch Name:</string>
+    <string name="lightSwitchPinView">Lightswitch Pin:</string>
+    <string name="saveButton">Save</string>
+    <string name="newHouseName">New House</string>
+    <string name="newRoomName">New Room</string>
+    <string name="newLightSwitchName">New Lightswitch</string>
+    <string name="newOutletSwitchName">New Outletswitch</string>
+    <string name="newSomeSwitchName">New SomeOtherSwitch</string>
+    
+    
+</resources>

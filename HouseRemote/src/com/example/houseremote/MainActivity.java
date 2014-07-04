@@ -30,15 +30,17 @@ public class MainActivity extends ActionBarActivity implements
 		if (savedInstanceState == null) {
 			FragmentTransaction ft = getSupportFragmentManager()
 					.beginTransaction();
+			
 			myHousesFragment=new HousesFragment();
 			ft.add(R.id.list, myHousesFragment);
-			if (findViewById(R.id.expanded) != null) {
-				if (currentlySelectedHouse != null) {
+			
+			if (findViewById(R.id.expanded) != null) {//check to see if expanded view is visible
+				if (currentlySelectedHouse != null) {//if there's a house forward it's name to the fragment
 					RoomsFragment f = new RoomsFragment();
 					Bundle b = new Bundle();
-					b.putString("house_name", "Pera");
+					b.putString("house_name", currentlySelectedHouse);//TODO hardcoding
 					f.setArguments(b);
-					ft.add(R.id.expanded, f);
+					ft.add(R.id.expanded, f);//once the fragment has been initialised add it to the layout
 				}
 			}
 			ft.commit();
@@ -58,47 +60,47 @@ public class MainActivity extends ActionBarActivity implements
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			// TODO Open Settings?
-			Log.d("MOO", "settings");
 			return true;
 		}
-		// TODO move the ADD A HOUSE BUTTON TO HOUSE LIST FRAGMENT
-		// if (id == R.id.action_add_a_house) {
-		// Log.d("MOO","house");
-		// //TODO Shove a new house into the database and start the edit
-		// activity passing that house's name
-		// return true;
-		// }
 		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
 	public void roomSelected(String roomName) {
 		//TODO optimize
-		if(currentlySelectedRoom==roomName){
+		//boy was I descriptive...
+		//TODO add a currentlySelectedRoom==null case
+		
+		if(currentlySelectedRoom==roomName){//if the room selected is the current one... do... NOTHING
 			return;
 		}
+		//else start manipulating fragments
 		FragmentTransaction ft = getSupportFragmentManager()
 				.beginTransaction();
 		if(currentlySelectedRoom!=null){
-			ft.remove(myControllersFragment);
+			ft.remove(myControllersFragment);//if there was a previously selected room remove it's controllers fragment
 		}
 		currentlySelectedRoom = roomName;
-		getSupportFragmentManager();
-		getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+		//TODO move ft init and old fragment removal here
+		getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);//TODO investigate...
 		myControllersFragment = new ControllersFragment();
+		
 		Bundle b = new Bundle();
 		b.putString("house_name", currentlySelectedHouse);
 		b.putString("room_name", currentlySelectedRoom);
 		myControllersFragment.setArguments(b);
+		
+		//TODO if there's a currently selected house remove the fragments
+		//else just replace the myControllersFragment
 		ft.remove(myRoomsFragment);
 		ft.remove(myHousesFragment);
 		ft.commit();
 		getSupportFragmentManager().executePendingTransactions();
 		ft= getSupportFragmentManager().beginTransaction();
 		ft.add(R.id.list, myRoomsFragment);
+		
 		ft.add(R.id.expanded, myControllersFragment);
 		ft.commit();
-		Log.d("MOOOOOOOO", roomName);
 
 	}
 

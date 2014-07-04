@@ -76,7 +76,7 @@ public class ControllersFragment extends Fragment {
 				+ "' AND room_name='" + roomName + "'", null);
 		if (c != null) {
 			if (c.moveToFirst()) {
-				roomIp = c.getString(c.getColumnIndex("controler_ip"));
+				roomIp = c.getString(c.getColumnIndex("controller_ip"));
 			}
 		}
 
@@ -177,8 +177,6 @@ public class ControllersFragment extends Fragment {
 	}
 
 
-	// TODO MANAGE NAVIGATION... IF ROOM FRAGMENT IS IN THE RIGHT UP EXITS APP
-	// IF ROOM IS IN THE LEFT, MOVE ROOM TO THE RIGHT AND LOAD HOUSES TO THE
-	// LEFT
+
 
 }

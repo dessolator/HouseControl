@@ -10,41 +10,40 @@ public class DBHandler extends SQLiteOpenHelper {
 	/*
 	 * TABLE NAMES
 	 */
-	static final String HOUSE_TABLE_NAME = "house";
-	static final String ROOM_TABLE_NAME = "room";
-	static final String CONTROLLER_INTERFACE_TABLE_NAME = "controller_interface";
+	public static final String HOUSE_TABLE_NAME = "house";
+	public static final String ROOM_TABLE_NAME = "room";
+	public static final String CONTROLLER_INTERFACE_TABLE_NAME = "controller_interface";
 	
 	/*
 	 * HOUSE TABLE COLUMNS
 	 */
 	public static final String HOUSE_ID = BaseColumns._ID;
 	public static final String HOUSE_NAME = "house_name";
-	static final String HOUSE_WIFI_NAME = "house_wifi_name";
-	static final String HOUSE_WIFI_TYPE = "house_wifi_type";
+	public static final String HOUSE_WIFI_NAME = "house_wifi_name";
+	public static final String HOUSE_WIFI_TYPE = "house_wifi_type";
 	public static final String HOUSE_IMAGE_NAME = "house_image_name";
-	static final String HOUSE_WIFI_PASS = "house_wifi_pass";
+	public static final String HOUSE_WIFI_PASS = "house_wifi_pass";
 	/*
 	 * ROOM TABLE COLUMNS
 	 */
 	public static final String ROOM_ID = BaseColumns._ID;
 	public static final String ROOM_NAME = "room_name";
 	public static final String ROOM_IMAGE_NAME = "room_image_name";
-	static final String CONTROLER_IP = "controler_ip";
+	public static final String CONTROLLER_IP = "controller_ip";
 	/*
 	 * CONTROLER TABLE COLUMNS
 	 */
-	static final String CONTROLLER_ID = BaseColumns._ID;;
-	static final String CONTROLLER_INTERFACE_NAME = "controller_interface_name";
-	static final String CONTROLLER_IMAGE_NAME = "controller_image_name";
-	static final String CONTROLLER_IP = "controller_ip";
-	static final String CONTROLLER_TYPE = "controller_type";
-	static final String CONTROL_PIN1_NUMBER = "control_pin1_number";
+	public static final String CONTROLLER_ID = BaseColumns._ID;;
+	public static final String CONTROLLER_INTERFACE_NAME = "controller_interface_name";
+	public static final String CONTROLLER_IMAGE_NAME = "controller_image_name";
+	public static final String CONTROLLER_TYPE = "controller_type";
+	public static final String CONTROL_PIN1_NUMBER = "control_pin1_number";
 	/*
 	 * SQL CREATION STRINGS
 	 */
 	private static final String CREATE_HOUSE_TABLE = "CREATE TABLE "+ HOUSE_TABLE_NAME + "(" 
 			+ HOUSE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " 
-			+ HOUSE_NAME + " STRING UNIQUE NOT NULL, " 
+			+ HOUSE_NAME + " STRING UNIQUE NOT NULL , " 
 			+ HOUSE_WIFI_NAME + " STRING NOT NULL, " 
 			+ HOUSE_WIFI_TYPE + " STRING NOT NULL, "
 			+ HOUSE_IMAGE_NAME + " STRING NOT NULL, "
@@ -55,7 +54,7 @@ public class DBHandler extends SQLiteOpenHelper {
 			+ "("
 			+ ROOM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
 			+ ROOM_NAME	+ " STRING NOT NULL, "
-			+ CONTROLER_IP + " STRING NOT NULL, "
+			+ CONTROLLER_IP + " STRING NOT NULL, "
 			+ HOUSE_NAME + " STRING NOT NULL, "
 			+ ROOM_IMAGE_NAME + " STRING NOT NULL, "
 			+ " FOREIGN KEY(" + HOUSE_NAME + ") REFERENCES " + HOUSE_TABLE_NAME	+ "(" + HOUSE_NAME + ") ON DELETE CASCADE ON UPDATE CASCADE,"

@@ -29,7 +29,7 @@ public class EditRoomActivity extends Activity {
 		Cursor c=db.rawQuery("SELECT * FROM room WHERE room_name='"+roomName+"' AND house_name='"+houseName+"'",null);//run query getting all the houses
 		if(c!=null){//if the query got anything
 			if(c.moveToFirst()){//start from the begining
-				((EditText)findViewById(R.id.roomIpField)).setText(c.getString(c.getColumnIndex("controler_ip")));//add the names
+				((EditText)findViewById(R.id.roomIpField)).setText(c.getString(c.getColumnIndex(DBHandler.CONTROLLER_IP)));//add the names
 			}
 		}
 		
@@ -43,7 +43,7 @@ public class EditRoomActivity extends Activity {
 				SQLiteDatabase db=new DBHandler(getApplicationContext()).getWritableDatabase();
 				db.execSQL("UPDATE room SET "
 						+ "room_name='"+((EditText)findViewById(R.id.roomNameField)).getText().toString()+"',"
-								+ "controler_ip='"+((EditText)findViewById(R.id.roomIpField)).getText().toString()+"'"
+								+ "controller_ip='"+((EditText)findViewById(R.id.roomIpField)).getText().toString()+"'"
 								+ " WHERE room_name='"+roomName+"' AND house_name='"+houseName+"'");
 				onBackPressed();
 				db.close();

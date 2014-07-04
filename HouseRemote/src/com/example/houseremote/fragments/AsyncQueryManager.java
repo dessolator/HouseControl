@@ -25,25 +25,30 @@ public class AsyncQueryManager extends AsyncQueryHandler {
 
 	@Override
 	protected void onDeleteComplete(int token, Object cookie, int result) {
+		if(mListener.get()!=null)
 		mListener.get().dataSetChanged();//TODO BRUTAL hardcoding quite possibly Broadcast receivers might be a more elegant solution
 		super.onDeleteComplete(token, cookie, result);
 	}
 	
 	@Override
 	protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
+		super.onQueryComplete(token, cookie, cursor);
 		if(mListener.get()!=null)
 			mListener.get().replaceCursor(cursor);
-		super.onQueryComplete(token, cookie, cursor);
+		else
+			cursor.close();
 	}
 	
 	@Override
 	protected void onInsertComplete(int token, Object cookie, Uri uri) {
+		if(mListener.get()!=null)
 		mListener.get().dataSetChanged();//TODO BRUTAL hardcoding quite possibly Broadcast receivers might be a more elegant solution
 		super.onInsertComplete(token, cookie, uri);
 	}
 	
 	@Override
 	protected void onUpdateComplete(int token, Object cookie, int result) {
+		if(mListener.get()!=null)
 		mListener.get().dataSetChanged();//TODO BRUTAL hardcoding quite possibly Broadcast receivers might be a more elegant solution
 		super.onUpdateComplete(token, cookie, result);
 	}

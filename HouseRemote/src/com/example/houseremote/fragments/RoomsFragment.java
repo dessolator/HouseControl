@@ -114,9 +114,11 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 			return true;
 		}
 		if (item.getItemId() == R.id.action_delete_room) {
-			String selection = DBHandler.HOUSE_NAME + "=?"+DBHandler.ROOM_NAME+"=?";
-			String[] selectionArgs = { mHouseName,selectedRoomName };
-			mAsyncQueryManager.startDelete(0, null, DBProvider.ROOMS_URI, selection, selectionArgs);	
+			String selection = DBHandler.HOUSE_NAME + "=?"+" AND "
+					+ DBHandler.ROOM_NAME + "=?";
+			String[] selectionArgs = { mHouseName, selectedRoomName };
+			mAsyncQueryManager.startDelete(0, null, DBProvider.ROOMS_URI,
+					selection, selectionArgs);
 			return true;
 		}
 		return super.onContextItemSelected(item);
@@ -132,14 +134,14 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if (id == R.id.action_add_a_room) {
-			
+
 			ContentValues cv = new ContentValues();
-			cv.put(DBHandler.ROOM_NAME,getString(R.string.newRoomName));
-			cv.put(DBHandler.CONTROLLER_IP,"");
+			cv.put(DBHandler.ROOM_NAME, getString(R.string.newRoomName));
+			cv.put(DBHandler.CONTROLLER_IP, "");
 			cv.put(DBHandler.HOUSE_NAME, mHouseName);
 			cv.put(DBHandler.ROOM_IMAGE_NAME, "bed");
 			mAsyncQueryManager.startInsert(0, null, DBProvider.ROOMS_URI, cv);
-			
+
 			Intent i = new Intent(getActivity(), EditRoomActivity.class);
 			i.putExtra("roomName", getString(R.string.newRoomName));
 			i.putExtra("houseName", mHouseName);
@@ -152,7 +154,6 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 	public interface RoomSelectionListener {
 		void roomSelected(String roomName);
 	}
-
 
 	@Override
 	public void dataSetChanged() {
@@ -167,7 +168,7 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 
 	@Override
 	public void replaceCursor(Cursor cursor) {
-		mAdapter.swapCursor(cursor);
+		mAdapter.swapCursor(cursor).close();
 
 	}
 

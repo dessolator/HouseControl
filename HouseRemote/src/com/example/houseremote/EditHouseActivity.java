@@ -1,10 +1,9 @@
 package com.example.houseremote;
 
-
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -12,44 +11,76 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.houseremote.database.DBHandler;
+import com.example.houseremote.database.DBProvider;
+import com.example.houseremote.fragments.AsyncQueryManager;
+import com.example.houseremote.fragments.AsyncQueryManager.ReplyListener;
 
-public class EditHouseActivity extends Activity {
+public class EditHouseActivity extends Activity implements ReplyListener {
+
+	private AsyncQueryManager mAsyncQueryManager;
+	EditText houseNameField;
+	EditText houseWifiNameField;
+	String houseName;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_house);
-		// Show the Up button in the action bar.
-		Intent startIntent=getIntent();
-		final String houseName=startIntent.getExtras().getString("houseName");
-		Button saveButton=(Button)findViewById(R.id.saveHouseButton);
-		((EditText)findViewById(R.id.houseNameField)).setText(houseName);
-		SQLiteDatabase db = new DBHandler(this).getReadableDatabase();//grab a database
-		Cursor c=db.rawQuery("SELECT * FROM house WHERE house_name='"+houseName+"'",null);//run query getting all the houses
-		if(c!=null){//if the query got anything
-			if(c.moveToFirst()){//start from the begining
-				((EditText)findViewById(R.id.houseWifiField)).setText(c.getString(c.getColumnIndex("house_wifi_name")));//add the names
-			}
-		}
-		db.close();
-		
-		saveButton.setOnClickListener(new OnClickListener(){
+
+		Button saveButton = (Button) findViewById(R.id.saveHouseButton);
+
+		Intent startIntent = getIntent();
+		houseName = startIntent.getExtras().getString("houseName");
+
+		houseNameField = ((EditText) findViewById(R.id.houseNameField));
+		houseWifiNameField = ((EditText) findViewById(R.id.houseWifiField));
+
+		houseNameField.setText(houseName);
+
+		mAsyncQueryManager = new AsyncQueryManager(getContentResolver(), this);
+		String selection = DBHandler.HOUSE_NAME + "=?";
+		String[] selectionArgs = { houseName };
+		mAsyncQueryManager.startQuery(0, null, DBProvider.HOUSES_URI, null,
+				selection, selectionArgs, null);
+
+		saveButton.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				SQLiteDatabase db=new DBHandler(EditHouseActivity.this).getWritableDatabase();
-				db.execSQL("UPDATE house SET "
-						+ "house_name='"+((EditText)findViewById(R.id.houseNameField)).getText().toString()+"',"
-								+ "house_wifi_name='"+((EditText)findViewById(R.id.houseWifiField)).getText().toString()+"'"
-								+ " WHERE house_name='"+houseName+"'");
+
+				String selection = DBHandler.HOUSE_NAME + "=?";
+				String[] selectionArgs = { houseName };
+
+				ContentValues cv = new ContentValues();
+				cv.put(DBHandler.HOUSE_NAME, houseNameField.getText()
+						.toString());
+				cv.put(DBHandler.HOUSE_WIFI_NAME, houseWifiNameField.getText()
+						.toString());
+
+				mAsyncQueryManager.startUpdate(0, null, DBProvider.HOUSES_URI,
+						cv, selection, selectionArgs);
+
 				onBackPressed();
-				db.close();
-				
-				
+
 			}
-			
+
 		});
 	}
 
+	@Override
+	public void dataSetChanged() {
+	}
+
+	@Override
+	public void replaceCursor(Cursor cursor) {
+		if (cursor != null) {// if the query got anything
+			if (cursor.moveToFirst()) {// start from the begining
+				houseWifiNameField.setText(cursor.getString(cursor
+						.getColumnIndex("house_wifi_name")));// add the names
+			}
+		}
+		cursor.close();
+
+	}
 
 }

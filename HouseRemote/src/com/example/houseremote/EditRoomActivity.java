@@ -10,10 +10,10 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.houseremote.database.AsyncQueryManager;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
-import com.example.houseremote.fragments.AsyncQueryManager;
-import com.example.houseremote.fragments.AsyncQueryManager.ReplyListener;
+import com.example.houseremote.database.AsyncQueryManager.ReplyListener;
 
 public class EditRoomActivity extends Activity implements ReplyListener {
 
@@ -36,6 +36,7 @@ public class EditRoomActivity extends Activity implements ReplyListener {
 
 		roomNameField = (EditText) findViewById(R.id.roomNameField);
 		roomNameField.setText(roomName);
+		roomIpField = (EditText) findViewById(R.id.roomIpField);
 
 		mAsyncQueryManager = new AsyncQueryManager(getContentResolver(), this);
 		String selection = DBHandler.HOUSE_NAME + "=?" + " AND "
@@ -68,7 +69,7 @@ public class EditRoomActivity extends Activity implements ReplyListener {
 	}
 
 	@Override
-	public void replaceCursor(Cursor cursor) {
+	public void replaceCursor(Cursor cursor,int token) {
 		if (cursor != null) {// if the query got anything
 			if (cursor.moveToFirst()) {// start from the begining
 				roomIpField.setText(cursor.getString(cursor

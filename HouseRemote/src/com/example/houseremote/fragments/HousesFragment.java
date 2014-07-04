@@ -16,12 +16,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+
 import com.example.houseremote.EditHouseActivity;
 import com.example.houseremote.R;
-import com.example.houseremote.adapters.HouseListAdapter;
+import com.example.houseremote.adapters.ListAdapter;
+import com.example.houseremote.database.AsyncQueryManager;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
-import com.example.houseremote.fragments.AsyncQueryManager.ReplyListener;
+import com.example.houseremote.database.AsyncQueryManager.ReplyListener;
 
 /**
  * MAJOR TODOS 
@@ -41,7 +43,7 @@ import com.example.houseremote.fragments.AsyncQueryManager.ReplyListener;
 public class HousesFragment extends Fragment implements ReplyListener {
 
 	private ListView mList;
-	private HouseListAdapter mAdapter;
+	private ListAdapter mAdapter;
 	private HouseSelectionListener mCallback;
 	private AsyncQueryManager asyncQ;
 
@@ -53,7 +55,7 @@ public class HousesFragment extends Fragment implements ReplyListener {
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		mAdapter = new HouseListAdapter(getActivity(), null, 0);
+		mAdapter = new ListAdapter(getActivity(), null, 0);
 		asyncQ = new AsyncQueryManager(getActivity().getContentResolver(), this);
 		mCallback = (HouseSelectionListener) getActivity();// register the
 															// activity for
@@ -180,8 +182,10 @@ public class HousesFragment extends Fragment implements ReplyListener {
 	}
 
 	@Override
-	public void replaceCursor(Cursor cursor) {
-		mAdapter.swapCursor(cursor).close();
+	public void replaceCursor(Cursor cursor,int token) {
+		Cursor temp=mAdapter.swapCursor(cursor);
+		if(temp!=null)
+			temp.close();
 
 	}
 

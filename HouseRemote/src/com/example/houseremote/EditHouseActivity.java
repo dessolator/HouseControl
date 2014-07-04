@@ -10,10 +10,10 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.houseremote.database.AsyncQueryManager;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
-import com.example.houseremote.fragments.AsyncQueryManager;
-import com.example.houseremote.fragments.AsyncQueryManager.ReplyListener;
+import com.example.houseremote.database.AsyncQueryManager.ReplyListener;
 
 public class EditHouseActivity extends Activity implements ReplyListener {
 
@@ -72,7 +72,7 @@ public class EditHouseActivity extends Activity implements ReplyListener {
 	}
 
 	@Override
-	public void replaceCursor(Cursor cursor) {
+	public void replaceCursor(Cursor cursor,int token) {
 		if (cursor != null) {// if the query got anything
 			if (cursor.moveToFirst()) {// start from the begining
 				houseWifiNameField.setText(cursor.getString(cursor

@@ -1,4 +1,4 @@
-package com.example.houseremote.fragments;
+package com.example.houseremote.database;
 
 import java.lang.ref.WeakReference;
 
@@ -16,7 +16,7 @@ public class AsyncQueryManager extends AsyncQueryHandler {
 		
 		void dataSetChanged();
 		
-		void replaceCursor(Cursor cursor);}
+		void replaceCursor(Cursor cursor, int token);}
 	
 	public AsyncQueryManager(ContentResolver cr, ReplyListener rl) {
 		super(cr);
@@ -34,7 +34,7 @@ public class AsyncQueryManager extends AsyncQueryHandler {
 	protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
 		super.onQueryComplete(token, cookie, cursor);
 		if(mListener.get()!=null)
-			mListener.get().replaceCursor(cursor);
+			mListener.get().replaceCursor(cursor, token);
 		else
 			cursor.close();
 	}

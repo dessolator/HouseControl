@@ -1,13 +1,10 @@
 package com.example.houseremote.fragments;
 
-import java.util.ArrayList;
-
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -23,64 +20,45 @@ import android.widget.GridView;
 import com.example.houseremote.EditLightSwitchActivity;
 import com.example.houseremote.R;
 import com.example.houseremote.adapters.GridAdapter;
-import com.example.houseremote.adapters.Listable;
-import com.example.houseremote.data_classes.BasicController;
+import com.example.houseremote.database.AsyncQueryManager;
 import com.example.houseremote.database.DBHandler;
+import com.example.houseremote.database.DBProvider;
+import com.example.houseremote.database.AsyncQueryManager.ReplyListener;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 
-public class ControllersFragment extends Fragment {
+public class ControllersFragment extends Fragment implements ReplyListener {
 
-	private ArrayList<Listable> controllerList;
+
 	private String houseName;
 	private String roomName;
-	private GridView myGrid;
+	private GridView mGrid;
 	private String roomIp;
+	private GridAdapter mAdapter;
+	AsyncQueryManager mAsyncQueryManager;
 
-	// private RoomSelectionListener myCallback;
 
 	public ControllersFragment() {
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		controllerList = new ArrayList<Listable>();
-		this.houseName = getArguments().getString("house_name");// TODO
-																// hardcoded
+		this.houseName = getArguments().getString("house_name");
 		this.roomName = getArguments().getString("room_name");
-		SQLiteDatabase db = new DBHandler(getActivity()).getReadableDatabase();// grab
-																				// a
-																				// database
-		Cursor c = db
-				.rawQuery(
-						"SELECT * FROM controller_interface WHERE house_name='"
-								+ houseName + "'AND room_name='" + roomName
-								+ "'", null);// run query getting all the houses
-		if (c != null) {// if the query got anything
-			if (c.moveToFirst()) {// start from the beginning
-				do {// TODO switch case
-					controllerList.add(new BasicController(c.getString(c
-							.getColumnIndex("controler_interface_name")),
-							c.getString(c
-									.getColumnIndex("controler_image_name")),
-							c.getString(c
-									.getColumnIndex("controler_image_name")),
-							c.getInt(c.getColumnIndex("control_pin1_number")),
-							true));// TODO on and off image supportadd the names
-				} while (c.moveToNext());// and iterate as far as possible
-			}
-		}
-		c = db.rawQuery("SELECT * FROM room WHERE house_name='" + houseName
-				+ "' AND room_name='" + roomName + "'", null);
-		if (c != null) {
-			if (c.moveToFirst()) {
-				roomIp = c.getString(c.getColumnIndex("controller_ip"));
-			}
-		}
 
-		db.close();
+		mAdapter = new GridAdapter(getActivity(), null, 0);
+		mAsyncQueryManager = new AsyncQueryManager(getActivity()
+				.getContentResolver(), this);
+
+		String[] projection = { DBHandler.CONTROLLER_IP };
+		String selection = DBHandler.HOUSE_NAME + "=?" + " AND "
+				+ DBHandler.ROOM_NAME + "=?";
+		String[] selectionArgs = { houseName, roomName };
+		mAsyncQueryManager.startQuery(1, null, DBProvider.ROOMS_URI,
+				projection, selection, selectionArgs, null);
+
 		setHasOptionsMenu(true);
 		super.onCreate(savedInstanceState);
 
@@ -96,19 +74,26 @@ public class ControllersFragment extends Fragment {
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-//		controllerList.add(new BasicController("moo", "moo", "moo", 4, true));
-		myGrid = (GridView) getActivity().findViewById(R.id.controllerGrid);
-		myGrid.setAdapter(new GridAdapter(getActivity(), controllerList));
 
-		myGrid.setOnItemClickListener(new OnItemClickListener() {
+		mGrid = (GridView) getActivity().findViewById(R.id.controllerGrid);
+		mGrid.setAdapter(mAdapter);
+
+		mGrid.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
 				// TODO ACTUAL LOGIC
 			}
 		});
-		registerForContextMenu(myGrid);
+		registerForContextMenu(mGrid);
 		super.onActivityCreated(savedInstanceState);
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		dataSetChanged();
+
 	}
 
 	@Override
@@ -122,40 +107,56 @@ public class ControllersFragment extends Fragment {
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();//yank the context menu's info
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item
+				.getMenuInfo();// yank the context menu's info
+
+		String controllerName = ((Cursor) mAdapter.getItem(info.position))
+				.getString(mAdapter.getCursor().getColumnIndex(
+						DBHandler.CONTROLLER_INTERFACE_NAME));
+
 		if (item.getItemId() == R.id.action_edit_controller) {
-			Log.d("CONTROLLER", "EDIT");
-			String selectedType=null;
-			Intent i=null;
-			SQLiteDatabase db = new DBHandler(getActivity()).getReadableDatabase();//grab a database
-			Cursor c=db.rawQuery("SELECT * FROM controler_interface WHERE house_name='"+houseName+"' AND room_name='"+roomName+"' AND controler_interface_name='"+((Listable)((GridView)getActivity().findViewById(R.id.controllerGrid)).getAdapter().getItem(info.position)).getName()+"'", null);
-			if(c!=null){
-				if(c.moveToFirst()){
-					selectedType=c.getString(c.getColumnIndex("controler_type"));
-				}
-			}
-			
-			db.close();
-			
-			if(selectedType.equals("lightSwitch")){
+
+			String selectedType = ((Cursor) mAdapter.getItem(info.position))// TODO
+																			// change
+																			// switchType
+																			// from
+																			// string
+																			// to
+																			// int
+																			// to
+																			// allow
+																			// a
+																			// switch
+																			// case
+																			// below
+					.getString(mAdapter.getCursor().getColumnIndex(
+							DBHandler.CONTROLLER_TYPE));
+			Intent i = null;
+
+			if (selectedType.equals("lightSwitch")) {// TODO change to switch
+														// case
 				i = new Intent(getActivity(), EditLightSwitchActivity.class);
-			}else
-			if(selectedType.equals("outletSwitch")){
-//				Intent i = new Intent(getApplicationContext(), EditOutletSwitchActivity.class);
-			}else
-			if(selectedType.equals("someSwitch")){
-//				Intent i = new Intent(getApplicationContext(), EditSomeSwitchActivity.class);	
+			} else if (selectedType.equals("outletSwitch")) {
+				// Intent i = new Intent(getApplicationContext(),
+				// EditOutletSwitchActivity.class);
+			} else if (selectedType.equals("someSwitch")) {
+				// Intent i = new Intent(getApplicationContext(),
+				// EditSomeSwitchActivity.class);
 			}
-			
-			i.putExtra("roomName", roomName);//give info about the house
+
+			i.putExtra("roomName", roomName);// give info about the house
 			i.putExtra("houseName", houseName);
-			i.putExtra("lightSwitchName", ((Listable)((GridView)getActivity().findViewById(R.id.controllerGrid)).getAdapter().getItem(info.position)).getName());
-			startActivity(i);//start the activity	   		
-	   		return true;
+			i.putExtra("lightSwitchName", controllerName);
+			startActivity(i);// start the activity
+			return true;
 		}
 		if (item.getItemId() == R.id.action_delete_controller) {
-			Log.d("CONTROLLER", "DELETE");
-			// TODO START ASYNC TASK DELETING FROM DB
+			String selection = DBHandler.HOUSE_NAME + "=?" + " AND "
+					+ DBHandler.ROOM_NAME + "=?" + " AND "
+					+ DBHandler.CONTROLLER_INTERFACE_NAME + "=?";
+			String[] selectionArgs = { houseName, roomName, controllerName };
+			mAsyncQueryManager.startDelete(0, null, DBProvider.CONTROLLERS_URI,
+					selection, selectionArgs);
 		}
 		return super.onContextItemSelected(item);
 	}
@@ -170,13 +171,69 @@ public class ControllersFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if (id == R.id.action_add_a_controller) {
-			Log.d("MOO", "controller");
+			// TODO present a dialog for which type of controller to make
+			ContentValues cv = new ContentValues();
+			cv.put(DBHandler.HOUSE_NAME, houseName);
+			cv.put(DBHandler.ROOM_NAME, roomName);
+			cv.put(DBHandler.CONTROLLER_INTERFACE_NAME, "New LigthSwitch");// TODO
+																			// change
+																			// with
+																			// type
+			cv.put(DBHandler.CONTROLLER_IP, roomIp);
+			cv.put(DBHandler.CONTROLLER_IMAGE_NAME, "bed");// TODO not really
+			cv.put(DBHandler.CONTROLLER_TYPE, "lightSwitch");// TODO not really
+			cv.put(DBHandler.CONTROL_PIN1_NUMBER, 0);
+			mAsyncQueryManager.startInsert(0, null, DBProvider.CONTROLLERS_URI,
+					cv);
+			Intent i = new Intent(getActivity(), EditLightSwitchActivity.class);// TODO
+																				// switch
+																				// based
+																				// on
+																				// switchtype
+			i.putExtra("roomName", roomName);// give info about the house
+			i.putExtra("houseName", houseName);
+			i.putExtra("lightSwitchName", "New LigthSwitch");
+			startActivity(i);// start the activity
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
+	@Override
+	public void dataSetChanged() {
+		String[] projection = { DBHandler.CONTROLLER_ID,
+				DBHandler.CONTROLLER_INTERFACE_NAME,
+				DBHandler.CONTROLLER_IMAGE_NAME, DBHandler.CONTROLLER_TYPE };
+		String selection = DBHandler.HOUSE_NAME + "=?" + " AND "
+				+ DBHandler.ROOM_NAME + "=?";
+		String[] selectionArgs = { houseName, roomName };
+		mAsyncQueryManager.startQuery(0, null, DBProvider.CONTROLLERS_URI,
+				projection, selection, selectionArgs, null);
 
+	}
 
+	@Override
+	public void replaceCursor(Cursor cursor, int token) {
+		switch (token) {
+		case 0:
+			mAdapter.swapCursor(cursor);// TODO close the old one
+			break;
+		case 1:
+			if (cursor != null) {
+				if (cursor.moveToFirst()) {
+					roomIp = cursor.getString(cursor
+							.getColumnIndex(DBHandler.CONTROLLER_IP));// TODO
+																		// prolly
+																		// better
+																		// if
+																		// passed
+																		// through
+																		// intent
+				}
+			}
+			break;
+		}
+
+	}
 
 }

@@ -19,10 +19,11 @@ import android.widget.ListView;
 
 import com.example.houseremote.EditRoomActivity;
 import com.example.houseremote.R;
-import com.example.houseremote.adapters.RoomListAdapter;
+import com.example.houseremote.adapters.ListAdapter;
+import com.example.houseremote.database.AsyncQueryManager;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
-import com.example.houseremote.fragments.AsyncQueryManager.ReplyListener;
+import com.example.houseremote.database.AsyncQueryManager.ReplyListener;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -32,7 +33,7 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 
 	private String mHouseName;
 	private ListView mList;
-	private RoomListAdapter mAdapter;
+	private ListAdapter mAdapter;
 	private RoomSelectionListener mCallback;
 	private AsyncQueryManager mAsyncQueryManager;
 
@@ -42,7 +43,7 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		this.mHouseName = getArguments().getString("house_name");
-		mAdapter = new RoomListAdapter(getActivity(), null, 0);
+		mAdapter = new ListAdapter(getActivity(), null, 0);
 		mAsyncQueryManager = new AsyncQueryManager(getActivity()
 				.getContentResolver(), this);
 		mCallback = (RoomSelectionListener) getActivity();
@@ -105,7 +106,7 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item
 				.getMenuInfo();
 		String selectedRoomName = ((Cursor) mAdapter.getItem(info.position))
-				.getString(1);
+				.getString(1);//TODO HARDCODED
 		if (item.getItemId() == R.id.action_edit_room) {
 			Intent i = new Intent(getActivity(), EditRoomActivity.class);
 			i.putExtra("roomName", selectedRoomName);
@@ -167,8 +168,10 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 	}
 
 	@Override
-	public void replaceCursor(Cursor cursor) {
-		mAdapter.swapCursor(cursor).close();
+	public void replaceCursor(Cursor cursor,int token) {
+		Cursor temp=mAdapter.swapCursor(cursor);
+		if(temp!=null)
+			temp.close();
 
 	}
 

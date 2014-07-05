@@ -47,17 +47,18 @@ public class ControllersFragment extends Fragment implements ReplyListener {
 	public void onCreate(Bundle savedInstanceState) {
 		this.houseName = getArguments().getString("house_name");
 		this.roomName = getArguments().getString("room_name");
+		this.roomIp=getArguments().getString("room_ip");
 
 		mAdapter = new GridAdapter(getActivity(), null, 0);
 		mAsyncQueryManager = new AsyncQueryManager(getActivity()
 				.getContentResolver(), this);
 
-		String[] projection = { DBHandler.CONTROLLER_IP };
-		String selection = DBHandler.HOUSE_NAME + "=?" + " AND "
-				+ DBHandler.ROOM_NAME + "=?";
-		String[] selectionArgs = { houseName, roomName };
-		mAsyncQueryManager.startQuery(1, null, DBProvider.ROOMS_URI,
-				projection, selection, selectionArgs, null);
+//		String[] projection = { DBHandler.CONTROLLER_IP };
+//		String selection = DBHandler.HOUSE_NAME + "=?" + " AND "
+//				+ DBHandler.ROOM_NAME + "=?";
+//		String[] selectionArgs = { houseName, roomName };
+//		mAsyncQueryManager.startQuery(1, null, DBProvider.ROOMS_URI,
+//				projection, selection, selectionArgs, null);
 
 		setHasOptionsMenu(true);
 		super.onCreate(savedInstanceState);
@@ -213,26 +214,10 @@ public class ControllersFragment extends Fragment implements ReplyListener {
 	}
 
 	@Override
-	public void replaceCursor(Cursor cursor, int token) {
-		switch (token) {
-		case 0:
-			mAdapter.swapCursor(cursor);// TODO close the old one
-			break;
-		case 1:
-			if (cursor != null) {
-				if (cursor.moveToFirst()) {
-					roomIp = cursor.getString(cursor
-							.getColumnIndex(DBHandler.CONTROLLER_IP));// TODO
-																		// prolly
-																		// better
-																		// if
-																		// passed
-																		// through
-																		// intent
-				}
-			}
-			break;
-		}
+	public void replaceCursor(Cursor cursor) {
+		Cursor temp=mAdapter.swapCursor(cursor);
+		if(temp!=null)
+			temp.close();
 
 	}
 

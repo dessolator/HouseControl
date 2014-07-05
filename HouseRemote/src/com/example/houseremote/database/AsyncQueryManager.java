@@ -16,7 +16,7 @@ public class AsyncQueryManager extends AsyncQueryHandler {
 		
 		void dataSetChanged();
 		
-		void replaceCursor(Cursor cursor, int token);}
+		void replaceCursor(Cursor cursor);}
 	
 	public AsyncQueryManager(ContentResolver cr, ReplyListener rl) {
 		super(cr);
@@ -34,7 +34,7 @@ public class AsyncQueryManager extends AsyncQueryHandler {
 	protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
 		super.onQueryComplete(token, cookie, cursor);
 		if(mListener.get()!=null)
-			mListener.get().replaceCursor(cursor, token);
+			mListener.get().replaceCursor(cursor);
 		else
 			cursor.close();
 	}

@@ -69,7 +69,7 @@ public class EditRoomActivity extends Activity implements ReplyListener {
 	}
 
 	@Override
-	public void replaceCursor(Cursor cursor,int token) {
+	public void replaceCursor(Cursor cursor) {
 		if (cursor != null) {// if the query got anything
 			if (cursor.moveToFirst()) {// start from the begining
 				roomIpField.setText(cursor.getString(cursor
@@ -77,8 +77,8 @@ public class EditRoomActivity extends Activity implements ReplyListener {
 				// the
 				// names
 			}
+			cursor.close();
 		}
-		cursor.close();
 
 	}
 

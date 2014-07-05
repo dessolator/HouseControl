@@ -72,14 +72,14 @@ public class EditHouseActivity extends Activity implements ReplyListener {
 	}
 
 	@Override
-	public void replaceCursor(Cursor cursor,int token) {
+	public void replaceCursor(Cursor cursor) {
 		if (cursor != null) {// if the query got anything
 			if (cursor.moveToFirst()) {// start from the begining
 				houseWifiNameField.setText(cursor.getString(cursor
 						.getColumnIndex("house_wifi_name")));// add the names
 			}
+			cursor.close();
 		}
-		cursor.close();
 
 	}
 

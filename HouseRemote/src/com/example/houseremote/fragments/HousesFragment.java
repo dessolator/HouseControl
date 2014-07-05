@@ -182,7 +182,7 @@ public class HousesFragment extends Fragment implements ReplyListener {
 	}
 
 	@Override
-	public void replaceCursor(Cursor cursor,int token) {
+	public void replaceCursor(Cursor cursor) {
 		Cursor temp=mAdapter.swapCursor(cursor);
 		if(temp!=null)
 			temp.close();

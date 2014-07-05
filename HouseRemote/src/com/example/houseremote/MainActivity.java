@@ -18,6 +18,7 @@ public class MainActivity extends ActionBarActivity implements
 		RoomSelectionListener, HouseSelectionListener {
 	String currentlySelectedHouse;
 	String currentlySelectedRoom;
+	String currentlySelectedRoomIp;
 	HousesFragment myHousesFragment;
 	RoomsFragment myRoomsFragment;
 	ControllersFragment myControllersFragment;
@@ -66,7 +67,7 @@ public class MainActivity extends ActionBarActivity implements
 	}
 
 	@Override
-	public void roomSelected(String roomName) {
+	public void roomSelected(String roomName, String roomIp) {
 		//TODO optimize
 		//boy was I descriptive...
 		//TODO add a currentlySelectedRoom==null case
@@ -81,6 +82,7 @@ public class MainActivity extends ActionBarActivity implements
 			ft.remove(myControllersFragment);//if there was a previously selected room remove it's controllers fragment
 		}
 		currentlySelectedRoom = roomName;
+		currentlySelectedRoomIp=roomIp;
 		//TODO move ft init and old fragment removal here
 		getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);//TODO investigate...
 		myControllersFragment = new ControllersFragment();
@@ -88,6 +90,7 @@ public class MainActivity extends ActionBarActivity implements
 		Bundle b = new Bundle();
 		b.putString("house_name", currentlySelectedHouse);
 		b.putString("room_name", currentlySelectedRoom);
+		b.putString("room_ip", currentlySelectedRoomIp);
 		myControllersFragment.setArguments(b);
 		
 		//TODO if there's a currently selected house remove the fragments

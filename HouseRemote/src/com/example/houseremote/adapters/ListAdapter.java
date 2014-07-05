@@ -1,6 +1,7 @@
 package com.example.houseremote.adapters;
 
 import com.example.houseremote.R;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
@@ -33,9 +34,10 @@ public class ListAdapter extends CursorAdapter {
 
 	}
 
+	@SuppressLint("InflateParams")
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
-		return li.inflate(R.layout.list_view_icon, null);
+		return li.inflate(R.layout.list_view_icon, null,false);//TODO placing parrent instead of null limits the onClick detector
 	}
 
 }

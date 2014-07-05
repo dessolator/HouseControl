@@ -69,7 +69,8 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
 				mCallback.roomSelected(((Cursor) mAdapter.getItem(position))
-						.getString(1));
+						.getString(1),((Cursor) mAdapter.getItem(position))
+						.getString(3));
 			}
 		});
 		registerForContextMenu(mList);
@@ -84,7 +85,7 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 	public void onStart() {
 		super.onStart();
 		String[] projection = { DBHandler.ROOM_ID, DBHandler.ROOM_NAME,
-				DBHandler.ROOM_IMAGE_NAME };
+				DBHandler.ROOM_IMAGE_NAME,DBHandler.CONTROLLER_IP };
 		String selection = DBHandler.HOUSE_NAME + "=?";
 		String[] selectionArgs = { mHouseName };
 		mAsyncQueryManager.startQuery(0, null, DBProvider.ROOMS_URI,
@@ -106,7 +107,7 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item
 				.getMenuInfo();
 		String selectedRoomName = ((Cursor) mAdapter.getItem(info.position))
-				.getString(1);//TODO HARDCODED
+				.getString(mAdapter.getCursor().getColumnIndex(DBHandler.ROOM_NAME));//TODO HARDCODED
 		if (item.getItemId() == R.id.action_edit_room) {
 			Intent i = new Intent(getActivity(), EditRoomActivity.class);
 			i.putExtra("roomName", selectedRoomName);
@@ -153,7 +154,7 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 	}
 
 	public interface RoomSelectionListener {
-		void roomSelected(String roomName);
+		void roomSelected(String roomName, String roomIp);
 	}
 
 	@Override
@@ -168,7 +169,7 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 	}
 
 	@Override
-	public void replaceCursor(Cursor cursor,int token) {
+	public void replaceCursor(Cursor cursor) {
 		Cursor temp=mAdapter.swapCursor(cursor);
 		if(temp!=null)
 			temp.close();

@@ -49,8 +49,7 @@ public class ControllersFragment extends Fragment implements ReplyListener {
 		this.roomIp = getArguments().getString(DBHandler.CONTROLLER_IP);
 
 		mAdapter = new GridAdapter(getActivity(), null, 0);
-		mAsyncQueryManager = new AsyncQueryManager(getActivity()
-				.getContentResolver(), this);
+		mAsyncQueryManager = new AsyncQueryManager(getActivity().getContentResolver(), this);
 
 		setHasOptionsMenu(true);
 		super.onCreate(savedInstanceState);
@@ -58,10 +57,8 @@ public class ControllersFragment extends Fragment implements ReplyListener {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fragment_controllers,
-				container, false);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		View rootView = inflater.inflate(R.layout.fragment_controllers, container, false);
 		return rootView;
 	}
 
@@ -73,8 +70,7 @@ public class ControllersFragment extends Fragment implements ReplyListener {
 
 		mGrid.setOnItemClickListener(new OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> parent, View v,
-					int position, long id) {
+			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 				// TODO ACTUAL LOGIC
 			}
 		});
@@ -90,28 +86,23 @@ public class ControllersFragment extends Fragment implements ReplyListener {
 	}
 
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		getActivity().getMenuInflater().inflate(
-				R.menu.controller_fragment_context_menu, menu);
+		getActivity().getMenuInflater().inflate(R.menu.controller_fragment_context_menu, menu);
 
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item
-				.getMenuInfo();// yank the context menu's info
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
-		String controllerName = ((Cursor) mAdapter.getItem(info.position))
-				.getString(mAdapter.getCursor().getColumnIndex(
-						DBHandler.CONTROLLER_INTERFACE_NAME));
+		String controllerName = ((Cursor) mAdapter.getItem(info.position)).getString(mAdapter.getCursor()
+				.getColumnIndex(DBHandler.CONTROLLER_INTERFACE_NAME));
 
 		if (item.getItemId() == R.id.action_edit_controller) {
 
-			String selectedType = ((Cursor) mAdapter.getItem(info.position))
-					.getString(mAdapter.getCursor().getColumnIndex(
-							DBHandler.CONTROLLER_TYPE));
+			String selectedType = ((Cursor) mAdapter.getItem(info.position)).getString(mAdapter.getCursor()
+					.getColumnIndex(DBHandler.CONTROLLER_TYPE));
 			// TODO
 			// change
 			// switchType
@@ -142,19 +133,17 @@ public class ControllersFragment extends Fragment implements ReplyListener {
 														// house
 			i.putExtra(DBHandler.HOUSE_NAME, houseName);
 			i.putExtra(DBHandler.CONTROLLER_INTERFACE_NAME, controllerName);
-			Log.d("MOOOO",controllerName);
-			Log.d("MOOOO",roomName);
-			Log.d("MOOOO",houseName);
+			Log.d("MOOOO", controllerName);
+			Log.d("MOOOO", roomName);
+			Log.d("MOOOO", houseName);
 			startActivity(i);// start the activity
 			return true;
 		}
 		if (item.getItemId() == R.id.action_delete_controller) {
-			String selection = DBHandler.HOUSE_NAME + "=?" + " AND "
-					+ DBHandler.ROOM_NAME + "=?" + " AND "
+			String selection = DBHandler.HOUSE_NAME + "=?" + " AND " + DBHandler.ROOM_NAME + "=?" + " AND "
 					+ DBHandler.CONTROLLER_INTERFACE_NAME + "=?";
 			String[] selectionArgs = { houseName, roomName, controllerName };
-			mAsyncQueryManager.startDelete(0, null, DBProvider.CONTROLLERS_URI,
-					selection, selectionArgs);
+			mAsyncQueryManager.startDelete(0, null, DBProvider.CONTROLLERS_URI, selection, selectionArgs);
 		}
 		return super.onContextItemSelected(item);
 	}
@@ -181,8 +170,7 @@ public class ControllersFragment extends Fragment implements ReplyListener {
 			cv.put(DBHandler.CONTROLLER_IMAGE_NAME, "bed");// TODO not really
 			cv.put(DBHandler.CONTROLLER_TYPE, "lightSwitch");// TODO not really
 			cv.put(DBHandler.CONTROL_PIN1_NUMBER, 0);
-			mAsyncQueryManager.startInsert(0, null, DBProvider.CONTROLLERS_URI,
-					cv);
+			mAsyncQueryManager.startInsert(0, null, DBProvider.CONTROLLERS_URI, cv);
 			Intent i = new Intent(getActivity(), EditLightSwitchActivity.class);// TODO
 																				// switch
 																				// based
@@ -200,14 +188,12 @@ public class ControllersFragment extends Fragment implements ReplyListener {
 
 	@Override
 	public void dataSetChanged() {
-		String[] projection = { DBHandler.CONTROLLER_ID,
-				DBHandler.CONTROLLER_INTERFACE_NAME,
+		String[] projection = { DBHandler.CONTROLLER_ID, DBHandler.CONTROLLER_INTERFACE_NAME,
 				DBHandler.CONTROLLER_IMAGE_NAME, DBHandler.CONTROLLER_TYPE };
-		String selection = DBHandler.HOUSE_NAME + "=?" + " AND "
-				+ DBHandler.ROOM_NAME + "=?";
+		String selection = DBHandler.HOUSE_NAME + "=?" + " AND " + DBHandler.ROOM_NAME + "=?";
 		String[] selectionArgs = { houseName, roomName };
-		mAsyncQueryManager.startQuery(0, null, DBProvider.CONTROLLERS_URI,
-				projection, selection, selectionArgs, null);
+		mAsyncQueryManager.startQuery(0, null, DBProvider.CONTROLLERS_URI, projection, selection,
+				selectionArgs, null);
 
 	}
 

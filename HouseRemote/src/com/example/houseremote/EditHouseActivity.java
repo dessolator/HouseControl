@@ -27,39 +27,31 @@ public class EditHouseActivity extends Activity implements ReplyListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_house);
 
+		//Field inits
 		Button saveButton = (Button) findViewById(R.id.saveHouseButton);
-
 		Intent startIntent = getIntent();
+		String selection = DBHandler.HOUSE_NAME + "=?";
 		houseName = startIntent.getExtras().getString(DBHandler.HOUSE_NAME);
-
+		String[] selectionArgs = { houseName };
+		
 		houseNameField = ((EditText) findViewById(R.id.houseNameField));
 		houseWifiNameField = ((EditText) findViewById(R.id.houseWifiField));
-
 		houseNameField.setText(houseName);
-
 		mAsyncQueryManager = new AsyncQueryManager(getContentResolver(), this);
-		String selection = DBHandler.HOUSE_NAME + "=?";
-		String[] selectionArgs = { houseName };
-		mAsyncQueryManager.startQuery(0, null, DBProvider.HOUSES_URI, null,
-				selection, selectionArgs, null);
+
+		mAsyncQueryManager.startQuery(0, null, DBProvider.HOUSES_URI, null, selection, selectionArgs, null);
 
 		saveButton.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-
+				
 				String selection = DBHandler.HOUSE_NAME + "=?";
 				String[] selectionArgs = { houseName };
-
 				ContentValues cv = new ContentValues();
-				cv.put(DBHandler.HOUSE_NAME, houseNameField.getText()
-						.toString());
-				cv.put(DBHandler.HOUSE_WIFI_NAME, houseWifiNameField.getText()
-						.toString());
-
-				mAsyncQueryManager.startUpdate(0, null, DBProvider.HOUSES_URI,
-						cv, selection, selectionArgs);
-
+				cv.put(DBHandler.HOUSE_NAME, houseNameField.getText().toString());
+				cv.put(DBHandler.HOUSE_WIFI_NAME, houseWifiNameField.getText().toString());
+				mAsyncQueryManager.startUpdate(0, null, DBProvider.HOUSES_URI, cv, selection, selectionArgs);
 				onBackPressed();
 
 			}
@@ -73,10 +65,10 @@ public class EditHouseActivity extends Activity implements ReplyListener {
 
 	@Override
 	public void replaceCursor(Cursor cursor) {
-		if (cursor != null) {// if the query got anything
-			if (cursor.moveToFirst()) {// start from the begining
-				houseWifiNameField.setText(cursor.getString(cursor
-						.getColumnIndex(DBHandler.HOUSE_WIFI_NAME)));// add the names
+		if (cursor != null) {
+			if (cursor.moveToFirst()) {
+				houseWifiNameField
+						.setText(cursor.getString(cursor.getColumnIndex(DBHandler.HOUSE_WIFI_NAME)));
 			}
 			cursor.close();
 		}

@@ -276,8 +276,7 @@ int id end 0x7f050013
 int id expand_activities_button 0x7f050026
 int id expanded 0x7f05004d
 int id expanded_menu 0x7f05002c
-int id gridItemImage 0x7f050054
-int id gridItemText 0x7f050055
+int id gridItemText 0x7f050054
 int id home 0x7f050014
 int id homeAsUp 0x7f050005
 int id houseList 0x7f050051
@@ -294,6 +293,7 @@ int id lightSwitchNameField 0x7f050043
 int id lightSwitchPin 0x7f050044
 int id lightSwitchPinField 0x7f050045
 int id list 0x7f05004c
+int id listItemText 0x7f050055
 int id listMode 0x7f050001
 int id list_item 0x7f050029
 int id middle 0x7f050012

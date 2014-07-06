@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -21,3 +22,13 @@
 	    android:maxLines="2" />
 
 </LinearLayout>
+-->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/gridItemText"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:lines="2"
+    android:maxLines="2"
+    android:padding="10dp" 
+    android:paddingLeft="10dp"/>

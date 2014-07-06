@@ -1,10 +1,8 @@
 package com.example.houseremote;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -15,8 +13,7 @@ import com.example.houseremote.fragments.HousesFragment.HouseSelectionListener;
 import com.example.houseremote.fragments.RoomsFragment;
 import com.example.houseremote.fragments.RoomsFragment.RoomSelectionListener;
 
-public class MainActivity extends ActionBarActivity implements
-		RoomSelectionListener, HouseSelectionListener {
+public class MainActivity extends ActionBarActivity implements RoomSelectionListener, HouseSelectionListener {
 	String currentlySelectedHouse;
 	String currentlySelectedRoom;
 	String currentlySelectedRoomIp;
@@ -30,20 +27,20 @@ public class MainActivity extends ActionBarActivity implements
 		setContentView(R.layout.activity_main);
 
 		if (savedInstanceState == null) {
-			FragmentTransaction ft = getSupportFragmentManager()
-					.beginTransaction();
-			
-			myHousesFragment=new HousesFragment();
+			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+			myHousesFragment = new HousesFragment();
 			ft.add(R.id.list, myHousesFragment);
-			
-			if (findViewById(R.id.expanded) != null) {//check to see if expanded view is visible
-				if (currentlySelectedHouse != null) {//if there's a house forward it's name to the fragment
+
+			if (findViewById(R.id.expanded) != null) {
+				if (currentlySelectedHouse != null) {
+					
 					RoomsFragment f = new RoomsFragment();
 					Bundle b = new Bundle();
 					b.putString(DBHandler.HOUSE_NAME, currentlySelectedHouse);
 					f.setArguments(b);
-					ft.add(R.id.expanded, f);//once the fragment has been initialised add it to the layout
-				}
+					ft.add(R.id.expanded, f);
+					}
 			}
 			ft.commit();
 		}
@@ -51,8 +48,6 @@ public class MainActivity extends ActionBarActivity implements
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
@@ -69,40 +64,42 @@ public class MainActivity extends ActionBarActivity implements
 
 	@Override
 	public void roomSelected(String roomName, String roomIp) {
-		//TODO optimize
-		//boy was I descriptive...
-		//TODO add a currentlySelectedRoom==null case
-		
-		if(currentlySelectedRoom==roomName){//if the room selected is the current one... do... NOTHING
+		// TODO optimize
+		// boy was I descriptive...
+		// TODO add a currentlySelectedRoom==null case
+
+		if (currentlySelectedRoom == roomName) {
 			return;
 		}
-		//else start manipulating fragments
-		FragmentTransaction ft = getSupportFragmentManager()
-				.beginTransaction();
-		if(currentlySelectedRoom!=null){
-			ft.remove(myControllersFragment);//if there was a previously selected room remove it's controllers fragment
+		// else start manipulating fragments
+		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		if (currentlySelectedRoom != null) {
+			ft.remove(myControllersFragment);// if there was a previously
+												// selected room remove it's
+												// controllers fragment
 		}
 		currentlySelectedRoom = roomName;
-		currentlySelectedRoomIp=roomIp;
-		//TODO move ft init and old fragment removal here
-		getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);//TODO investigate...
+		currentlySelectedRoomIp = roomIp;
+		// TODO move ft init and old fragment removal here
+//		getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);// TODO
+																									// investigate...
 		myControllersFragment = new ControllersFragment();
-		
+
 		Bundle b = new Bundle();
 		b.putString(DBHandler.HOUSE_NAME, currentlySelectedHouse);
 		b.putString(DBHandler.ROOM_NAME, currentlySelectedRoom);
 		b.putString(DBHandler.CONTROLLER_IP, currentlySelectedRoomIp);
 		myControllersFragment.setArguments(b);
-		
-		//TODO if there's a currently selected house remove the fragments
-		//else just replace the myControllersFragment
+
+		// TODO if there's a currently selected house remove the fragments
+		// else just replace the myControllersFragment
 		ft.remove(myRoomsFragment);
 		ft.remove(myHousesFragment);
 		ft.commit();
 		getSupportFragmentManager().executePendingTransactions();
-		ft= getSupportFragmentManager().beginTransaction();
+		ft = getSupportFragmentManager().beginTransaction();
 		ft.add(R.id.list, myRoomsFragment);
-		
+
 		ft.add(R.id.expanded, myControllersFragment);
 		ft.commit();
 
@@ -110,23 +107,21 @@ public class MainActivity extends ActionBarActivity implements
 
 	@Override
 	public void houseSelected(String houseName) {
-		if(currentlySelectedHouse==houseName){
+		if (currentlySelectedHouse == houseName) {
 			return;
 		}
-		FragmentTransaction ft = getSupportFragmentManager()
-				.beginTransaction();
-		if(currentlySelectedHouse!=null){
+		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		if (currentlySelectedHouse != null) {
 			ft.remove(myRoomsFragment);
 		}
 		currentlySelectedHouse = houseName;
-		
+
 		myRoomsFragment = new RoomsFragment();
 		Bundle b = new Bundle();
 		b.putString("house_name", currentlySelectedHouse);
 		myRoomsFragment.setArguments(b);
 		ft.add(R.id.expanded, myRoomsFragment);
 		ft.commit();
-		Log.d("MOOOOOOOO", houseName);
 
 	}
 

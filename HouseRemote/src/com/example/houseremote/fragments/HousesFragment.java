@@ -27,16 +27,15 @@ import com.example.houseremote.database.AsyncQueryManager.ReplyListener;
 
 /**
  * MAJOR TODOS 
- * TODO IMPLEMENT ADD A CONTROLLER?!?!?! 
  * TODO IMPLEMENT CONTROLLER LOGIC?!?!?! 
  * TODO DEAR LORD MAKE THIS PHONE FRIENDLY!!! 
  * TODO WHAT IF CURRENT HOUSE IS DELETED, RESET THE ROOM FRAGMENT AND CALLBACK WITH NULL 
  * TODO WHAT IF CURRENT HOUSE IS EDITED, RESET ROOM FRAGMENT AND CALLBACK WITH NULL 
  * TODO NAVIGATION MANAGEMENT 
- * MINOR TODOS
- * TODO CHECK RESOURCE USAGE, NAMELY CLOSE THE DAMN CURSORS IN ONSTOP ONPAUSE ETC.
- * TODO ANIMATE THE FRAGMENT TRANSITIONS 
- * TODO HAVE THE DATASET AUTOMATICALLY NOTIFIED VIA OBSERVERS/BROADCAST RECEIVERS?
+ * MINOR TODOS 
+ * TODO CHECK RESOURCE USAGE, NAMELY CLOSE THE DAMN CURSORS IN ONSTOP ONPAUSE ETC. 
+ * TODO ANIMATE THE FRAGMENT TRANSITIONS
+ * TODO HAVE THE DATASET AUTOMATICALLY NOTIFIED VIA OBSERVERS/BROADCAST RECEIVERS? 
  * TODO HAVE NEW HOUSE NAME AUTOINCREMENT
  */
 
@@ -70,8 +69,7 @@ public class HousesFragment extends Fragment implements ReplyListener {
 	 * Inflate the layout
 	 */
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.fragment_houses, container, false);
 	}
 
@@ -89,10 +87,9 @@ public class HousesFragment extends Fragment implements ReplyListener {
 		mList.setAdapter(mAdapter);
 		mList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> parent, View v,
-					int position, long id) {
-				mCallback.houseSelected(((Cursor) mAdapter.getItem(position))
-						.getString(mAdapter.getCursor().getColumnIndex(DBHandler.HOUSE_NAME)));
+			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+				mCallback.houseSelected(((Cursor) mAdapter.getItem(position)).getString(mAdapter.getCursor()
+						.getColumnIndex(DBHandler.HOUSE_NAME)));
 			}
 		});
 		registerForContextMenu(mList);
@@ -103,18 +100,14 @@ public class HousesFragment extends Fragment implements ReplyListener {
 	@Override
 	public void onStart() {
 		super.onStart();
-		String[] projection = { DBHandler.HOUSE_ID, DBHandler.HOUSE_NAME,
-				DBHandler.HOUSE_IMAGE_NAME };
-		asyncQ.startQuery(0, null, DBProvider.HOUSES_URI, projection, null,
-				null, null);
+		String[] projection = { DBHandler.HOUSE_ID, DBHandler.HOUSE_NAME, DBHandler.HOUSE_IMAGE_NAME };
+		asyncQ.startQuery(0, null, DBProvider.HOUSES_URI, projection, null, null, null);
 
 	}
 
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
-		getActivity().getMenuInflater().inflate(
-				R.menu.house_fragment_context_menu, menu);
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		getActivity().getMenuInflater().inflate(R.menu.house_fragment_context_menu, menu);
 		super.onCreateContextMenu(menu, v, menuInfo);
 
 	}
@@ -122,22 +115,21 @@ public class HousesFragment extends Fragment implements ReplyListener {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 
-		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item
-				.getMenuInfo();
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
 		String selectedHouseName;
-		
+
 		if (item.getItemId() == R.id.action_edit_house) {
-			selectedHouseName = ((Cursor) mAdapter.getItem(info.position))
-					.getString(mAdapter.getCursor().getColumnIndex(DBHandler.HOUSE_NAME));
+			selectedHouseName = ((Cursor) mAdapter.getItem(info.position)).getString(mAdapter.getCursor()
+					.getColumnIndex(DBHandler.HOUSE_NAME));
 			Intent i = new Intent(getActivity(), EditHouseActivity.class);
 			i.putExtra(DBHandler.HOUSE_NAME, selectedHouseName);
 			startActivity(i);
 		}
 		if (item.getItemId() == R.id.action_delete_house) {
-			selectedHouseName = ((Cursor) mAdapter.getItem(info.position))
-					.getString(mAdapter.getCursor().getColumnIndex(DBHandler.HOUSE_NAME));
-			asyncQ.startDelete(0, null, DBProvider.HOUSES_URI, DBHandler.HOUSE_NAME+"=?",
+			selectedHouseName = ((Cursor) mAdapter.getItem(info.position)).getString(mAdapter.getCursor()
+					.getColumnIndex(DBHandler.HOUSE_NAME));
+			asyncQ.startDelete(0, null, DBProvider.HOUSES_URI, DBHandler.HOUSE_NAME + "=?",
 					new String[] { selectedHouseName });
 		}
 		return super.onContextItemSelected(item);
@@ -177,17 +169,20 @@ public class HousesFragment extends Fragment implements ReplyListener {
 
 	@Override
 	public void dataSetChanged() {
-		String[] projection = { DBHandler.HOUSE_ID, DBHandler.HOUSE_NAME,
-				DBHandler.HOUSE_IMAGE_NAME };
-		asyncQ.startQuery(0, null, DBProvider.HOUSES_URI, projection, null,
-				null, null);// if data changed requery the database
+		String[] projection = { DBHandler.HOUSE_ID, DBHandler.HOUSE_NAME, DBHandler.HOUSE_IMAGE_NAME };
+		asyncQ.startQuery(0, null, DBProvider.HOUSES_URI, projection, null, null, null);// if
+																						// data
+																						// changed
+																						// requery
+																						// the
+																						// database
 
 	}
 
 	@Override
 	public void replaceCursor(Cursor cursor) {
-		Cursor temp=mAdapter.swapCursor(cursor);
-		if(temp!=null)
+		Cursor temp = mAdapter.swapCursor(cursor);
+		if (temp != null)
 			temp.close();
 
 	}

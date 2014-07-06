@@ -1,6 +1,5 @@
 package com.example.houseremote.adapters;
 
-import com.example.houseremote.R;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
@@ -8,8 +7,9 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.houseremote.R;
 
 public class ListAdapter extends CursorAdapter {
 
@@ -24,12 +24,10 @@ public class ListAdapter extends CursorAdapter {
 	@Override
 	public void bindView(View temp, Context context, Cursor cursor) {
 		if (cursor != null) {
-			((ImageView) temp.findViewById(R.id.gridItemImage))
-					.setImageResource(context.getResources().getIdentifier(
-							"drawable/" + cursor.getString(2), null,
-							context.getPackageName()));
-			((TextView) temp.findViewById(R.id.gridItemText)).setText(cursor
-					.getString(1));
+			((TextView) temp.findViewById(R.id.listItemText)).setCompoundDrawablesWithIntrinsicBounds(context.getResources().getDrawable(context.getResources()
+					.getIdentifier("drawable/" + cursor.getString(2), null, context.getPackageName())),null, null, null);
+
+			((TextView) temp.findViewById(R.id.listItemText)).setText(cursor.getString(1));
 		}
 
 	}
@@ -37,7 +35,7 @@ public class ListAdapter extends CursorAdapter {
 	@SuppressLint("InflateParams")
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
-		return li.inflate(R.layout.list_view_icon, null,false);//TODO placing parrent instead of null limits the onClick detector
+		return li.inflate(R.layout.list_view_icon, viewGroup, false);
 	}
 
 }

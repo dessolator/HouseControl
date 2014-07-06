@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -31,7 +32,6 @@ import com.example.houseremote.database.AsyncQueryManager.ReplyListener;
 
 public class ControllersFragment extends Fragment implements ReplyListener {
 
-
 	private String houseName;
 	private String roomName;
 	private GridView mGrid;
@@ -39,26 +39,18 @@ public class ControllersFragment extends Fragment implements ReplyListener {
 	private GridAdapter mAdapter;
 	AsyncQueryManager mAsyncQueryManager;
 
-
 	public ControllersFragment() {
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		this.houseName = getArguments().getString("house_name");
-		this.roomName = getArguments().getString("room_name");
-		this.roomIp=getArguments().getString("room_ip");
+		this.houseName = getArguments().getString(DBHandler.HOUSE_NAME);
+		this.roomName = getArguments().getString(DBHandler.ROOM_NAME);
+		this.roomIp = getArguments().getString(DBHandler.CONTROLLER_IP);
 
 		mAdapter = new GridAdapter(getActivity(), null, 0);
 		mAsyncQueryManager = new AsyncQueryManager(getActivity()
 				.getContentResolver(), this);
-
-//		String[] projection = { DBHandler.CONTROLLER_IP };
-//		String selection = DBHandler.HOUSE_NAME + "=?" + " AND "
-//				+ DBHandler.ROOM_NAME + "=?";
-//		String[] selectionArgs = { houseName, roomName };
-//		mAsyncQueryManager.startQuery(1, null, DBProvider.ROOMS_URI,
-//				projection, selection, selectionArgs, null);
 
 		setHasOptionsMenu(true);
 		super.onCreate(savedInstanceState);
@@ -117,21 +109,22 @@ public class ControllersFragment extends Fragment implements ReplyListener {
 
 		if (item.getItemId() == R.id.action_edit_controller) {
 
-			String selectedType = ((Cursor) mAdapter.getItem(info.position))// TODO
-																			// change
-																			// switchType
-																			// from
-																			// string
-																			// to
-																			// int
-																			// to
-																			// allow
-																			// a
-																			// switch
-																			// case
-																			// below
+			String selectedType = ((Cursor) mAdapter.getItem(info.position))
 					.getString(mAdapter.getCursor().getColumnIndex(
 							DBHandler.CONTROLLER_TYPE));
+			// TODO
+			// change
+			// switchType
+			// from
+			// string
+			// to
+			// int
+			// to
+			// allow
+			// a
+			// switch
+			// case
+			// below
 			Intent i = null;
 
 			if (selectedType.equals("lightSwitch")) {// TODO change to switch
@@ -145,9 +138,13 @@ public class ControllersFragment extends Fragment implements ReplyListener {
 				// EditSomeSwitchActivity.class);
 			}
 
-			i.putExtra("roomName", roomName);// give info about the house
-			i.putExtra("houseName", houseName);
-			i.putExtra("lightSwitchName", controllerName);
+			i.putExtra(DBHandler.ROOM_NAME, roomName);// give info about the
+														// house
+			i.putExtra(DBHandler.HOUSE_NAME, houseName);
+			i.putExtra(DBHandler.CONTROLLER_INTERFACE_NAME, controllerName);
+			Log.d("MOOOO",controllerName);
+			Log.d("MOOOO",roomName);
+			Log.d("MOOOO",houseName);
 			startActivity(i);// start the activity
 			return true;
 		}
@@ -191,9 +188,10 @@ public class ControllersFragment extends Fragment implements ReplyListener {
 																				// based
 																				// on
 																				// switchtype
-			i.putExtra("roomName", roomName);// give info about the house
-			i.putExtra("houseName", houseName);
-			i.putExtra("lightSwitchName", "New LigthSwitch");
+			i.putExtra(DBHandler.ROOM_NAME, roomName);// give info about the
+														// house
+			i.putExtra(DBHandler.HOUSE_NAME, houseName);
+			i.putExtra(DBHandler.CONTROLLER_INTERFACE_NAME, "New LigthSwitch");
 			startActivity(i);// start the activity
 			return true;
 		}
@@ -215,8 +213,8 @@ public class ControllersFragment extends Fragment implements ReplyListener {
 
 	@Override
 	public void replaceCursor(Cursor cursor) {
-		Cursor temp=mAdapter.swapCursor(cursor);
-		if(temp!=null)
+		Cursor temp = mAdapter.swapCursor(cursor);
+		if (temp != null)
 			temp.close();
 
 	}

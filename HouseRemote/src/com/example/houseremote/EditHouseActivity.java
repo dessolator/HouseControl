@@ -30,7 +30,7 @@ public class EditHouseActivity extends Activity implements ReplyListener {
 		Button saveButton = (Button) findViewById(R.id.saveHouseButton);
 
 		Intent startIntent = getIntent();
-		houseName = startIntent.getExtras().getString("houseName");
+		houseName = startIntent.getExtras().getString(DBHandler.HOUSE_NAME);
 
 		houseNameField = ((EditText) findViewById(R.id.houseNameField));
 		houseWifiNameField = ((EditText) findViewById(R.id.houseWifiField));
@@ -76,7 +76,7 @@ public class EditHouseActivity extends Activity implements ReplyListener {
 		if (cursor != null) {// if the query got anything
 			if (cursor.moveToFirst()) {// start from the begining
 				houseWifiNameField.setText(cursor.getString(cursor
-						.getColumnIndex("house_wifi_name")));// add the names
+						.getColumnIndex(DBHandler.HOUSE_WIFI_NAME)));// add the names
 			}
 			cursor.close();
 		}

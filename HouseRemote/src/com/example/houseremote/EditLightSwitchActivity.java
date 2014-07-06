@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -29,9 +30,14 @@ public class EditLightSwitchActivity extends Activity implements ReplyListener {
 		setContentView(R.layout.activity_edit_light_switch);
 		
 		Intent startIntent=getIntent();
-		roomName=startIntent.getExtras().getString("roomName");
-		houseName=startIntent.getExtras().getString("houseName");
-		lightSwitchName=startIntent.getExtras().getString("lightSwitchName");
+		roomName=startIntent.getExtras().getString(DBHandler.ROOM_NAME);
+		houseName=startIntent.getExtras().getString(DBHandler.HOUSE_NAME);
+		lightSwitchName=startIntent.getExtras().getString(DBHandler.CONTROLLER_INTERFACE_NAME);
+		
+		
+		Log.d("MOOOO",lightSwitchName);
+		Log.d("MOOOO",roomName);
+		Log.d("MOOOO",houseName);
 		
 		Button saveButton=(Button)findViewById(R.id.saveLightSwitchButton);
 		

@@ -92,7 +92,7 @@ public class HousesFragment extends Fragment implements ReplyListener {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
 				mCallback.houseSelected(((Cursor) mAdapter.getItem(position))
-						.getString(1));
+						.getString(mAdapter.getCursor().getColumnIndex(DBHandler.HOUSE_NAME)));
 			}
 		});
 		registerForContextMenu(mList);
@@ -125,15 +125,18 @@ public class HousesFragment extends Fragment implements ReplyListener {
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item
 				.getMenuInfo();
 
-		String selectedHouseName = ((Cursor) mAdapter.getItem(info.position))
-				.getString(1);
-
+		String selectedHouseName;
+		
 		if (item.getItemId() == R.id.action_edit_house) {
+			selectedHouseName = ((Cursor) mAdapter.getItem(info.position))
+					.getString(mAdapter.getCursor().getColumnIndex(DBHandler.HOUSE_NAME));
 			Intent i = new Intent(getActivity(), EditHouseActivity.class);
-			i.putExtra("houseName", selectedHouseName);
+			i.putExtra(DBHandler.HOUSE_NAME, selectedHouseName);
 			startActivity(i);
 		}
 		if (item.getItemId() == R.id.action_delete_house) {
+			selectedHouseName = ((Cursor) mAdapter.getItem(info.position))
+					.getString(mAdapter.getCursor().getColumnIndex(DBHandler.HOUSE_NAME));
 			asyncQ.startDelete(0, null, DBProvider.HOUSES_URI, DBHandler.HOUSE_NAME+"=?",
 					new String[] { selectedHouseName });
 		}
@@ -161,7 +164,7 @@ public class HousesFragment extends Fragment implements ReplyListener {
 			asyncQ.startInsert(0, null, DBProvider.HOUSES_URI, cv);
 
 			Intent i = new Intent(getActivity(), EditHouseActivity.class);
-			i.putExtra("houseName", getString(R.string.newHouseName));
+			i.putExtra(DBHandler.HOUSE_NAME, getString(R.string.newHouseName));
 			startActivity(i);
 			return true;
 		}

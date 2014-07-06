@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -106,16 +107,21 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item
 				.getMenuInfo();
-		String selectedRoomName = ((Cursor) mAdapter.getItem(info.position))
-				.getString(mAdapter.getCursor().getColumnIndex(DBHandler.ROOM_NAME));//TODO HARDCODED
+		String selectedRoomName;
 		if (item.getItemId() == R.id.action_edit_room) {
+			selectedRoomName = ((Cursor) mAdapter.getItem(info.position))
+					.getString(mAdapter.getCursor().getColumnIndex(DBHandler.ROOM_NAME));//TODO HARDCODED
 			Intent i = new Intent(getActivity(), EditRoomActivity.class);
-			i.putExtra("roomName", selectedRoomName);
-			i.putExtra("houseName", mHouseName);
+			Log.d("MOOOO",selectedRoomName);
+			Log.d("MOOOO",mHouseName);
+			i.putExtra(DBHandler.ROOM_NAME, selectedRoomName);
+			i.putExtra(DBHandler.HOUSE_NAME, mHouseName);
 			startActivity(i);
 			return true;
 		}
 		if (item.getItemId() == R.id.action_delete_room) {
+			selectedRoomName = ((Cursor) mAdapter.getItem(info.position))
+					.getString(mAdapter.getCursor().getColumnIndex(DBHandler.ROOM_NAME));//TODO HARDCODED
 			String selection = DBHandler.HOUSE_NAME + "=?"+" AND "
 					+ DBHandler.ROOM_NAME + "=?";
 			String[] selectionArgs = { mHouseName, selectedRoomName };
@@ -145,8 +151,8 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 			mAsyncQueryManager.startInsert(0, null, DBProvider.ROOMS_URI, cv);
 
 			Intent i = new Intent(getActivity(), EditRoomActivity.class);
-			i.putExtra("roomName", getString(R.string.newRoomName));
-			i.putExtra("houseName", mHouseName);
+			i.putExtra(DBHandler.ROOM_NAME, getString(R.string.newRoomName));
+			i.putExtra(DBHandler.HOUSE_NAME, mHouseName);
 			startActivity(i);
 			return true;
 		}

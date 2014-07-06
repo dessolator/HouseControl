@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.fragments.ControllersFragment;
 import com.example.houseremote.fragments.HousesFragment;
 import com.example.houseremote.fragments.HousesFragment.HouseSelectionListener;
@@ -39,7 +40,7 @@ public class MainActivity extends ActionBarActivity implements
 				if (currentlySelectedHouse != null) {//if there's a house forward it's name to the fragment
 					RoomsFragment f = new RoomsFragment();
 					Bundle b = new Bundle();
-					b.putString("house_name", currentlySelectedHouse);//TODO hardcoding
+					b.putString(DBHandler.HOUSE_NAME, currentlySelectedHouse);
 					f.setArguments(b);
 					ft.add(R.id.expanded, f);//once the fragment has been initialised add it to the layout
 				}
@@ -88,9 +89,9 @@ public class MainActivity extends ActionBarActivity implements
 		myControllersFragment = new ControllersFragment();
 		
 		Bundle b = new Bundle();
-		b.putString("house_name", currentlySelectedHouse);
-		b.putString("room_name", currentlySelectedRoom);
-		b.putString("room_ip", currentlySelectedRoomIp);
+		b.putString(DBHandler.HOUSE_NAME, currentlySelectedHouse);
+		b.putString(DBHandler.ROOM_NAME, currentlySelectedRoom);
+		b.putString(DBHandler.CONTROLLER_IP, currentlySelectedRoomIp);
 		myControllersFragment.setArguments(b);
 		
 		//TODO if there's a currently selected house remove the fragments

@@ -204,5 +204,10 @@ public class ControllersFragment extends Fragment implements ReplyListener {
 			temp.close();
 
 	}
+	public void replaceData(String houseName,String roomName,String roomIp){
+		this.houseName=houseName;
+		this.roomName=roomName;
+		this.roomIp=roomIp;
+	}
 
 }

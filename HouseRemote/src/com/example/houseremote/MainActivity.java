@@ -1,5 +1,6 @@
 package com.example.houseremote;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
@@ -64,65 +65,71 @@ public class MainActivity extends ActionBarActivity implements RoomSelectionList
 
 	@Override
 	public void roomSelected(String roomName, String roomIp) {
-		// TODO optimize
-		// boy was I descriptive...
-		// TODO add a currentlySelectedRoom==null case
-
-		if (currentlySelectedRoom == roomName) {
+	
+		if (findViewById(R.id.expanded) == null){	//if on phone start the new activity passing roomName and houseName as args
+			Intent i= new Intent(this, ControllersActivity.class);
+			i.putExtra(DBHandler.HOUSE_NAME, currentlySelectedHouse);
+			i.putExtra(DBHandler.ROOM_NAME, roomName);
+			i.putExtra(DBHandler.CONTROLLER_IP, roomIp);
+			startActivity(i);
 			return;
 		}
-		// else start manipulating fragments
-		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-		if (currentlySelectedRoom != null) {
-			ft.remove(myControllersFragment);// if there was a previously
-												// selected room remove it's
-												// controllers fragment
+
+		if (myControllersFragment==null) {		//check to see if the controller fragment is even loaded if not make a new one and pass it args
+			currentlySelectedRoom = roomName;
+			currentlySelectedRoomIp = roomIp;
+			myControllersFragment = new ControllersFragment();
+
+			Bundle b = new Bundle();
+			b.putString(DBHandler.HOUSE_NAME, currentlySelectedHouse);
+			b.putString(DBHandler.ROOM_NAME, currentlySelectedRoom);
+			b.putString(DBHandler.CONTROLLER_IP, currentlySelectedRoomIp);
+			myControllersFragment.setArguments(b);
+			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+			ft.replace(R.id.expanded, myControllersFragment);			//replace room and controller fragment
+			ft.commit();
+			getSupportFragmentManager().executePendingTransactions();	//not the most elegant thing ever... but no need to create new fragment
+			ft= getSupportFragmentManager().beginTransaction();
+			ft.replace(R.id.list, myRoomsFragment);			//replace house and room fragment
+			ft.commit();
+			return;
+		}		
+
+		if(currentlySelectedRoom!=roomName){		//if a new room is selected change data in the controllers fragment
+			currentlySelectedRoom=roomName;
+			currentlySelectedRoomIp=roomIp;
+			myControllersFragment.replaceData(currentlySelectedHouse, roomName, roomIp);
+			myControllersFragment.dataSetChanged();
+			return;
 		}
-		currentlySelectedRoom = roomName;
-		currentlySelectedRoomIp = roomIp;
-		// TODO move ft init and old fragment removal here
-//		getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);// TODO
-																									// investigate...
-		myControllersFragment = new ControllersFragment();
-
-		Bundle b = new Bundle();
-		b.putString(DBHandler.HOUSE_NAME, currentlySelectedHouse);
-		b.putString(DBHandler.ROOM_NAME, currentlySelectedRoom);
-		b.putString(DBHandler.CONTROLLER_IP, currentlySelectedRoomIp);
-		myControllersFragment.setArguments(b);
-
-		// TODO if there's a currently selected house remove the fragments
-		// else just replace the myControllersFragment
-		ft.remove(myRoomsFragment);
-		ft.remove(myHousesFragment);
-		ft.commit();
-		getSupportFragmentManager().executePendingTransactions();
-		ft = getSupportFragmentManager().beginTransaction();
-		ft.add(R.id.list, myRoomsFragment);
-
-		ft.add(R.id.expanded, myControllersFragment);
-		ft.commit();
-
 	}
 
 	@Override
 	public void houseSelected(String houseName) {
-		if (currentlySelectedHouse == houseName) {
+		if (findViewById(R.id.expanded) == null){	//if on phone start the new activity passing roomName and houseName as args
+			Intent i= new Intent(this, RoomsActivity.class);
+			i.putExtra(DBHandler.HOUSE_NAME, houseName);
+			startActivity(i);
 			return;
 		}
-		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-		if (currentlySelectedHouse != null) {
-			ft.remove(myRoomsFragment);
+		if(myRoomsFragment==null){
+			currentlySelectedHouse=houseName;
+			myRoomsFragment=new RoomsFragment();
+			Bundle b= new Bundle();
+			b.putString("house_name", currentlySelectedHouse);
+			myRoomsFragment.setArguments(b);
+			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+			ft.add(R.id.expanded, myRoomsFragment);
+			ft.commit();
+			return;
 		}
-		currentlySelectedHouse = houseName;
-
-		myRoomsFragment = new RoomsFragment();
-		Bundle b = new Bundle();
-		b.putString("house_name", currentlySelectedHouse);
-		myRoomsFragment.setArguments(b);
-		ft.add(R.id.expanded, myRoomsFragment);
-		ft.commit();
-
+		if(currentlySelectedHouse!=houseName){
+			currentlySelectedHouse=houseName;
+			myRoomsFragment.replaceData(houseName);
+			myRoomsFragment.dataSetChanged();
+			return;
+		}
+		
 	}
 
 }

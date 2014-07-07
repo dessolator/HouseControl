@@ -27,6 +27,14 @@
             android:label="@string/app_name" >
         </activity>
         <activity
+            android:name="com.example.houseremote.ControllersActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name="com.example.houseremote.RoomsActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
             android:name="com.example.houseremote.EditRoomActivity"
             android:label="@string/app_name" >
         </activity>

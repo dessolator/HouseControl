@@ -43,7 +43,7 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		this.mHouseName = getArguments().getString("house_name");
+		this.mHouseName = getArguments().getString(DBHandler.HOUSE_NAME);
 		mAdapter = new ListAdapter(getActivity(), null, 0);
 		mAsyncQueryManager = new AsyncQueryManager(getActivity().getContentResolver(), this);
 		mCallback = (RoomSelectionListener) getActivity();
@@ -67,7 +67,7 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 				mCallback.roomSelected(((Cursor) mAdapter.getItem(position)).getString(1),
-						((Cursor) mAdapter.getItem(position)).getString(3));
+						((Cursor) mAdapter.getItem(position)).getString(3));//TODO fix hardcoding
 			}
 		});
 		registerForContextMenu(mList);
@@ -81,12 +81,13 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 	@Override
 	public void onStart() {
 		super.onStart();
-		String[] projection = { DBHandler.ROOM_ID, DBHandler.ROOM_NAME, DBHandler.ROOM_IMAGE_NAME,
-				DBHandler.CONTROLLER_IP };
-		String selection = DBHandler.HOUSE_NAME + "=?";
-		String[] selectionArgs = { mHouseName };
-		mAsyncQueryManager.startQuery(0, null, DBProvider.ROOMS_URI, projection, selection, selectionArgs,
-				null);
+//		String[] projection = { DBHandler.ROOM_ID, DBHandler.ROOM_NAME, DBHandler.ROOM_IMAGE_NAME,
+//				DBHandler.CONTROLLER_IP };
+//		String selection = DBHandler.HOUSE_NAME + "=?";
+//		String[] selectionArgs = { mHouseName };
+//		mAsyncQueryManager.startQuery(0, null, DBProvider.ROOMS_URI, projection, selection, selectionArgs,
+//				null);
+		dataSetChanged();
 
 	}
 
@@ -156,7 +157,8 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 
 	@Override
 	public void dataSetChanged() {
-		String[] projection = { DBHandler.ROOM_ID, DBHandler.ROOM_NAME, DBHandler.ROOM_IMAGE_NAME };
+		String[] projection = { DBHandler.ROOM_ID, DBHandler.ROOM_NAME, DBHandler.ROOM_IMAGE_NAME,
+				DBHandler.CONTROLLER_IP };
 		String selection = DBHandler.HOUSE_NAME + "=?";
 		String[] selectionArgs = { mHouseName };
 		mAsyncQueryManager.startQuery(0, null, DBProvider.ROOMS_URI, projection, selection, selectionArgs,
@@ -170,6 +172,9 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 		if (temp != null)
 			temp.close();
 
+	}
+	public void replaceData(String houseName){
+		this.mHouseName=houseName;
 	}
 
 }

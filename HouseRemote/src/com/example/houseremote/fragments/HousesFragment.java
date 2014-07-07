@@ -28,11 +28,13 @@ import com.example.houseremote.database.AsyncQueryManager.ReplyListener;
 /**
  * MAJOR TODOS 
  * TODO IMPLEMENT CONTROLLER LOGIC?!?!?! 
- * TODO DEAR LORD MAKE THIS PHONE FRIENDLY!!! 
  * TODO WHAT IF CURRENT HOUSE IS DELETED, RESET THE ROOM FRAGMENT AND CALLBACK WITH NULL 
  * TODO WHAT IF CURRENT HOUSE IS EDITED, RESET ROOM FRAGMENT AND CALLBACK WITH NULL 
  * TODO NAVIGATION MANAGEMENT 
  * MINOR TODOS 
+ * TODO MAKE ACTIVITY ACTIONBARS A BIT MORE CUSTOM ADD UP BUTTON TO PHONE VERSION
+ * TODO MANAGE FRAGMENTS BETTER NAMELY WHEN CHANGING ORIENTATION ETC..., no need to destroy old rooms fragment if new house was selected
+ * TODO USE UI DESIGN TO HILIGHT SELECTED ELEMENTS
  * TODO CHECK RESOURCE USAGE, NAMELY CLOSE THE DAMN CURSORS IN ONSTOP ONPAUSE ETC. 
  * TODO ANIMATE THE FRAGMENT TRANSITIONS
  * TODO HAVE THE DATASET AUTOMATICALLY NOTIFIED VIA OBSERVERS/BROADCAST RECEIVERS? 
@@ -56,10 +58,7 @@ public class HousesFragment extends Fragment implements ReplyListener {
 	public void onCreate(Bundle savedInstanceState) {
 		mAdapter = new ListAdapter(getActivity(), null, 0);
 		asyncQ = new AsyncQueryManager(getActivity().getContentResolver(), this);
-		mCallback = (HouseSelectionListener) getActivity();// register the
-															// activity for
-															// inter-fragment
-															// communication
+		mCallback = (HouseSelectionListener) getActivity();
 		setHasOptionsMenu(true);// register for options menu callbacks
 		super.onCreate(savedInstanceState);
 

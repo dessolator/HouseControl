@@ -1,11 +1,11 @@
 package com.example.houseremote.fragments;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -22,34 +22,66 @@ import com.example.houseremote.EditLightSwitchActivity;
 import com.example.houseremote.R;
 import com.example.houseremote.adapters.GridAdapter;
 import com.example.houseremote.database.AsyncQueryManager;
+import com.example.houseremote.database.AsyncQueryManager.ReplyListener;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
-import com.example.houseremote.database.AsyncQueryManager.ReplyListener;
+import com.example.houseremote.fragments.RoomsFragment.QueryManagerProvider;
+import com.example.houseremote.fragments.RoomsFragment.SelectedHouseProvider;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 
-public class ControllersFragment extends Fragment implements ReplyListener {
+public class ControllersFragment extends Fragment {
+	
+	public interface ControllersAdapterProvider{
+		GridAdapter  getControllersAdapter();
+		
+	}
+	public interface SelectedRoomProvider{
+		String getSelectedRoom();
+
+		String getSelectedRoomIp();
+	}
+	
+	
 
 	private String houseName;
 	private String roomName;
 	private GridView mGrid;
 	private String roomIp;
 	private GridAdapter mAdapter;
+	private ReplyListener mCallback;
 	AsyncQueryManager mAsyncQueryManager;
 
 	public ControllersFragment() {
 	}
+	
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		houseName=((SelectedHouseProvider) activity).getSelectedHouse();
+		roomName=((SelectedRoomProvider) activity).getSelectedRoom();
+		roomIp=((SelectedRoomProvider) activity).getSelectedRoomIp();
+		mAdapter=((ControllersAdapterProvider) activity).getControllersAdapter();
+		mAsyncQueryManager=((QueryManagerProvider) activity).getQueryManager();
+		mCallback=(ReplyListener) activity;
+
+	}
+	
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		houseName=null;
+		roomIp=null;
+		roomName=null;
+		mCallback=null;
+		mAdapter=null;
+		mAsyncQueryManager=null;
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		this.houseName = getArguments().getString(DBHandler.HOUSE_NAME);
-		this.roomName = getArguments().getString(DBHandler.ROOM_NAME);
-		this.roomIp = getArguments().getString(DBHandler.CONTROLLER_IP);
-
-		mAdapter = new GridAdapter(getActivity(), null, 0);
-		mAsyncQueryManager = new AsyncQueryManager(getActivity().getContentResolver(), this);
 
 		setHasOptionsMenu(true);
 		super.onCreate(savedInstanceState);
@@ -81,7 +113,7 @@ public class ControllersFragment extends Fragment implements ReplyListener {
 	@Override
 	public void onStart() {
 		super.onStart();
-		dataSetChanged();
+		mCallback.dataSetChanged(2,mAdapter);
 
 	}
 
@@ -96,10 +128,11 @@ public class ControllersFragment extends Fragment implements ReplyListener {
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
-		String controllerName = ((Cursor) mAdapter.getItem(info.position)).getString(mAdapter.getCursor()
-				.getColumnIndex(DBHandler.CONTROLLER_INTERFACE_NAME));
+		String controllerName;
 
 		if (item.getItemId() == R.id.action_edit_controller) {
+			controllerName = ((Cursor) mAdapter.getItem(info.position)).getString(mAdapter.getCursor()
+					.getColumnIndex(DBHandler.CONTROLLER_INTERFACE_NAME));
 
 			String selectedType = ((Cursor) mAdapter.getItem(info.position)).getString(mAdapter.getCursor()
 					.getColumnIndex(DBHandler.CONTROLLER_TYPE));
@@ -133,13 +166,12 @@ public class ControllersFragment extends Fragment implements ReplyListener {
 														// house
 			i.putExtra(DBHandler.HOUSE_NAME, houseName);
 			i.putExtra(DBHandler.CONTROLLER_INTERFACE_NAME, controllerName);
-			Log.d("MOOOO", controllerName);
-			Log.d("MOOOO", roomName);
-			Log.d("MOOOO", houseName);
 			startActivity(i);// start the activity
 			return true;
 		}
 		if (item.getItemId() == R.id.action_delete_controller) {
+			controllerName = ((Cursor) mAdapter.getItem(info.position)).getString(mAdapter.getCursor()
+					.getColumnIndex(DBHandler.CONTROLLER_INTERFACE_NAME));
 			String selection = DBHandler.HOUSE_NAME + "=?" + " AND " + DBHandler.ROOM_NAME + "=?" + " AND "
 					+ DBHandler.CONTROLLER_INTERFACE_NAME + "=?";
 			String[] selectionArgs = { houseName, roomName, controllerName };
@@ -186,24 +218,6 @@ public class ControllersFragment extends Fragment implements ReplyListener {
 		return super.onOptionsItemSelected(item);
 	}
 
-	@Override
-	public void dataSetChanged() {
-		String[] projection = { DBHandler.CONTROLLER_ID, DBHandler.CONTROLLER_INTERFACE_NAME,
-				DBHandler.CONTROLLER_IMAGE_NAME, DBHandler.CONTROLLER_TYPE };
-		String selection = DBHandler.HOUSE_NAME + "=?" + " AND " + DBHandler.ROOM_NAME + "=?";
-		String[] selectionArgs = { houseName, roomName };
-		mAsyncQueryManager.startQuery(0, null, DBProvider.CONTROLLERS_URI, projection, selection,
-				selectionArgs, null);
-
-	}
-
-	@Override
-	public void replaceCursor(Cursor cursor) {
-		Cursor temp = mAdapter.swapCursor(cursor);
-		if (temp != null)
-			temp.close();
-
-	}
 	public void replaceData(String houseName,String roomName,String roomIp){
 		this.houseName=houseName;
 		this.roomName=roomName;

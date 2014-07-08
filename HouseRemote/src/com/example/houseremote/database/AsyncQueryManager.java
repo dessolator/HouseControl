@@ -13,9 +13,9 @@ public class AsyncQueryManager extends AsyncQueryHandler {
 
 	public interface ReplyListener {
 
-		void dataSetChanged();
+		void dataSetChanged(int token, Object cookie);
 
-		void replaceCursor(Cursor cursor);
+		void replaceCursor(Cursor cursor, Object o);
 	}
 
 	public AsyncQueryManager(ContentResolver cr, ReplyListener rl) {
@@ -26,7 +26,7 @@ public class AsyncQueryManager extends AsyncQueryHandler {
 	@Override
 	protected void onDeleteComplete(int token, Object cookie, int result) {
 		if (mListener.get() != null)
-			mListener.get().dataSetChanged();// TODO BRUTAL hardcoding quite
+			mListener.get().dataSetChanged(token, cookie);// TODO BRUTAL hardcoding quite
 												// possibly Broadcast receivers
 												// might be a more elegant
 												// solution
@@ -37,7 +37,7 @@ public class AsyncQueryManager extends AsyncQueryHandler {
 	protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
 		super.onQueryComplete(token, cookie, cursor);
 		if (mListener.get() != null)
-			mListener.get().replaceCursor(cursor);
+			mListener.get().replaceCursor(cursor,cookie);
 		else
 			cursor.close();
 	}
@@ -45,7 +45,7 @@ public class AsyncQueryManager extends AsyncQueryHandler {
 	@Override
 	protected void onInsertComplete(int token, Object cookie, Uri uri) {
 		if (mListener.get() != null)
-			mListener.get().dataSetChanged();// TODO BRUTAL hardcoding quite
+			mListener.get().dataSetChanged(token, cookie);// TODO BRUTAL hardcoding quite
 												// possibly Broadcast receivers
 												// might be a more elegant
 												// solution
@@ -55,7 +55,7 @@ public class AsyncQueryManager extends AsyncQueryHandler {
 	@Override
 	protected void onUpdateComplete(int token, Object cookie, int result) {
 		if (mListener.get() != null)
-			mListener.get().dataSetChanged();// TODO BRUTAL hardcoding quite
+			mListener.get().dataSetChanged(token, cookie);// TODO BRUTAL hardcoding quite
 												// possibly Broadcast receivers
 												// might be a more elegant
 												// solution

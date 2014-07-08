@@ -67,11 +67,11 @@ public class EditLightSwitchActivity extends Activity implements ReplyListener {
 	}
 
 	@Override
-	public void dataSetChanged() {
+	public void dataSetChanged(int token, Object o) {
 	}
 
 	@Override
-	public void replaceCursor(Cursor cursor) {
+	public void replaceCursor(Cursor cursor, Object o) {
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
 				lightSwitchPinField.setText(Integer.toString(cursor.getInt(cursor

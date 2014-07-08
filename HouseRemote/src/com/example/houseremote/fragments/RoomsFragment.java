@@ -1,5 +1,6 @@
 package com.example.houseremote.fragments;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -22,16 +23,37 @@ import com.example.houseremote.EditRoomActivity;
 import com.example.houseremote.R;
 import com.example.houseremote.adapters.ListAdapter;
 import com.example.houseremote.database.AsyncQueryManager;
+import com.example.houseremote.database.AsyncQueryManager.ReplyListener;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
-import com.example.houseremote.database.AsyncQueryManager.ReplyListener;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 
-public class RoomsFragment extends Fragment implements ReplyListener {
+public class RoomsFragment extends Fragment {
 
+	
+
+
+
+
+	
+	public interface RoomSelectionListener {
+		void roomSelected(String roomName, String roomIp);
+	}
+
+	public interface RoomsAdapterProvider{
+		ListAdapter  getRoomsAdapter();
+	}
+	
+	public interface SelectedHouseProvider{
+		String getSelectedHouse();
+	}
+	public interface QueryManagerProvider{
+		AsyncQueryManager getQueryManager();
+	}
+	
 	private String mHouseName;
 	private ListView mList;
 	private ListAdapter mAdapter;
@@ -41,39 +63,47 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 	public RoomsFragment() {
 	}
 
+	
+	
+	
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		mHouseName=((SelectedHouseProvider) activity).getSelectedHouse();
+		mAdapter=((RoomsAdapterProvider) activity).getRoomsAdapter();
+		mCallback=(RoomSelectionListener) activity;
+		Log.d("Mooooo",mHouseName);
+		mAsyncQueryManager=((QueryManagerProvider) activity).getQueryManager();
+
+	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		this.mHouseName = getArguments().getString(DBHandler.HOUSE_NAME);
-		mAdapter = new ListAdapter(getActivity(), null, 0);
-		mAsyncQueryManager = new AsyncQueryManager(getActivity().getContentResolver(), this);
-		mCallback = (RoomSelectionListener) getActivity();
 		setHasOptionsMenu(true);
 		super.onCreate(savedInstanceState);
-
+		
 	}
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+		
 		return inflater.inflate(R.layout.fragment_rooms, container, false);
 	}
-
+	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-
+		
 		mList = (ListView) getActivity().findViewById(R.id.roomList);
 		mList.setAdapter(mAdapter);
 		mList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-				mCallback.roomSelected(((Cursor) mAdapter.getItem(position)).getString(1),
-						((Cursor) mAdapter.getItem(position)).getString(3));//TODO fix hardcoding
+				mCallback.roomSelected(((Cursor) mAdapter.getItem(position)).getString(mAdapter.getCursor().getColumnIndex(DBHandler.ROOM_NAME)),
+						((Cursor) mAdapter.getItem(position)).getString(mAdapter.getCursor().getColumnIndex(DBHandler.CONTROLLER_IP)));
 			}
 		});
 		registerForContextMenu(mList);
 		super.onActivityCreated(savedInstanceState);
 	}
-
+	
 	/**
 	 * Gets called when returning from another activity e.g. editing a room
 	 * Refresh DataSet
@@ -81,15 +111,21 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 	@Override
 	public void onStart() {
 		super.onStart();
-//		String[] projection = { DBHandler.ROOM_ID, DBHandler.ROOM_NAME, DBHandler.ROOM_IMAGE_NAME,
-//				DBHandler.CONTROLLER_IP };
-//		String selection = DBHandler.HOUSE_NAME + "=?";
-//		String[] selectionArgs = { mHouseName };
-//		mAsyncQueryManager.startQuery(0, null, DBProvider.ROOMS_URI, projection, selection, selectionArgs,
-//				null);
-		dataSetChanged();
-
+		((ReplyListener) mCallback).dataSetChanged(0,mAdapter);
+		
 	}
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		mHouseName=null;
+		mAdapter=null;
+		mCallback=null;
+		mAsyncQueryManager=null;
+	}
+	
+	
+	
+
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
@@ -104,10 +140,8 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 		String selectedRoomName;
 		if (item.getItemId() == R.id.action_edit_room) {
 			selectedRoomName = ((Cursor) mAdapter.getItem(info.position)).getString(mAdapter.getCursor()
-					.getColumnIndex(DBHandler.ROOM_NAME));// TODO HARDCODED
+					.getColumnIndex(DBHandler.ROOM_NAME));
 			Intent i = new Intent(getActivity(), EditRoomActivity.class);
-			Log.d("MOOOO", selectedRoomName);
-			Log.d("MOOOO", mHouseName);
 			i.putExtra(DBHandler.ROOM_NAME, selectedRoomName);
 			i.putExtra(DBHandler.HOUSE_NAME, mHouseName);
 			startActivity(i);
@@ -115,7 +149,7 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 		}
 		if (item.getItemId() == R.id.action_delete_room) {
 			selectedRoomName = ((Cursor) mAdapter.getItem(info.position)).getString(mAdapter.getCursor()
-					.getColumnIndex(DBHandler.ROOM_NAME));// TODO HARDCODED
+					.getColumnIndex(DBHandler.ROOM_NAME));
 			String selection = DBHandler.HOUSE_NAME + "=?" + " AND " + DBHandler.ROOM_NAME + "=?";
 			String[] selectionArgs = { mHouseName, selectedRoomName };
 			mAsyncQueryManager.startDelete(0, null, DBProvider.ROOMS_URI, selection, selectionArgs);
@@ -151,28 +185,6 @@ public class RoomsFragment extends Fragment implements ReplyListener {
 		return super.onOptionsItemSelected(item);
 	}
 
-	public interface RoomSelectionListener {
-		void roomSelected(String roomName, String roomIp);
-	}
-
-	@Override
-	public void dataSetChanged() {
-		String[] projection = { DBHandler.ROOM_ID, DBHandler.ROOM_NAME, DBHandler.ROOM_IMAGE_NAME,
-				DBHandler.CONTROLLER_IP };
-		String selection = DBHandler.HOUSE_NAME + "=?";
-		String[] selectionArgs = { mHouseName };
-		mAsyncQueryManager.startQuery(0, null, DBProvider.ROOMS_URI, projection, selection, selectionArgs,
-				null);
-
-	}
-
-	@Override
-	public void replaceCursor(Cursor cursor) {
-		Cursor temp = mAdapter.swapCursor(cursor);
-		if (temp != null)
-			temp.close();
-
-	}
 	public void replaceData(String houseName){
 		this.mHouseName=houseName;
 	}

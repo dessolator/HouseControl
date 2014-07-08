@@ -59,12 +59,12 @@ public class EditRoomActivity extends Activity implements ReplyListener {
 	}
 
 	@Override
-	public void dataSetChanged() {
+	public void dataSetChanged(int token, Object o) {
 
 	}
 
 	@Override
-	public void replaceCursor(Cursor cursor) {
+	public void replaceCursor(Cursor cursor,Object o) {
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
 				roomIpField.setText(cursor.getString(cursor.getColumnIndex(DBHandler.CONTROLLER_IP)));

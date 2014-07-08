@@ -1,5 +1,6 @@
 package com.example.houseremote.fragments;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -21,12 +22,14 @@ import com.example.houseremote.EditHouseActivity;
 import com.example.houseremote.R;
 import com.example.houseremote.adapters.ListAdapter;
 import com.example.houseremote.database.AsyncQueryManager;
+import com.example.houseremote.database.AsyncQueryManager.ReplyListener;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
-import com.example.houseremote.database.AsyncQueryManager.ReplyListener;
+import com.example.houseremote.fragments.RoomsFragment.QueryManagerProvider;
 
 /**
  * MAJOR TODOS 
+ * TODO SWITCH PHONE ACTIVITIES TO HEADLESS FRAGMENT
  * TODO IMPLEMENT CONTROLLER LOGIC?!?!?! 
  * TODO WHAT IF CURRENT HOUSE IS DELETED, RESET THE ROOM FRAGMENT AND CALLBACK WITH NULL 
  * TODO WHAT IF CURRENT HOUSE IS EDITED, RESET ROOM FRAGMENT AND CALLBACK WITH NULL 
@@ -41,7 +44,12 @@ import com.example.houseremote.database.AsyncQueryManager.ReplyListener;
  * TODO HAVE NEW HOUSE NAME AUTOINCREMENT
  */
 
-public class HousesFragment extends Fragment implements ReplyListener {
+public class HousesFragment extends Fragment {
+	
+	public interface HousesAdapterProvider{
+		ListAdapter  getHousesAdapter();
+		
+	}
 
 	private ListView mList;
 	private ListAdapter mAdapter;
@@ -50,15 +58,29 @@ public class HousesFragment extends Fragment implements ReplyListener {
 
 	public HousesFragment() {
 	}
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		mAdapter=((HousesAdapterProvider) activity).getHousesAdapter();
+		asyncQ=((QueryManagerProvider) activity).getQueryManager();
+		mCallback=(HouseSelectionListener) activity;
+
+	}
+	
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		mCallback=null;
+		mAdapter=null;
+		asyncQ=null;
+	}
+	
 
 	/**
 	 * Initialize the adapter Initialize the background loader
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		mAdapter = new ListAdapter(getActivity(), null, 0);
-		asyncQ = new AsyncQueryManager(getActivity().getContentResolver(), this);
-		mCallback = (HouseSelectionListener) getActivity();
 		setHasOptionsMenu(true);// register for options menu callbacks
 		super.onCreate(savedInstanceState);
 
@@ -99,8 +121,7 @@ public class HousesFragment extends Fragment implements ReplyListener {
 	@Override
 	public void onStart() {
 		super.onStart();
-		String[] projection = { DBHandler.HOUSE_ID, DBHandler.HOUSE_NAME, DBHandler.HOUSE_IMAGE_NAME };
-		asyncQ.startQuery(0, null, DBProvider.HOUSES_URI, projection, null, null, null);
+		((ReplyListener) mCallback).dataSetChanged(0,mAdapter);
 
 	}
 
@@ -166,24 +187,5 @@ public class HousesFragment extends Fragment implements ReplyListener {
 		void houseSelected(String houseName);
 	}
 
-	@Override
-	public void dataSetChanged() {
-		String[] projection = { DBHandler.HOUSE_ID, DBHandler.HOUSE_NAME, DBHandler.HOUSE_IMAGE_NAME };
-		asyncQ.startQuery(0, null, DBProvider.HOUSES_URI, projection, null, null, null);// if
-																						// data
-																						// changed
-																						// requery
-																						// the
-																						// database
-
-	}
-
-	@Override
-	public void replaceCursor(Cursor cursor) {
-		Cursor temp = mAdapter.swapCursor(cursor);
-		if (temp != null)
-			temp.close();
-
-	}
 
 }

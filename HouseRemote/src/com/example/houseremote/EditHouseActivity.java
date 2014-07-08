@@ -60,11 +60,11 @@ public class EditHouseActivity extends Activity implements ReplyListener {
 	}
 
 	@Override
-	public void dataSetChanged() {
+	public void dataSetChanged(int token, Object cookie) {		
 	}
 
 	@Override
-	public void replaceCursor(Cursor cursor) {
+	public void replaceCursor(Cursor cursor,Object o) {
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
 				houseWifiNameField
@@ -74,5 +74,7 @@ public class EditHouseActivity extends Activity implements ReplyListener {
 		}
 
 	}
+
+	
 
 }

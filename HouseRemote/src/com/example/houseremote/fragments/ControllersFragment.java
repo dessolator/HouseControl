@@ -60,7 +60,7 @@ public class ControllersFragment extends Fragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		mCallback=(ReplyListener) activity;
+		
 		
 
 	}
@@ -93,6 +93,7 @@ public class ControllersFragment extends Fragment {
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
+		mCallback=(ReplyListener) getActivity();
 		houseName=((SelectedHouseProvider) mCallback).getSelectedHouse();
 		roomName=((SelectedRoomProvider) mCallback).getSelectedRoom();
 		roomIp=((SelectedRoomProvider) mCallback).getSelectedRoomIp();

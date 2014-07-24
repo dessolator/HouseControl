@@ -68,7 +68,7 @@ public class RoomsFragment extends Fragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		mCallback=(RoomSelectionListener) activity;
+		
 
 	}
 	@Override
@@ -85,6 +85,7 @@ public class RoomsFragment extends Fragment {
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
+		mCallback=(RoomSelectionListener) getActivity();
 		mHouseName=((SelectedHouseProvider) mCallback).getSelectedHouse();
 		mAdapter=((RoomsAdapterProvider) mCallback).getRoomsAdapter();
 		mAsyncQueryManager=((QueryManagerProvider) mCallback).getQueryManager();

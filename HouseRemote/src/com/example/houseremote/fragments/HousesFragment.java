@@ -29,7 +29,6 @@ import com.example.houseremote.fragments.RoomsFragment.QueryManagerProvider;
 
 /**
  * MAJOR TODOS 
- * TODO FIX ROTATION BUG, LIKELY IN ROOM FRAGMENT
  * TODO SWITCH PHONE ACTIVITIES TO HEADLESS FRAGMENT
  * TODO IMPLEMENT CONTROLLER LOGIC?!?!?! 
  * TODO WHAT IF CURRENT HOUSE IS DELETED, RESET THE ROOM FRAGMENT AND CALLBACK WITH NULL 
@@ -63,7 +62,7 @@ public class HousesFragment extends Fragment {
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		
-		mCallback=(HouseSelectionListener) activity;
+		
 
 	}
 	
@@ -100,6 +99,7 @@ public class HousesFragment extends Fragment {
 	 */
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
+		mCallback=(HouseSelectionListener) getActivity();
 		mAdapter=((HousesAdapterProvider) mCallback).getHousesAdapter();
 		asyncQ=((QueryManagerProvider) mCallback).getQueryManager();
 		/*

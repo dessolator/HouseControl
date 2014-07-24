@@ -60,12 +60,8 @@ public class ControllersFragment extends Fragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		houseName=((SelectedHouseProvider) activity).getSelectedHouse();
-		roomName=((SelectedRoomProvider) activity).getSelectedRoom();
-		roomIp=((SelectedRoomProvider) activity).getSelectedRoomIp();
-		mAdapter=((ControllersAdapterProvider) activity).getControllersAdapter();
-		mAsyncQueryManager=((QueryManagerProvider) activity).getQueryManager();
 		mCallback=(ReplyListener) activity;
+		
 
 	}
 	
@@ -78,6 +74,7 @@ public class ControllersFragment extends Fragment {
 		mCallback=null;
 		mAdapter=null;
 		mAsyncQueryManager=null;
+		
 	}
 
 	@Override
@@ -96,6 +93,11 @@ public class ControllersFragment extends Fragment {
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
+		houseName=((SelectedHouseProvider) mCallback).getSelectedHouse();
+		roomName=((SelectedRoomProvider) mCallback).getSelectedRoom();
+		roomIp=((SelectedRoomProvider) mCallback).getSelectedRoomIp();
+		mAdapter=((ControllersAdapterProvider) mCallback).getControllersAdapter();
+		mAsyncQueryManager=((QueryManagerProvider) mCallback).getQueryManager();
 
 		mGrid = (GridView) getActivity().findViewById(R.id.controllerGrid);
 		mGrid.setAdapter(mAdapter);

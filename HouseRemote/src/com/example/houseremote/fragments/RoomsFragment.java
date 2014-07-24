@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -69,11 +68,7 @@ public class RoomsFragment extends Fragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		mHouseName=((SelectedHouseProvider) activity).getSelectedHouse();
-		mAdapter=((RoomsAdapterProvider) activity).getRoomsAdapter();
 		mCallback=(RoomSelectionListener) activity;
-		Log.d("Mooooo",mHouseName);
-		mAsyncQueryManager=((QueryManagerProvider) activity).getQueryManager();
 
 	}
 	@Override
@@ -90,6 +85,9 @@ public class RoomsFragment extends Fragment {
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
+		mHouseName=((SelectedHouseProvider) mCallback).getSelectedHouse();
+		mAdapter=((RoomsAdapterProvider) mCallback).getRoomsAdapter();
+		mAsyncQueryManager=((QueryManagerProvider) mCallback).getQueryManager();
 		
 		mList = (ListView) getActivity().findViewById(R.id.roomList);
 		mList.setAdapter(mAdapter);

@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -43,40 +44,59 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 		myHeadlessFragment=(HeadlessFragment)getSupportFragmentManager().findFragmentByTag(HEADLESS);
 		if(myHeadlessFragment==null){
 			myHeadlessFragment=new HeadlessFragment();
+			Log.d("MOOOO","new HeadF");
+			getSupportFragmentManager().beginTransaction().add(myHeadlessFragment, HEADLESS).commit();
 		}
 		
-		getSupportFragmentManager().beginTransaction().add(myHeadlessFragment, HEADLESS).commit();
-		
+
 		setContentView(R.layout.activity_main);
 
 		if (savedInstanceState == null) {
 			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
+			myRoomsFragment = (RoomsFragment)getSupportFragmentManager().findFragmentByTag(ROOMS);
+			if(myRoomsFragment!=null)
+				Log.d("MOOOO","restoredRooms");
+		
+			myControllersFragment = (ControllersFragment)getSupportFragmentManager().findFragmentByTag(CONTROLLERS);
+			if(myControllersFragment!=null)
+				Log.d("MOOOO","restoredControllers");
 			myHousesFragment = (HousesFragment)getSupportFragmentManager().findFragmentByTag(HOUSES);
-			if(myHousesFragment==null){
-				myHousesFragment=new HousesFragment();
+			if(myHousesFragment!=null)
+				Log.d("MOOOO","restoredHouse");
+			if(myControllersFragment==null){
+				if(myHousesFragment==null){
+					Log.d("MOOOO","new HF");
+					myHousesFragment=new HousesFragment();
+					ft.add(R.id.list, myHousesFragment);
+				}
 			}
 			
-			ft.add(R.id.list, myHousesFragment);
 
-			if (findViewById(R.id.expanded) != null) {//if on tablet
-				if (myHeadlessFragment.getSelectedHouse() != null) {
-					
-					RoomsFragment myRoomsFragment =(RoomsFragment) getSupportFragmentManager().findFragmentByTag(ROOMS);
-					if(myRoomsFragment==null){
-						myRoomsFragment= new RoomsFragment();
-					}
-					Bundle b = new Bundle();//TODO might be unnecessary
-					b.putString(DBHandler.HOUSE_NAME, myHeadlessFragment.getSelectedHouse());
-					myRoomsFragment.setArguments(b);
-					ft.add(R.id.expanded, myRoomsFragment);
-					}
-			}
-			else{//if on phone
-				
-			}
+//			if (findViewById(R.id.expanded) != null) {//if on tablet
+//				if (myHeadlessFragment.getSelectedHouse() != null) {
+//					
+//					RoomsFragment myRoomsFragment =(RoomsFragment) getSupportFragmentManager().findFragmentByTag(ROOMS);
+//					if(myRoomsFragment==null){
+//						Log.d("MOOOO","new RF");
+//						myRoomsFragment= new RoomsFragment();
+//						ft.add(R.id.expanded, myRoomsFragment);
+//					}
+//					}
+//			}
+//			else{//if on phone
+//				
+//			}
 			ft.commit();
 		}
+	}
+	@Override
+	protected void onDestroy() {
+		myControllersFragment=null;
+		myHeadlessFragment=null;
+		myHousesFragment=null;
+		myRoomsFragment=null;
+		super.onDestroy();
 	}
 
 	@Override
@@ -95,11 +115,6 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 		return super.onOptionsItemSelected(item);
 	}
 
-	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		super.onDestroy();
-	}
 
 	@Override
 	public void roomSelected(String roomName, String roomIp) {
@@ -119,14 +134,9 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 			myControllersFragment =(ControllersFragment) getSupportFragmentManager().findFragmentByTag(CONTROLLERS);
 			if(myControllersFragment==null){
 				myControllersFragment= new ControllersFragment();
+				Log.d("MOOOO","new HF");
 			}
 	
-
-			Bundle b = new Bundle();
-			b.putString(DBHandler.HOUSE_NAME, myHeadlessFragment.getSelectedHouse());
-			b.putString(DBHandler.ROOM_NAME, myHeadlessFragment.getSelectedRoom());
-			b.putString(DBHandler.CONTROLLER_IP, myHeadlessFragment.getSelectedRoomIp());
-			myControllersFragment.setArguments(b);
 			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 			ft.replace(R.id.expanded, myControllersFragment);			//replace room and controller fragment
 			ft.commit();
@@ -156,9 +166,7 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 		if(myRoomsFragment==null){
 			myHeadlessFragment.setSelectedHouse(houseName);
 			myRoomsFragment=new RoomsFragment();
-			Bundle b= new Bundle();
-			b.putString(DBHandler.HOUSE_NAME, myHeadlessFragment.getSelectedHouse());
-			myRoomsFragment.setArguments(b);
+			Log.d("MOOOO","new RF");
 			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 			ft.add(R.id.expanded, myRoomsFragment);
 			ft.commit();

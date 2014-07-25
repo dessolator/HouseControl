@@ -32,12 +32,7 @@ public class GridAdapter extends CursorAdapter {
 
 	@Override
 	public View newView(Context arg0, Cursor arg1, ViewGroup arg2) {
-		return li.inflate(R.layout.grid_view_icon, arg2, false);// TODO placing
-																// parrent
-																// instead of
-																// null limits
-																// the onClick
-																// detector
+		return li.inflate(R.layout.grid_view_icon, arg2, false);
 	}
 
 }

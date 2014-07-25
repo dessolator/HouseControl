@@ -1,6 +1,5 @@
 package com.example.houseremote.fragments;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -27,24 +26,31 @@ import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.fragments.RoomsFragment.QueryManagerProvider;
 import com.example.houseremote.fragments.RoomsFragment.SelectedHouseProvider;
+import com.example.houseremote.network.SwitchPacket;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 
 public class ControllersFragment extends Fragment {
-	
-	public interface ControllersAdapterProvider{
-		GridAdapter  getControllersAdapter();
-		
-	}
-	public interface SelectedRoomProvider{
-		String getSelectedRoom();
 
+	public interface ControllersAdapterProvider {
+		GridAdapter getControllersAdapter();
+
+	}
+
+	public interface SelectedRoomProvider {
+		String getSelectedRoom();
 		String getSelectedRoomIp();
 	}
-	
-	
+
+	public interface NetworkCommandListener {
+		public void startNetworkListener();
+		public void stopNetworkListener();
+		public void startNetworkSender();
+		public void stopNetworkSender();
+		void addToNetworkSender(SwitchPacket switchPacket);
+	}
 
 	private String houseName;
 	private String roomName;
@@ -56,30 +62,9 @@ public class ControllersFragment extends Fragment {
 
 	public ControllersFragment() {
 	}
-	
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		
-		
-
-	}
-	
-	@Override
-	public void onDetach() {
-		super.onDetach();
-		houseName=null;
-		roomIp=null;
-		roomName=null;
-		mCallback=null;
-		mAdapter=null;
-		mAsyncQueryManager=null;
-		
-	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
 		setHasOptionsMenu(true);
 		super.onCreate(savedInstanceState);
 
@@ -93,20 +78,23 @@ public class ControllersFragment extends Fragment {
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-		mCallback=(ReplyListener) getActivity();
-		houseName=((SelectedHouseProvider) mCallback).getSelectedHouse();
-		roomName=((SelectedRoomProvider) mCallback).getSelectedRoom();
-		roomIp=((SelectedRoomProvider) mCallback).getSelectedRoomIp();
-		mAdapter=((ControllersAdapterProvider) mCallback).getControllersAdapter();
-		mAsyncQueryManager=((QueryManagerProvider) mCallback).getQueryManager();
+		mCallback = (ReplyListener) getActivity();
+		houseName = ((SelectedHouseProvider) mCallback).getSelectedHouse();
+		roomName = ((SelectedRoomProvider) mCallback).getSelectedRoom();
+		roomIp = ((SelectedRoomProvider) mCallback).getSelectedRoomIp();
+		mAdapter = ((ControllersAdapterProvider) mCallback).getControllersAdapter();
+		mAsyncQueryManager = ((QueryManagerProvider) mCallback).getQueryManager();
 
 		mGrid = (GridView) getActivity().findViewById(R.id.controllerGrid);
 		mGrid.setAdapter(mAdapter);
+		// TODO display the loopyloop thing and block all interaction
 
 		mGrid.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-				// TODO ACTUAL LOGIC
+				((NetworkCommandListener) mCallback).addToNetworkSender(new SwitchPacket(((Cursor) mAdapter
+						.getItem(position)).getInt(mAdapter.getCursor().getColumnIndex(
+						DBHandler.CONTROL_PIN1_NUMBER))));
 			}
 		});
 		registerForContextMenu(mGrid);
@@ -116,7 +104,10 @@ public class ControllersFragment extends Fragment {
 	@Override
 	public void onStart() {
 		super.onStart();
-		mCallback.dataSetChanged(2,mAdapter);
+		mCallback.dataSetChanged(2, mAdapter);
+		// TODO start query full state
+		((NetworkCommandListener) mCallback).startNetworkSender();
+		((NetworkCommandListener) mCallback).startNetworkListener();
 
 	}
 
@@ -221,10 +212,16 @@ public class ControllersFragment extends Fragment {
 		return super.onOptionsItemSelected(item);
 	}
 
-	public void replaceData(String houseName,String roomName,String roomIp){
-		this.houseName=houseName;
-		this.roomName=roomName;
-		this.roomIp=roomIp;
+	public void replaceData(String houseName, String roomName, String roomIp) {
+		this.houseName = houseName;
+		this.roomName = roomName;
+		this.roomIp = roomIp;
 	}
+
+	// TODO when the full load is finished
+	// display the data
+	// remove the loopyloop
+	// allow interaction
+	// start the listener
 
 }

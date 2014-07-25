@@ -1,6 +1,5 @@
 package com.example.houseremote.fragments;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -30,10 +29,10 @@ import com.example.houseremote.fragments.RoomsFragment.QueryManagerProvider;
 /**
  * MAJOR TODOS 
  * TODO SWITCH PHONE ACTIVITIES TO HEADLESS FRAGMENT
- * TODO IMPLEMENT CONTROLLER LOGIC?!?!?! 
  * TODO WHAT IF CURRENT HOUSE IS DELETED, RESET THE ROOM FRAGMENT AND CALLBACK WITH NULL 
  * TODO WHAT IF CURRENT HOUSE IS EDITED, RESET ROOM FRAGMENT AND CALLBACK WITH NULL 
- * TODO NAVIGATION MANAGEMENT 
+ * TODO NAVIGATION MANAGEMENT
+ * TODO TEST ORIENTATION CHANGE ALONG WITH BACK ACTIONS 
  * MINOR TODOS 
  * TODO MAKE ACTIVITY ACTIONBARS A BIT MORE CUSTOM ADD UP BUTTON TO PHONE VERSION
  * TODO MANAGE FRAGMENTS BETTER NAMELY WHEN CHANGING ORIENTATION ETC..., no need to destroy old rooms fragment if new house was selected
@@ -58,54 +57,27 @@ public class HousesFragment extends Fragment {
 
 	public HousesFragment() {
 	}
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		
 		
 
-	}
-	
-	@Override
-	public void onDetach() {
-		super.onDetach();
-		mCallback=null;
-		mAdapter=null;
-		asyncQ=null;
-	}
-	
-
-	/**
-	 * Initialize the adapter Initialize the background loader
-	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		setHasOptionsMenu(true);// register for options menu callbacks
+		setHasOptionsMenu(true);
 		super.onCreate(savedInstanceState);
 
 	}
 
-	/**
-	 * Inflate the layout
-	 */
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.fragment_houses, container, false);
 	}
 
-	/**
-	 * The ViewHierarchy is now available Register callback activity Bind
-	 * ListView Attach a Listener to ListView
-	 */
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		mCallback=(HouseSelectionListener) getActivity();
 		mAdapter=((HousesAdapterProvider) mCallback).getHousesAdapter();
 		asyncQ=((QueryManagerProvider) mCallback).getQueryManager();
-		/*
-		 * ListView Setup, attach adapter, set onclick listener and register for
-		 * context menu
-		 */
 		mList = (ListView) getActivity().findViewById(R.id.houseList);
 		mList.setAdapter(mAdapter);
 		mList.setOnItemClickListener(new OnItemClickListener() {
@@ -148,6 +120,7 @@ public class HousesFragment extends Fragment {
 			i.putExtra(DBHandler.HOUSE_NAME, selectedHouseName);
 			startActivity(i);
 		}
+		
 		if (item.getItemId() == R.id.action_delete_house) {
 			selectedHouseName = ((Cursor) mAdapter.getItem(info.position)).getString(mAdapter.getCursor()
 					.getColumnIndex(DBHandler.HOUSE_NAME));

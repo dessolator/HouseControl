@@ -1,6 +1,5 @@
 package com.example.houseremote.fragments;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -33,11 +32,6 @@ import com.example.houseremote.database.DBProvider;
 public class RoomsFragment extends Fragment {
 
 	
-
-
-
-
-	
 	public interface RoomSelectionListener {
 		void roomSelected(String roomName, String roomIp);
 	}
@@ -62,15 +56,6 @@ public class RoomsFragment extends Fragment {
 	public RoomsFragment() {
 	}
 
-	
-	
-	
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		
-
-	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		setHasOptionsMenu(true);
@@ -113,18 +98,6 @@ public class RoomsFragment extends Fragment {
 		((ReplyListener) mCallback).dataSetChanged(0,mAdapter);
 		
 	}
-	@Override
-	public void onDetach() {
-		super.onDetach();
-		mHouseName=null;
-		mAdapter=null;
-		mCallback=null;
-		mAsyncQueryManager=null;
-	}
-	
-	
-	
-
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {

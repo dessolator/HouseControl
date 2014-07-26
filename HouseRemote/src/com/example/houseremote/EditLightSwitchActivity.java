@@ -10,7 +10,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.houseremote.database.AsyncQueryManager;
+import com.example.houseremote.database.DataBaseQueryManager;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.interfaces.ReplyListener;
@@ -20,7 +20,7 @@ public class EditLightSwitchActivity extends Activity implements ReplyListener {
 	String houseName;
 	String roomName;
 	String lightSwitchName;
-	AsyncQueryManager mAsyncQueryManager;
+	DataBaseQueryManager mAsyncQueryManager;
 	EditText lightSwitchNameField;
 	EditText lightSwitchPinField;
 
@@ -42,7 +42,7 @@ public class EditLightSwitchActivity extends Activity implements ReplyListener {
 		lightSwitchNameField = ((EditText) findViewById(R.id.lightSwitchNameField));
 		lightSwitchNameField.setText(lightSwitchName);
 		lightSwitchPinField = ((EditText) findViewById(R.id.lightSwitchPinField));
-		mAsyncQueryManager = new AsyncQueryManager(getContentResolver(), this);
+		mAsyncQueryManager = new DataBaseQueryManager(getContentResolver(), this);
 
 		mAsyncQueryManager.startQuery(0, null, DBProvider.CONTROLLERS_URI, projection, selection,
 				selectionArgs, null);

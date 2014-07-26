@@ -9,11 +9,11 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 
-public class AsyncQueryManager extends AsyncQueryHandler {
+public class DataBaseQueryManager extends AsyncQueryHandler {
 
 	WeakReference<ReplyListener> mListener;
 
-	public AsyncQueryManager(ContentResolver cr, ReplyListener rl) {
+	public DataBaseQueryManager(ContentResolver cr, ReplyListener rl) {
 		super(cr);
 		mListener = new WeakReference<ReplyListener>(rl);
 	}

@@ -4,16 +4,14 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 import android.os.AsyncTask;
 
 import com.example.houseremote.interfaces.NetworkCallbackListener;
 import com.example.houseremote.interfaces.SocketProvider;
 
-public class ControllerStateQuery extends AsyncTask<PinStatusSet, Void, PinStatusSet> {
+public class ControllerStateQueryAsyncTask extends AsyncTask<Void, Void, PinStatusSet> {
 
 	
 
@@ -21,32 +19,26 @@ public class ControllerStateQuery extends AsyncTask<PinStatusSet, Void, PinStatu
 	DataInputStream mInputStream;
 	DataOutputStream mOutputStream;
 	private SocketProvider mSocketProvider;
-	private String mRoomIp;
 	WeakReference<NetworkCallbackListener> mCallback;
 	
-	public ControllerStateQuery(NetworkCallbackListener headlessFragment) {//TODO need a finishlistener
+	public ControllerStateQueryAsyncTask(NetworkCallbackListener headlessFragment) {
 		mCallback=new WeakReference<NetworkCallbackListener>(headlessFragment);
 	}
 
 	@Override     
-	protected PinStatusSet doInBackground(PinStatusSet... params) {
-		mSocket=acquireSocket();
+	protected PinStatusSet doInBackground(Void... params) {
+		mSocket=mSocketProvider.acquireSocket();
 		try {
 			mInputStream=new DataInputStream(mSocket.getInputStream());
 			mOutputStream=new DataOutputStream(mSocket.getOutputStream());
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		for(PinStatus p: (params[0]).getArray()){
-			try {
-				mOutputStream.writeUTF("STATUS_"+p.pinNumber);
-				mOutputStream.flush();
-				p.pinState=mInputStream.readUTF().equals("HIGH")?0:1;//TODO hardcoded
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return params[0];
+		//TODO send call
+		//TODO wait for reply
+		//TODO create reply packet from response
+
+		return null;
 	}
 	
 	@Override
@@ -56,19 +48,5 @@ public class ControllerStateQuery extends AsyncTask<PinStatusSet, Void, PinStatu
 			mCallback.get().pinStateQueryComplete(result);
 	}
 	
-	private Socket acquireSocket() {
-		Socket temp= mSocketProvider.getSocket();
-		if(temp==null){
-			try {
-				temp=new Socket(InetAddress.getByName(mRoomIp),55000);
-				mSocketProvider.setSocket(temp);
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return temp;
-	}
 
 }

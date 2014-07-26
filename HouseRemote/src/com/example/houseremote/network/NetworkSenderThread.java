@@ -2,23 +2,20 @@ package com.example.houseremote.network;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.example.houseremote.interfaces.SocketProvider;
 
-public class NetworkSender extends Thread {
+public class NetworkSenderThread extends Thread {
 	private ConcurrentLinkedQueue<SwitchPacket> mQueue=new ConcurrentLinkedQueue<SwitchPacket>();
 	private boolean kill;
 	private boolean change;
-	private String mRoomIp;
 	private Socket mSocket;
 	private DataOutputStream mOutputStream;
 	SocketProvider mSocketProvider;
 	
-	public NetworkSender(SocketProvider socketProvider){
+	public NetworkSenderThread(SocketProvider socketProvider){
 		mSocketProvider=socketProvider;
 	}
 	
@@ -36,8 +33,7 @@ public class NetworkSender extends Thread {
 	@Override
 	public void run(){
 		while(!kill){
-			mRoomIp=mSocketProvider.getIp();
-			mSocket=acquireSocket();
+			mSocket=mSocketProvider.acquireSocket();
 		try {
 			mOutputStream=new DataOutputStream(mSocket.getOutputStream());
 			change=false;
@@ -59,21 +55,6 @@ public class NetworkSender extends Thread {
 				}
 			}
 		}
-	}
-
-	private Socket acquireSocket() {
-		Socket temp= mSocketProvider.getSocket();
-		if(temp==null){
-			try {
-				temp=new Socket(InetAddress.getByName(mRoomIp),55000);
-				mSocketProvider.setSocket(temp);
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return temp;
 	}
 
 

@@ -1,9 +1,9 @@
 package com.example.houseremote.interfaces;
 
-import com.example.houseremote.database.AsyncQueryManager;
+import com.example.houseremote.database.DataBaseQueryManager;
 
 public interface QueryManagerProvider{
-		AsyncQueryManager getQueryManager();
+		DataBaseQueryManager getQueryManager();
 
 //		void restartFullStateRead();
 	}

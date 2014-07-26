@@ -20,7 +20,7 @@ import android.widget.ListView;
 import com.example.houseremote.EditHouseActivity;
 import com.example.houseremote.R;
 import com.example.houseremote.adapters.ListAdapter;
-import com.example.houseremote.database.AsyncQueryManager;
+import com.example.houseremote.database.DataBaseQueryManager;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.interfaces.HouseSelectionListener;
@@ -50,7 +50,7 @@ public class HousesFragment extends Fragment {
 	private ListView mList;
 	private ListAdapter mAdapter;
 	private HouseSelectionListener mCallback;
-	private AsyncQueryManager asyncQ;
+	private DataBaseQueryManager asyncQ;
 
 	public HousesFragment() {
 	}

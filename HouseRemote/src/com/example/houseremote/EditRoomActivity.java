@@ -10,7 +10,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.houseremote.database.AsyncQueryManager;
+import com.example.houseremote.database.DataBaseQueryManager;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.interfaces.ReplyListener;
@@ -21,7 +21,7 @@ public class EditRoomActivity extends Activity implements ReplyListener {
 	String houseName;
 	EditText roomNameField;
 	EditText roomIpField;
-	AsyncQueryManager mAsyncQueryManager;
+	DataBaseQueryManager mAsyncQueryManager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +37,7 @@ public class EditRoomActivity extends Activity implements ReplyListener {
 		roomNameField = (EditText) findViewById(R.id.roomNameField);
 		roomNameField.setText(roomName);
 		roomIpField = (EditText) findViewById(R.id.roomIpField);
-		mAsyncQueryManager = new AsyncQueryManager(getContentResolver(), this);
+		mAsyncQueryManager = new DataBaseQueryManager(getContentResolver(), this);
 		
 		mAsyncQueryManager.startQuery(0, null, DBProvider.ROOMS_URI, null, selection, selectionArgs, null);
 

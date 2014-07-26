@@ -2,28 +2,25 @@ package com.example.houseremote.network;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
+
+import android.os.AsyncTask;
 
 import com.example.houseremote.interfaces.SocketProvider;
 import com.example.houseremote.interfaces.SwitchStateListener;
 
-import android.os.AsyncTask;
 
-
-public class NetworkListener extends AsyncTask<Void,NetData,Void>{
+public class NetworkListenerAsyncTask extends AsyncTask<Void,NetData,Void>{
 	
 	SocketProvider mSocketProvider;
 	SwitchStateListener mListener;
 	boolean kill;
 	boolean change;
-	String mRoomIp;
 	Socket mSocket;
 	DataInputStream mInputStream;
 	public static final int SERVER_PORT=55000; 
 	
-	public NetworkListener(SocketProvider socketProvider, SwitchStateListener switchStateListener){
+	public NetworkListenerAsyncTask(SocketProvider socketProvider, SwitchStateListener switchStateListener){
 		mListener=switchStateListener;
 		mSocketProvider=socketProvider;
 	}
@@ -39,8 +36,7 @@ public class NetworkListener extends AsyncTask<Void,NetData,Void>{
 	@Override
 	protected Void doInBackground(Void... params) {
 		while(!kill){
-				mRoomIp=mSocketProvider.getIp();
-				mSocket=acquireSocket();
+				mSocket=mSocketProvider.acquireSocket();
 			try {
 				mInputStream=new DataInputStream(mSocket.getInputStream());
 				change=false;
@@ -61,22 +57,6 @@ public class NetworkListener extends AsyncTask<Void,NetData,Void>{
 		return null;
 	}
 	
-	
-	
-	private Socket acquireSocket() {
-		Socket temp= mSocketProvider.getSocket();
-		if(temp==null){
-			try {
-				temp=new Socket(InetAddress.getByName(mRoomIp),55000);
-				mSocketProvider.setSocket(temp);
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return temp;
-	}
 
 	@Override
 	protected void onProgressUpdate(NetData... values) {

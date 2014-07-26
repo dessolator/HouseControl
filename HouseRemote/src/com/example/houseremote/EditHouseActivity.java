@@ -10,14 +10,14 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.houseremote.database.AsyncQueryManager;
+import com.example.houseremote.database.DataBaseQueryManager;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.interfaces.ReplyListener;
 
 public class EditHouseActivity extends Activity implements ReplyListener {
 
-	private AsyncQueryManager mAsyncQueryManager;
+	private DataBaseQueryManager mAsyncQueryManager;
 	EditText houseNameField;
 	EditText houseWifiNameField;
 	String houseName;
@@ -37,7 +37,7 @@ public class EditHouseActivity extends Activity implements ReplyListener {
 		houseNameField = ((EditText) findViewById(R.id.houseNameField));
 		houseWifiNameField = ((EditText) findViewById(R.id.houseWifiField));
 		houseNameField.setText(houseName);
-		mAsyncQueryManager = new AsyncQueryManager(getContentResolver(), this);
+		mAsyncQueryManager = new DataBaseQueryManager(getContentResolver(), this);
 
 		mAsyncQueryManager.startQuery(0, null, DBProvider.HOUSES_URI, null, selection, selectionArgs, null);
 

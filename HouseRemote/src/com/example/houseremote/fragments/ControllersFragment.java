@@ -20,18 +20,17 @@ import android.widget.GridView;
 import com.example.houseremote.EditLightSwitchActivity;
 import com.example.houseremote.R;
 import com.example.houseremote.adapters.GridAdapter;
-import com.example.houseremote.database.AsyncQueryManager;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
+import com.example.houseremote.database.DataBaseQueryManager;
 import com.example.houseremote.interfaces.ControllerStateQueryListener;
-import com.example.houseremote.interfaces.ControllerStateQueryProvider;
 import com.example.houseremote.interfaces.ControllersAdapterProvider;
 import com.example.houseremote.interfaces.NetworkCommandListener;
 import com.example.houseremote.interfaces.QueryManagerProvider;
 import com.example.houseremote.interfaces.ReplyListener;
 import com.example.houseremote.interfaces.SelectedHouseProvider;
 import com.example.houseremote.interfaces.SelectedRoomProvider;
-import com.example.houseremote.network.ControllerStateQuery;
+import com.example.houseremote.network.ControllerStateQueryAsyncTask;
 import com.example.houseremote.network.PinStatusSet;
 import com.example.houseremote.network.SwitchPacket;
 
@@ -50,8 +49,8 @@ public class ControllersFragment extends Fragment implements ControllerStateQuer
 	private String roomIp;
 	private GridAdapter mAdapter;
 	private ReplyListener mCallback;
-	AsyncQueryManager mAsyncQueryManager;
-	ControllerStateQuery mControllerStateQuery;
+	DataBaseQueryManager mAsyncQueryManager;
+	ControllerStateQueryAsyncTask mControllerStateQuery;
 
 	public ControllersFragment() {
 	}
@@ -77,7 +76,6 @@ public class ControllersFragment extends Fragment implements ControllerStateQuer
 		roomIp = ((SelectedRoomProvider) mCallback).getSelectedRoomIp();
 		mAdapter = ((ControllersAdapterProvider) mCallback).getControllersAdapter();
 		mAsyncQueryManager = ((QueryManagerProvider) mCallback).getQueryManager();
-		mControllerStateQuery=((ControllerStateQueryProvider)mCallback).getStateQuery();
 
 		mGrid = (GridView) getActivity().findViewById(R.id.controllerGrid);
 		mGrid.setAdapter(mAdapter);

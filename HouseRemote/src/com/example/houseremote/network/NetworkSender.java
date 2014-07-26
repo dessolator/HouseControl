@@ -7,7 +7,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import com.example.houseremote.network.NetworkListener.SocketProvider;
+import com.example.houseremote.interfaces.SocketProvider;
 
 public class NetworkSender extends Thread {
 	private ConcurrentLinkedQueue<SwitchPacket> mQueue=new ConcurrentLinkedQueue<SwitchPacket>();
@@ -42,14 +42,12 @@ public class NetworkSender extends Thread {
 			mOutputStream=new DataOutputStream(mSocket.getOutputStream());
 			change=false;
 		} catch (IOException e) {
-			// problem getting inputstream
 			e.printStackTrace();
 		}
 			while(!change){
 				while(mQueue.isEmpty()){try {
 					synchronized(this){wait();}
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}}
 				SwitchPacket mData=mQueue.poll();
@@ -57,9 +55,8 @@ public class NetworkSender extends Thread {
 					mOutputStream.writeUTF("FLIP_"+mData.getPin());
 					mOutputStream.flush();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}//TODO send packet off the top
+				}
 			}
 		}
 	}
@@ -71,10 +68,8 @@ public class NetworkSender extends Thread {
 				temp=new Socket(InetAddress.getByName(mRoomIp),55000);
 				mSocketProvider.setSocket(temp);
 			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

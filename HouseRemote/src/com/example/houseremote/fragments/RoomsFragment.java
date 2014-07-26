@@ -21,9 +21,13 @@ import com.example.houseremote.EditRoomActivity;
 import com.example.houseremote.R;
 import com.example.houseremote.adapters.ListAdapter;
 import com.example.houseremote.database.AsyncQueryManager;
-import com.example.houseremote.database.AsyncQueryManager.ReplyListener;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
+import com.example.houseremote.interfaces.QueryManagerProvider;
+import com.example.houseremote.interfaces.ReplyListener;
+import com.example.houseremote.interfaces.RoomSelectionListener;
+import com.example.houseremote.interfaces.RoomsAdapterProvider;
+import com.example.houseremote.interfaces.SelectedHouseProvider;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -31,21 +35,6 @@ import com.example.houseremote.database.DBProvider;
 
 public class RoomsFragment extends Fragment {
 
-	
-	public interface RoomSelectionListener {
-		void roomSelected(String roomName, String roomIp);
-	}
-
-	public interface RoomsAdapterProvider{
-		ListAdapter  getRoomsAdapter();
-	}
-	
-	public interface SelectedHouseProvider{
-		String getSelectedHouse();
-	}
-	public interface QueryManagerProvider{
-		AsyncQueryManager getQueryManager();
-	}
 	
 	private String mHouseName;
 	private ListView mList;

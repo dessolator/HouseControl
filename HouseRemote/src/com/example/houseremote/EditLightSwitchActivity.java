@@ -11,9 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.houseremote.database.AsyncQueryManager;
-import com.example.houseremote.database.AsyncQueryManager.ReplyListener;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
+import com.example.houseremote.interfaces.ReplyListener;
 
 public class EditLightSwitchActivity extends Activity implements ReplyListener {
 

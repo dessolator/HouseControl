@@ -21,10 +21,12 @@ import com.example.houseremote.EditHouseActivity;
 import com.example.houseremote.R;
 import com.example.houseremote.adapters.ListAdapter;
 import com.example.houseremote.database.AsyncQueryManager;
-import com.example.houseremote.database.AsyncQueryManager.ReplyListener;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
-import com.example.houseremote.fragments.RoomsFragment.QueryManagerProvider;
+import com.example.houseremote.interfaces.HouseSelectionListener;
+import com.example.houseremote.interfaces.HousesAdapterProvider;
+import com.example.houseremote.interfaces.QueryManagerProvider;
+import com.example.houseremote.interfaces.ReplyListener;
 
 /**
  * MAJOR TODOS 
@@ -45,11 +47,6 @@ import com.example.houseremote.fragments.RoomsFragment.QueryManagerProvider;
 
 public class HousesFragment extends Fragment {
 	
-	public interface HousesAdapterProvider{
-		ListAdapter  getHousesAdapter();
-		
-	}
-
 	private ListView mList;
 	private ListAdapter mAdapter;
 	private HouseSelectionListener mCallback;
@@ -156,10 +153,6 @@ public class HousesFragment extends Fragment {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	public interface HouseSelectionListener {
-		void houseSelected(String houseName);
 	}
 
 

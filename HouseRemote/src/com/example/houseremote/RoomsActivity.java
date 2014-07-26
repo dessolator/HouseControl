@@ -9,7 +9,7 @@ import android.view.MenuItem;
 
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.fragments.RoomsFragment;
-import com.example.houseremote.fragments.RoomsFragment.RoomSelectionListener;
+import com.example.houseremote.interfaces.RoomSelectionListener;
 
 public class RoomsActivity extends ActionBarActivity implements RoomSelectionListener{
 	String currentlySelectedHouse;

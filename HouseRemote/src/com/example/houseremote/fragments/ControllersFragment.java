@@ -21,37 +21,29 @@ import com.example.houseremote.EditLightSwitchActivity;
 import com.example.houseremote.R;
 import com.example.houseremote.adapters.GridAdapter;
 import com.example.houseremote.database.AsyncQueryManager;
-import com.example.houseremote.database.AsyncQueryManager.ReplyListener;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
-import com.example.houseremote.fragments.RoomsFragment.QueryManagerProvider;
-import com.example.houseremote.fragments.RoomsFragment.SelectedHouseProvider;
+import com.example.houseremote.interfaces.ControllerStateQueryListener;
+import com.example.houseremote.interfaces.ControllerStateQueryProvider;
+import com.example.houseremote.interfaces.ControllersAdapterProvider;
+import com.example.houseremote.interfaces.NetworkCommandListener;
+import com.example.houseremote.interfaces.QueryManagerProvider;
+import com.example.houseremote.interfaces.ReplyListener;
+import com.example.houseremote.interfaces.SelectedHouseProvider;
+import com.example.houseremote.interfaces.SelectedRoomProvider;
+import com.example.houseremote.network.ControllerStateQuery;
+import com.example.houseremote.network.PinStatusSet;
 import com.example.houseremote.network.SwitchPacket;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 
-public class ControllersFragment extends Fragment {
-
-	public interface ControllersAdapterProvider {
-		GridAdapter getControllersAdapter();
-
-	}
-
-	public interface SelectedRoomProvider {
-		String getSelectedRoom();
-		String getSelectedRoomIp();
-	}
-
-	public interface NetworkCommandListener {
-		public void startNetworkListener();
-		public void stopNetworkListener();
-		public void startNetworkSender();
-		public void stopNetworkSender();
-		void addToNetworkSender(SwitchPacket switchPacket);
-	}
-
+public class ControllersFragment extends Fragment implements ControllerStateQueryListener {
+	
+	
+	
+	
 	private String houseName;
 	private String roomName;
 	private GridView mGrid;
@@ -59,6 +51,7 @@ public class ControllersFragment extends Fragment {
 	private GridAdapter mAdapter;
 	private ReplyListener mCallback;
 	AsyncQueryManager mAsyncQueryManager;
+	ControllerStateQuery mControllerStateQuery;
 
 	public ControllersFragment() {
 	}
@@ -84,30 +77,21 @@ public class ControllersFragment extends Fragment {
 		roomIp = ((SelectedRoomProvider) mCallback).getSelectedRoomIp();
 		mAdapter = ((ControllersAdapterProvider) mCallback).getControllersAdapter();
 		mAsyncQueryManager = ((QueryManagerProvider) mCallback).getQueryManager();
+		mControllerStateQuery=((ControllerStateQueryProvider)mCallback).getStateQuery();
 
 		mGrid = (GridView) getActivity().findViewById(R.id.controllerGrid);
 		mGrid.setAdapter(mAdapter);
 		// TODO display the loopyloop thing and block all interaction
-
-		mGrid.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-				((NetworkCommandListener) mCallback).addToNetworkSender(new SwitchPacket(((Cursor) mAdapter
-						.getItem(position)).getInt(mAdapter.getCursor().getColumnIndex(
-						DBHandler.CONTROL_PIN1_NUMBER))));
-			}
-		});
-		registerForContextMenu(mGrid);
+		((NetworkCommandListener) mCallback).startNetworkSender();
+		((NetworkCommandListener) mCallback).startNetworkListener();
+		
 		super.onActivityCreated(savedInstanceState);
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
-		mCallback.dataSetChanged(2, mAdapter);
-		// TODO start query full state
-		((NetworkCommandListener) mCallback).startNetworkSender();
-		((NetworkCommandListener) mCallback).startNetworkListener();
+		mCallback.dataSetChanged(2, mAdapter);		
 
 	}
 
@@ -218,10 +202,32 @@ public class ControllersFragment extends Fragment {
 		this.roomIp = roomIp;
 	}
 
-	// TODO when the full load is finished
-	// display the data
-	// remove the loopyloop
-	// allow interaction
-	// start the listener
+	public void lockInterface(){
+//		mGrid.getOnItemClickListener().//TODO
+		
+	}
+	public void unlockInterface(){//TODO
+		mGrid.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+				((NetworkCommandListener) mCallback).addToNetworkSender(new SwitchPacket(((Cursor) mAdapter
+						.getItem(position)).getInt(mAdapter.getCursor().getColumnIndex(
+						DBHandler.CONTROL_PIN1_NUMBER))));
+			}
+		});
+		registerForContextMenu(mGrid);
+	}
+	
+	
+	public void onStateLoadFinished(PinStatusSet ps){
+		mAdapter.addStatusSet(ps);
+		unlockInterface();
+		//TODO do something with the read data
+		//TODO remove loopy loop
+		
+		
+		
+	}
+
 
 }

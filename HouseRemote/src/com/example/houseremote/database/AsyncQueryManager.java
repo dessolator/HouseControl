@@ -2,6 +2,8 @@ package com.example.houseremote.database;
 
 import java.lang.ref.WeakReference;
 
+import com.example.houseremote.interfaces.ReplyListener;
+
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.database.Cursor;
@@ -11,16 +13,9 @@ public class AsyncQueryManager extends AsyncQueryHandler {
 
 	WeakReference<ReplyListener> mListener;
 
-	public interface ReplyListener {
-
-		void dataSetChanged(int token, Object cookie);
-
-		void replaceCursor(Cursor cursor, Object o);
-	}
-
 	public AsyncQueryManager(ContentResolver cr, ReplyListener rl) {
 		super(cr);
-		mListener = new WeakReference<AsyncQueryManager.ReplyListener>(rl);
+		mListener = new WeakReference<ReplyListener>(rl);
 	}
 
 	@Override

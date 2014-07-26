@@ -13,7 +13,7 @@ import android.widget.EditText;
 import com.example.houseremote.database.AsyncQueryManager;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
-import com.example.houseremote.database.AsyncQueryManager.ReplyListener;
+import com.example.houseremote.interfaces.ReplyListener;
 
 public class EditHouseActivity extends Activity implements ReplyListener {
 

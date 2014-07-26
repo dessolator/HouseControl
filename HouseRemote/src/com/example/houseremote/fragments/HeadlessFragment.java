@@ -13,23 +13,26 @@ import android.widget.Toast;
 import com.example.houseremote.adapters.GridAdapter;
 import com.example.houseremote.adapters.ListAdapter;
 import com.example.houseremote.database.AsyncQueryManager;
-import com.example.houseremote.database.AsyncQueryManager.ReplyListener;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
-import com.example.houseremote.fragments.ControllersFragment.ControllersAdapterProvider;
-import com.example.houseremote.fragments.ControllersFragment.NetworkCommandListener;
-import com.example.houseremote.fragments.HousesFragment.HousesAdapterProvider;
-import com.example.houseremote.fragments.RoomsFragment.RoomsAdapterProvider;
+import com.example.houseremote.interfaces.ControllerStateQueryProvider;
+import com.example.houseremote.interfaces.ControllersAdapterProvider;
+import com.example.houseremote.interfaces.HousesAdapterProvider;
+import com.example.houseremote.interfaces.NetworkCommandListener;
+import com.example.houseremote.interfaces.ReplyListener;
+import com.example.houseremote.interfaces.RoomsAdapterProvider;
+import com.example.houseremote.interfaces.SocketProvider;
+import com.example.houseremote.interfaces.SwitchStateListener;
+import com.example.houseremote.network.ControllerStateQuery;
 import com.example.houseremote.network.NetData;
 import com.example.houseremote.network.NetworkListener;
-import com.example.houseremote.network.NetworkListener.SocketProvider;
-import com.example.houseremote.network.NetworkListener.SwitchStateListener;
 import com.example.houseremote.network.NetworkSender;
+import com.example.houseremote.network.PinStatusSet;
 import com.example.houseremote.network.SwitchPacket;
 
 public class HeadlessFragment extends Fragment implements ReplyListener, ControllersAdapterProvider,
 		RoomsAdapterProvider, HousesAdapterProvider, NetworkCommandListener, SwitchStateListener,
-		SocketProvider {
+		SocketProvider, ControllerStateQueryProvider {
 	
 	private GridAdapter controllerAdapter;
 	private ListAdapter houseAdapter;
@@ -41,6 +44,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	private NetworkListener mNetworkListener;
 	private NetworkSender mNetworkSender;
 	private Socket mSocket;
+	ControllerStateQuery mControllerStateQuery;
 
 
 	@Override
@@ -52,6 +56,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 		controllerAdapter = new GridAdapter(getActivity(), null, 0);
 		mNetworkListener = new NetworkListener(this, this);
 		mNetworkSender = new NetworkSender(this);
+		mControllerStateQuery=new ControllerStateQuery(this);
 		setRetainInstance(true);
 
 	}
@@ -76,8 +81,11 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 						roomSelectionArgs, null);
 			}
 		//Controller data change	
-		case 2:
+		case 2://TODO do network ops here as well
 			if (selectedHouse != null && selectedRoom != null) {
+				/*
+				 * Start DBsearch
+				 */
 				String[] controllerProjection = { DBHandler.CONTROLLER_ID,
 						DBHandler.CONTROLLER_INTERFACE_NAME, DBHandler.CONTROLLER_IMAGE_NAME,
 						DBHandler.CONTROLLER_TYPE, DBHandler.CONTROL_PIN1_NUMBER };
@@ -85,6 +93,10 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 				String[] controllerSelectionArgs = { selectedHouse, selectedRoom };
 				queryManager.startQuery(2, controllerAdapter, DBProvider.CONTROLLERS_URI,
 						controllerProjection, selection, controllerSelectionArgs, null);
+				/*
+				 * Start NetStatusLookup
+				 */
+				mControllerStateQuery.execute(new PinStatusSet());//TODO params
 			}
 			break;
 		default:
@@ -136,7 +148,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	public void setSelectedRoomWithIp(String roomName, String roomIp) {
 		selectedRoom = roomName;
 		selectedRoomIp = roomIp;
-		mNetworkListener.notifyOfChange();
+		mNetworkListener.registerChange();
 	}
 
 	@Override
@@ -199,5 +211,28 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 		mNetworkSender.interrupt();
 		
 	}
+
+	@Override
+	public ControllerStateQuery getStateQuery() {
+		return mControllerStateQuery;
+	}
+
+//	@Override
+//	public void restartFullStateRead(String ip, ControllerStateQueryListener l) {
+//		// TODO Auto-generated method stub
+//		
+//	}
+
+//	@Override
+//	public void restartFullStateRead(String ip, ControllerStateQueryListener ql) {
+////		mControllerStateQuery.setCallback(ql);//TODO needs to be synched
+//		if(mControllerStateQuery.getStatus()!=AsyncTask.Status.RUNNING){
+//			mControllerStateQuery.execute();//TODO initial params
+//		}
+//		
+//	}
+
+
+
 
 }

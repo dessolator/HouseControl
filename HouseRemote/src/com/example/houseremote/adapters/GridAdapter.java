@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.houseremote.R;
+import com.example.houseremote.network.PinStatusSet;
 
 public class GridAdapter extends CursorAdapter {
 
@@ -33,6 +34,11 @@ public class GridAdapter extends CursorAdapter {
 	@Override
 	public View newView(Context arg0, Cursor arg1, ViewGroup arg2) {
 		return li.inflate(R.layout.grid_view_icon, arg2, false);
+	}
+
+	public void addStatusSet(PinStatusSet ps) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

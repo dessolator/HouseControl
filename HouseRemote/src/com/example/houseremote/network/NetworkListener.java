@@ -6,21 +6,13 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import com.example.houseremote.interfaces.SocketProvider;
+import com.example.houseremote.interfaces.SwitchStateListener;
+
 import android.os.AsyncTask;
 
-//TODO need to get the IP somehow
+
 public class NetworkListener extends AsyncTask<Void,NetData,Void>{
-	
-	public interface SwitchStateListener{
-		public void postValueChange(NetData newData);
-	}
-	public interface SocketProvider{
-		public Socket getSocket();
-
-		public void setSocket(Socket temp);
-
-		public String getIp();
-	}
 	
 	SocketProvider mSocketProvider;
 	SwitchStateListener mListener;
@@ -53,7 +45,6 @@ public class NetworkListener extends AsyncTask<Void,NetData,Void>{
 				mInputStream=new DataInputStream(mSocket.getInputStream());
 				change=false;
 			} catch (IOException e) {
-				// problem getting inputstream
 				e.printStackTrace();
 			}
 			while(!change){
@@ -63,7 +54,6 @@ public class NetworkListener extends AsyncTask<Void,NetData,Void>{
 					NetData mNetPacket=new NetData(Integer.parseInt(parsedData[1]),Boolean.parseBoolean(parsedData[2]));
 					publishProgress(mNetPacket);
 				} catch (IOException e) {
-						//problem reading string
 					e.printStackTrace();
 				}
 			}
@@ -80,10 +70,8 @@ public class NetworkListener extends AsyncTask<Void,NetData,Void>{
 				temp=new Socket(InetAddress.getByName(mRoomIp),55000);
 				mSocketProvider.setSocket(temp);
 			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -95,11 +83,5 @@ public class NetworkListener extends AsyncTask<Void,NetData,Void>{
 		super.onProgressUpdate(values);
 		mListener.postValueChange(values[0]);
 	}
-
-	public void notifyOfChange() {
-		// TODO Auto-generated method stub
-		
-	}
-	
 
 }

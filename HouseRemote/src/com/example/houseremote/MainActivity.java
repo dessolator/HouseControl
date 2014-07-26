@@ -10,26 +10,29 @@ import android.view.MenuItem;
 import com.example.houseremote.adapters.GridAdapter;
 import com.example.houseremote.adapters.ListAdapter;
 import com.example.houseremote.database.AsyncQueryManager;
-import com.example.houseremote.database.AsyncQueryManager.ReplyListener;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.fragments.ControllersFragment;
-import com.example.houseremote.fragments.ControllersFragment.ControllersAdapterProvider;
-import com.example.houseremote.fragments.ControllersFragment.NetworkCommandListener;
-import com.example.houseremote.fragments.ControllersFragment.SelectedRoomProvider;
 import com.example.houseremote.fragments.HeadlessFragment;
 import com.example.houseremote.fragments.HousesFragment;
-import com.example.houseremote.fragments.HousesFragment.HouseSelectionListener;
-import com.example.houseremote.fragments.HousesFragment.HousesAdapterProvider;
 import com.example.houseremote.fragments.RoomsFragment;
-import com.example.houseremote.fragments.RoomsFragment.QueryManagerProvider;
-import com.example.houseremote.fragments.RoomsFragment.RoomSelectionListener;
-import com.example.houseremote.fragments.RoomsFragment.RoomsAdapterProvider;
-import com.example.houseremote.fragments.RoomsFragment.SelectedHouseProvider;
+import com.example.houseremote.interfaces.ControllerStateQueryListener;
+import com.example.houseremote.interfaces.ControllerStateQueryProvider;
+import com.example.houseremote.interfaces.ControllersAdapterProvider;
+import com.example.houseremote.interfaces.HouseSelectionListener;
+import com.example.houseremote.interfaces.HousesAdapterProvider;
+import com.example.houseremote.interfaces.NetworkCommandListener;
+import com.example.houseremote.interfaces.QueryManagerProvider;
+import com.example.houseremote.interfaces.ReplyListener;
+import com.example.houseremote.interfaces.RoomSelectionListener;
+import com.example.houseremote.interfaces.RoomsAdapterProvider;
+import com.example.houseremote.interfaces.SelectedHouseProvider;
+import com.example.houseremote.interfaces.SelectedRoomProvider;
+import com.example.houseremote.network.ControllerStateQuery;
 import com.example.houseremote.network.SwitchPacket;
 
 public class MainActivity extends ActionBarActivity implements ReplyListener, RoomSelectionListener,
 		HouseSelectionListener, ControllersAdapterProvider, RoomsAdapterProvider, HousesAdapterProvider,
-		QueryManagerProvider, SelectedHouseProvider, SelectedRoomProvider, NetworkCommandListener{
+		QueryManagerProvider, SelectedHouseProvider, SelectedRoomProvider, NetworkCommandListener,ControllerStateQueryProvider{
 
 	private static final String HEADLESS = "headless";
 	private static final String HOUSES = "houses";
@@ -287,5 +290,20 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 		myHeadlessFragment.addToNetworkSender(switchPacket);
 		
 	}
+
+
+	@Override
+	public ControllerStateQuery getStateQuery() {
+		return myHeadlessFragment.getStateQuery();
+	}
+
+
+	@Override
+	public void restartFullStateRead(String ip, ControllerStateQueryListener ql) {
+		myHeadlessFragment.restartFullStateRead(ip,ql);
+		
+	}
+
+
 
 }

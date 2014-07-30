@@ -84,7 +84,7 @@ public class RoomsFragment extends Fragment {
 	@Override
 	public void onStart() {
 		super.onStart();
-		((ReplyListener) mCallback).dataSetChanged(0,mAdapter);
+		((ReplyListener) mCallback).dataSetChanged(1,mAdapter);
 		
 	}
 

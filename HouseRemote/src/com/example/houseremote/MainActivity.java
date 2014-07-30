@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -51,12 +52,15 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 		 * and the houses fragment
 		 */
 		if (savedInstanceState == null) {
+			Log.d("MOO", "onCreateMainActivity first time");
 			myHeadlessFragment = new HeadlessFragment();
 			myHousesFragment = new HousesFragment();
+			Log.d("MOO", "added house and headless fragments");
 			getSupportFragmentManager().beginTransaction().add(myHeadlessFragment, HEADLESS)
 					.add(R.id.list, myHousesFragment, HOUSES).commit();
 			
 		} else {
+			Log.d("MOO", "onCreateMainActivity not first time");
 			/*
 			 * if coming back to the activity from somewhere
 			 * recover the headless fragment
@@ -80,6 +84,7 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 				 */
 				
 				if (myHeadlessFragment.getSelectedRoom() != null) {
+					Log.d("MOO", "a room is selected");
 					myHousesFragment = (HousesFragment) getSupportFragmentManager().findFragmentByTag(HOUSES);
 					myRoomsFragment = (RoomsFragment) getSupportFragmentManager().findFragmentByTag(ROOMS);
 					if (myRoomsFragment == null) {
@@ -93,6 +98,7 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 					}
 					
 				} else if (myHeadlessFragment.getSelectedHouse() != null) {
+					Log.d("MOO", "a house is selected");
 					myHousesFragment = (HousesFragment) getSupportFragmentManager().findFragmentByTag(HOUSES);
 					if (myHousesFragment == null) {
 						myHousesFragment = new HousesFragment();
@@ -105,6 +111,7 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 					}
 					
 				} else {
+					Log.d("MOO", "nothing is selected");
 					myHousesFragment = (HousesFragment) getSupportFragmentManager().findFragmentByTag(HOUSES);
 					if (myHousesFragment == null) {
 						myHousesFragment = new HousesFragment();
@@ -118,6 +125,7 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 
 	@Override
 	protected void onDestroy() {
+		Log.d("MOO", "onDestroyMainActivity");
 		super.onDestroy();
 	}
 
@@ -139,8 +147,8 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 
 	@Override
 	public void roomSelected(String roomName, String roomIp) {
-
 		if (myControllersFragment == null) {
+			Log.d("MOO", "roomSelected first time");
 			myHeadlessFragment.setSelectedRoomWithIp(roomName, roomIp);
 
 			myControllersFragment = (ControllersFragment) getSupportFragmentManager().findFragmentByTag(CONTROLLERS);
@@ -153,7 +161,7 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 			getSupportFragmentManager().beginTransaction().replace(R.id.list, myRoomsFragment,ROOMS).commit();
 			return;
 		}
-
+		Log.d("MOO", "roomSelected not first time");
 		if (myHeadlessFragment.getSelectedRoom() != roomName) {
 			myHeadlessFragment.setSelectedRoomWithIp(roomName, roomIp);
 			myControllersFragment.replaceData(myHeadlessFragment.getSelectedHouse(), roomName, roomIp);
@@ -177,11 +185,14 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 		 * if on tablet and this the first time a house is selected
 		 */
 		if (myRoomsFragment == null) {
+			Log.d("MOO", "houseSelected first time");
 			myHeadlessFragment.setSelectedHouse(houseName);
 			myRoomsFragment = new RoomsFragment();
+			Log.d("MOO", "added room fragment");
 			getSupportFragmentManager().beginTransaction().add(R.id.expanded, myRoomsFragment,ROOMS).commit();
 			return;
 		}
+		Log.d("MOO", "houseSelected not first time");
 		/*
 		 * if on tablet and a different house from the current one was selected
 		 */
@@ -240,6 +251,7 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 
 	@Override
 	public void dataSetChanged(int token, Object cookie) {
+		Log.d("MOO", "dataSetChanged called"+token);
 		myHeadlessFragment.dataSetChanged(token, cookie);
 
 	}
@@ -253,37 +265,40 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 	/*
 	 * Network interfaces
 	 */
-
-	@Override
-	public void startNetworkListener() {
-		myHeadlessFragment.startNetworkListener();
-		
-	}
-
-
-	@Override
-	public void stopNetworkListener() {
-		myHeadlessFragment.stopNetworkListener();
-		
-	}
-
-
-	@Override
-	public void startNetworkSender() {
-		myHeadlessFragment.startNetworkSender();
-		
-	}
-
-
-	@Override
-	public void stopNetworkSender() {
-		myHeadlessFragment.stopNetworkSender();
-		
-	}
+//
+//	@Override
+//	public void startNetworkListener() {
+////		Log.d("MOO", "start network listener");
+//		myHeadlessFragment.startNetworkListener();
+//		
+//	}
+//
+//
+//	@Override
+//	public void stopNetworkListener() {
+//		myHeadlessFragment.stopNetworkListener();
+//		
+//	}
+//
+//
+//	@Override
+//	public void startNetworkSender() {
+////		Log.d("MOO", "start network sender");
+//		myHeadlessFragment.startNetworkSender();
+//		
+//	}
+//
+//
+//	@Override
+//	public void stopNetworkSender() {
+//		myHeadlessFragment.stopNetworkSender();
+//		
+//	}
 
 
 	@Override
 	public void addToNetworkSender(SwitchPacket switchPacket) {
+		Log.d("MOO", "adding packet to sender");
 		myHeadlessFragment.addToNetworkSender(switchPacket);
 		
 	}

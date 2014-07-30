@@ -2,6 +2,7 @@ package com.example.houseremote.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,11 +10,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.houseremote.R;
-import com.example.houseremote.network.PinStatusSet;
 
 public class GridAdapter extends CursorAdapter {
+//	private PinStatusSet mStats;
 
 	private LayoutInflater li;
+	
 
 	public GridAdapter(Context myContext, Cursor c, int flags) {
 		super(myContext, c, flags);
@@ -23,11 +25,23 @@ public class GridAdapter extends CursorAdapter {
 	@Override
 	public void bindView(View temp, Context context, Cursor cursor) {
 		if (cursor != null) {
-			((TextView) temp.findViewById(R.id.gridItemText)).setCompoundDrawablesWithIntrinsicBounds(null, context.getResources().getDrawable(context.getResources()
-					.getIdentifier("drawable/" + cursor.getString(2), null, context.getPackageName())), null, null);
+			((TextView) temp.findViewById(R.id.gridItemText)).setCompoundDrawablesWithIntrinsicBounds(null, getImage(context,cursor), null, null);
 			((TextView) temp.findViewById(R.id.gridItemText)).setText(cursor.getString(1));
 		}
 
+	}
+	
+	public Drawable getImage(Context context,Cursor cursor){
+		Drawable retVal;
+//		if(mStats==null){
+		retVal= context.getResources().getDrawable(context.getResources()
+				.getIdentifier("drawable/" + cursor.getString(2), null, context.getPackageName()));
+//		}
+//		else{
+//			retVal= context.getResources().getDrawable(context.getResources()
+//					.getIdentifier("drawable/" + cursor.getString(2)+mStats., null, context.getPackageName()));
+//		}
+		return retVal;
 	}
 
 
@@ -36,9 +50,9 @@ public class GridAdapter extends CursorAdapter {
 		return li.inflate(R.layout.grid_view_icon, arg2, false);
 	}
 
-	public void addStatusSet(PinStatusSet ps) {
-		// TODO Auto-generated method stub
-		
-	}
+//	public void addStatusSet(PinStatusSet ps) {
+//		mStats=ps;
+//		
+//	}
 
 }

@@ -23,22 +23,19 @@ import com.example.houseremote.adapters.GridAdapter;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseQueryManager;
-import com.example.houseremote.interfaces.ControllerStateQueryListener;
 import com.example.houseremote.interfaces.ControllersAdapterProvider;
 import com.example.houseremote.interfaces.NetworkCommandListener;
 import com.example.houseremote.interfaces.QueryManagerProvider;
 import com.example.houseremote.interfaces.ReplyListener;
 import com.example.houseremote.interfaces.SelectedHouseProvider;
 import com.example.houseremote.interfaces.SelectedRoomProvider;
-import com.example.houseremote.network.ControllerStateQueryAsyncTask;
-import com.example.houseremote.network.PinStatusSet;
 import com.example.houseremote.network.SwitchPacket;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 
-public class ControllersFragment extends Fragment implements ControllerStateQueryListener {
+public class ControllersFragment extends Fragment {
 	
 	
 	
@@ -49,8 +46,8 @@ public class ControllersFragment extends Fragment implements ControllerStateQuer
 	private String roomIp;
 	private GridAdapter mAdapter;
 	private ReplyListener mCallback;
-	DataBaseQueryManager mAsyncQueryManager;
-	ControllerStateQueryAsyncTask mControllerStateQuery;
+	private DataBaseQueryManager mAsyncQueryManager;
+
 
 	public ControllersFragment() {
 	}
@@ -79,9 +76,8 @@ public class ControllersFragment extends Fragment implements ControllerStateQuer
 
 		mGrid = (GridView) getActivity().findViewById(R.id.controllerGrid);
 		mGrid.setAdapter(mAdapter);
+		unlockInterface();
 		// TODO display the loopyloop thing and block all interaction
-		((NetworkCommandListener) mCallback).startNetworkSender();
-		((NetworkCommandListener) mCallback).startNetworkListener();
 		
 		super.onActivityCreated(savedInstanceState);
 	}
@@ -201,7 +197,7 @@ public class ControllersFragment extends Fragment implements ControllerStateQuer
 	}
 
 	public void lockInterface(){
-//		mGrid.getOnItemClickListener().//TODO
+		//TODO
 		
 	}
 	public void unlockInterface(){//TODO
@@ -210,22 +206,11 @@ public class ControllersFragment extends Fragment implements ControllerStateQuer
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 				((NetworkCommandListener) mCallback).addToNetworkSender(new SwitchPacket(((Cursor) mAdapter
 						.getItem(position)).getInt(mAdapter.getCursor().getColumnIndex(
-						DBHandler.CONTROL_PIN1_NUMBER))));
+						DBHandler.CONTROL_PIN1_NUMBER)),false));
 			}
 		});
 		registerForContextMenu(mGrid);
 	}
 	
 	
-	public void onStateLoadFinished(PinStatusSet ps){
-		mAdapter.addStatusSet(ps);
-		unlockInterface();
-		//TODO do something with the read data
-		//TODO remove loopy loop
-		
-		
-		
-	}
-
-
 }

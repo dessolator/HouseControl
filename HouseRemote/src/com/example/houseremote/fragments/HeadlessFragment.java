@@ -5,11 +5,13 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.houseremote.adapters.GridAdapter;
@@ -19,22 +21,23 @@ import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseQueryManager;
 import com.example.houseremote.interfaces.ControllersAdapterProvider;
 import com.example.houseremote.interfaces.HousesAdapterProvider;
-import com.example.houseremote.interfaces.NetworkCallbackListener;
 import com.example.houseremote.interfaces.NetworkCommandListener;
 import com.example.houseremote.interfaces.ReplyListener;
 import com.example.houseremote.interfaces.RoomsAdapterProvider;
 import com.example.houseremote.interfaces.SocketProvider;
 import com.example.houseremote.interfaces.SwitchStateListener;
-import com.example.houseremote.network.ControllerStateQueryAsyncTask;
-import com.example.houseremote.network.NetData;
-import com.example.houseremote.network.NetworkListenerAsyncTask;
+import com.example.houseremote.interfaces.UILockupListener;
+import com.example.houseremote.network.NetworkListenerThread;
 import com.example.houseremote.network.NetworkSenderThread;
+import com.example.houseremote.network.PinStatus;
 import com.example.houseremote.network.PinStatusSet;
 import com.example.houseremote.network.SwitchPacket;
 
 public class HeadlessFragment extends Fragment implements ReplyListener, ControllersAdapterProvider,
-		RoomsAdapterProvider, HousesAdapterProvider, NetworkCommandListener, SwitchStateListener,
-		SocketProvider, NetworkCallbackListener {
+		RoomsAdapterProvider, HousesAdapterProvider, NetworkCommandListener, 
+		SocketProvider,  SwitchStateListener, UILockupListener {
+	
+
 
 	private GridAdapter controllerAdapter;
 	private ListAdapter houseAdapter;
@@ -43,12 +46,13 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	private String selectedHouse;
 	private String selectedRoom;
 	private String selectedRoomIp;
-	private NetworkListenerAsyncTask mNetworkListener;
+	private NetworkListenerThread mNetworkListener;
 	private NetworkSenderThread mNetworkSender;
 	private Socket mSocket;
-	private ControllerStateQueryAsyncTask mControllerStateQuery;
-	private ControllersFragment mControllersFragment;// TODO
 
+
+
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -56,12 +60,38 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 		houseAdapter = new ListAdapter(getActivity(), null, 0);
 		roomAdapter = new ListAdapter(getActivity(), null, 0);
 		controllerAdapter = new GridAdapter(getActivity(), null, 0);
-		mNetworkListener = new NetworkListenerAsyncTask(this, this);
+		mNetworkListener = new NetworkListenerThread(this,this,this);
 		mNetworkSender = new NetworkSenderThread(this);
-		mControllerStateQuery = new ControllerStateQueryAsyncTask(this);
 		setRetainInstance(true);
 
 	}
+
+	@SuppressLint("NewApi")
+	@Override
+	public void onStart() {
+		super.onStart();
+		if(android.os.Build.VERSION.SDK_INT>=11){
+			mNetworkListener.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void[])null);
+		}
+		else{
+			mNetworkListener.execute((Void[])null);
+		}
+		
+		mNetworkSender.start();
+	}
+	
+	@Override
+	public void onStop() {
+		super.onStop();
+//		mNetworkListener.pause();
+//		mNetworkSender.pause();
+//		mUIManager.pause();
+//		mUIUpdater.pasue();
+	}
+	
+	
+	
+	
 
 	@Override
 	public void dataSetChanged(int token, Object adapter) {
@@ -72,6 +102,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 			String[] houseProjection = { DBHandler.HOUSE_ID, DBHandler.HOUSE_NAME, DBHandler.HOUSE_IMAGE_NAME };
 			queryManager
 					.startQuery(0, houseAdapter, DBProvider.HOUSES_URI, houseProjection, null, null, null);
+			break;
 			// Room data change
 		case 1:
 			if (selectedHouse != null) {
@@ -83,6 +114,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 						roomSelectionArgs, null);
 			}
 			// Controller data change
+			break;
 		case 2:
 			if (selectedHouse != null && selectedRoom != null) {
 				/*
@@ -98,9 +130,8 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 				/*
 				 * Start NetStatusLookup
 				 */
-				if (mControllerStateQuery.getStatus() != AsyncTask.Status.RUNNING) {
-					mControllerStateQuery.execute();
-				}
+				mNetworkSender.addToQueue(new SwitchPacket(0,true));
+
 			}
 			break;
 		default:
@@ -110,6 +141,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 
 	@Override
 	public void replaceCursor(Cursor cursor, Object adapter) {
+		
 		Cursor temp = ((CursorAdapter) adapter).swapCursor(cursor);
 		if (temp != null)
 			temp.close();
@@ -153,32 +185,15 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 		selectedRoom = roomName;
 		selectedRoomIp = roomIp;
 		mNetworkListener.registerChange();
-	}
-
-	@Override
-	public void startNetworkListener() {
-		if (mNetworkListener.getStatus() != AsyncTask.Status.RUNNING)
-			mNetworkListener.execute((Void) null);
-
-	}
-
-	@Override
-	public void stopNetworkListener() {
-		mNetworkListener.registerKill();
-		try {
-			mSocket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+		mNetworkSender.registerChange();
 	}
 
 
 
 	@Override
-	public void postValueChange(NetData newData) {
+	public void postValueChange(PinStatus newData) {
 		// TODO needs to be passed to activity and then to controllers fragment
-		Toast.makeText(getActivity(), "switch change", Toast.LENGTH_LONG).show();
+		Toast.makeText(getActivity(), "switch change", Toast.LENGTH_SHORT).show();
 	}
 
 
@@ -192,35 +207,14 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 
 	}
 
-	@Override
-	public void startNetworkSender() {
-		if (!mNetworkSender.isAlive())
-			mNetworkSender.start();
 
-	}
 
 	@Override
-	public void stopNetworkSender() {
-		mNetworkSender.registerKill();
-		mNetworkSender.interrupt();
-
-	}
-
-	@Override
-	public void pinStateQueryComplete(PinStatusSet result) {
-		controllerAdapter.addStatusSet(result);
-		mControllersFragment.unlockInterface();// TODO twopart lock
-	}
-
-	public void setmControllersFragment(ControllersFragment mControllersFragment) {
-		this.mControllersFragment = mControllersFragment;
-	}
-
-	@Override
-	public Socket acquireSocket() {
+	synchronized public Socket acquireSocket(int port) {
 		if (mSocket == null) {
 			try {
-				mSocket = new Socket(InetAddress.getByName(selectedRoomIp), 55000);//TODO hardcoded
+				mSocket = new Socket(InetAddress.getByName(selectedRoomIp), port);
+				Log.d("MOO","OPENING SOCKET");
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -228,6 +222,13 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 			}
 		}
 		return mSocket;
+	}
+
+	@Override
+	public void postLookupValues(PinStatusSet pinStatusSet) {
+		// TODO needs to be passed to activity and then to controllers fragment
+		Toast.makeText(getActivity(), "switch state found", Toast.LENGTH_SHORT).show();
+		
 	}
 
 }

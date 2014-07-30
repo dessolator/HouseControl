@@ -27,7 +27,7 @@ import com.example.houseremote.interfaces.RoomsAdapterProvider;
 import com.example.houseremote.interfaces.SocketProvider;
 import com.example.houseremote.interfaces.SwitchStateListener;
 import com.example.houseremote.interfaces.UILockupListener;
-import com.example.houseremote.network.NetworkListenerThread;
+import com.example.houseremote.network.NetworkListenerAsyncTask;
 import com.example.houseremote.network.NetworkSenderThread;
 import com.example.houseremote.network.PinStatus;
 import com.example.houseremote.network.PinStatusSet;
@@ -46,7 +46,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	private String selectedHouse;
 	private String selectedRoom;
 	private String selectedRoomIp;
-	private NetworkListenerThread mNetworkListener;
+	private NetworkListenerAsyncTask mNetworkListener;
 	private NetworkSenderThread mNetworkSender;
 	private Socket mSocket;
 
@@ -60,7 +60,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 		houseAdapter = new ListAdapter(getActivity(), null, 0);
 		roomAdapter = new ListAdapter(getActivity(), null, 0);
 		controllerAdapter = new GridAdapter(getActivity(), null, 0);
-		mNetworkListener = new NetworkListenerThread(this,this,this);
+		mNetworkListener = new NetworkListenerAsyncTask(this,this,this);
 		mNetworkSender = new NetworkSenderThread(this);
 		setRetainInstance(true);
 
@@ -193,6 +193,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	@Override
 	public void postValueChange(PinStatus newData) {
 		// TODO needs to be passed to activity and then to controllers fragment
+		controllerAdapter.addToStatusSet(newData);
 		Toast.makeText(getActivity(), "switch change", Toast.LENGTH_SHORT).show();
 	}
 
@@ -226,6 +227,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 
 	@Override
 	public void postLookupValues(PinStatusSet pinStatusSet) {
+		controllerAdapter.addStatusSet(pinStatusSet);
 		// TODO needs to be passed to activity and then to controllers fragment
 		Toast.makeText(getActivity(), "switch state found", Toast.LENGTH_SHORT).show();
 		

@@ -235,9 +235,11 @@ int drawable abc_textfield_searchview_holo_light 0x7f020054
 int drawable abc_textfield_searchview_right_holo_dark 0x7f020055
 int drawable abc_textfield_searchview_right_holo_light 0x7f020056
 int drawable bed 0x7f020057
-int drawable div 0x7f020058
-int drawable house 0x7f020059
-int drawable ic_launcher 0x7f02005a
+int drawable bed_off 0x7f020058
+int drawable bed_on 0x7f020059
+int drawable div 0x7f02005a
+int drawable house 0x7f02005b
+int drawable ic_launcher 0x7f02005c
 int id LinearLayout1 0x7f05003c
 int id action_add_a_controller 0x7f050058
 int id action_add_a_house 0x7f05005b

@@ -11,7 +11,7 @@ import com.example.houseremote.interfaces.SocketProvider;
 import com.example.houseremote.interfaces.SwitchStateListener;
 import com.example.houseremote.interfaces.UILockupListener;
 
-public class NetworkListenerThread extends AsyncTask<Void,PinStatusSet,Void> {
+public class NetworkListenerAsyncTask extends AsyncTask<Void,PinStatusSet,Void> {
 
 	
 	private SwitchStateListener mSwitchStateListener;
@@ -22,7 +22,7 @@ public class NetworkListenerThread extends AsyncTask<Void,PinStatusSet,Void> {
 	private volatile boolean kill;
 	private volatile boolean change;
 
-	public NetworkListenerThread(SocketProvider mSocketProvider, SwitchStateListener mSwitchStateListener,UILockupListener mLockupListener) {
+	public NetworkListenerAsyncTask(SocketProvider mSocketProvider, SwitchStateListener mSwitchStateListener,UILockupListener mLockupListener) {
 		super();
 		this.mSocketProvider = mSocketProvider;
 		this.mLockupListener=mLockupListener;

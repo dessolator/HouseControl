@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 
 import com.example.houseremote.adapters.GridAdapter;
 import com.example.houseremote.database.DBHandler;
@@ -30,6 +31,7 @@ public class ControllersActivity extends ActionBarActivity implements ReplyListe
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+//		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
@@ -156,5 +158,16 @@ public class ControllersActivity extends ActionBarActivity implements ReplyListe
 	@Override
 	public void addToNetworkSender(SwitchPacket switchPacket) {
 		myHeadlessFragment.addToNetworkSender(switchPacket);
+	}
+
+	@Override
+	public boolean isInitialControllerDataLoaded() {
+		return myHeadlessFragment.isInitialControllerDataLoaded();
+	}
+
+	@Override
+	public void setInitialControllerDataLoaded(boolean initialControllerDataLoaded) {
+		myHeadlessFragment.setInitialControllerDataLoaded(initialControllerDataLoaded);
+		
 	}
 }

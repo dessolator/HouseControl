@@ -30,14 +30,13 @@ import com.example.houseremote.interfaces.ReplyListener;
 
 /**
  * MAJOR TODOS 
- * TODO SWITCH PHONE ACTIVITIES TO HEADLESS FRAGMENT
  * TODO WHAT IF CURRENT HOUSE IS DELETED, RESET THE ROOM FRAGMENT AND CALLBACK WITH NULL 
  * TODO WHAT IF CURRENT HOUSE IS EDITED, RESET ROOM FRAGMENT AND CALLBACK WITH NULL 
  * TODO NAVIGATION MANAGEMENT
  * TODO TEST ORIENTATION CHANGE ALONG WITH BACK ACTIONS 
  * MINOR TODOS 
+ * TODO REMOVE DATABASE LOADING REDUNDANCIES IN ROOMS AND HOUSES FRAGMENTS
  * TODO MAKE ACTIVITY ACTIONBARS A BIT MORE CUSTOM ADD UP BUTTON TO PHONE VERSION
- * TODO MANAGE FRAGMENTS BETTER NAMELY WHEN CHANGING ORIENTATION ETC..., no need to destroy old rooms fragment if new house was selected
  * TODO USE UI DESIGN TO HILIGHT SELECTED ELEMENTS
  * TODO CHECK RESOURCE USAGE, NAMELY CLOSE THE DAMN CURSORS IN ONSTOP ONPAUSE ETC. 
  * TODO ANIMATE THE FRAGMENT TRANSITIONS
@@ -51,6 +50,7 @@ public class HousesFragment extends Fragment {
 	private ListAdapter mAdapter;
 	private HouseSelectionListener mCallback;
 	private DataBaseQueryManager asyncQ;
+	private boolean initialDataLoaded=false;
 
 	public HousesFragment() {
 	}
@@ -60,6 +60,7 @@ public class HousesFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		setHasOptionsMenu(true);
 		super.onCreate(savedInstanceState);
+		
 
 	}
 
@@ -85,14 +86,24 @@ public class HousesFragment extends Fragment {
 			}
 		});
 		registerForContextMenu(mList);
-
+//		((ReplyListener) mCallback).dataSetChanged(0,mAdapter);
+		loadInitialControllerData(mAdapter);
 		super.onActivityCreated(savedInstanceState);
+		
 	}
+
+	private void loadInitialControllerData(ListAdapter mAdapter2) {
+		if(initialDataLoaded) return;
+		initialDataLoaded=true;
+		((ReplyListener) mCallback).dataSetChanged(0,mAdapter);
+		
+	}
+
 
 	@Override
 	public void onStart() {
 		super.onStart();
-		((ReplyListener) mCallback).dataSetChanged(0,mAdapter);
+		
 
 	}
 

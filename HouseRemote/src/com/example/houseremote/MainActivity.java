@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 
 import com.example.houseremote.adapters.GridAdapter;
 import com.example.houseremote.adapters.ListAdapter;
@@ -40,18 +41,31 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 	public static final String ROOMS = "rooms";
 	public static final String CONTROLLERS = "controllers";
 	
-	
+	/*
+	 * Logging variables
+	 */
 	private static final String TAG = "com.example.houseremote.MainActivity";
 	public static final boolean LOGGING = true;
 	
-	
+	/*
+	 * Fragments
+	 */
 	private HeadlessFragment myHeadlessFragment;
 	private HousesFragment myHousesFragment;
 	private RoomsFragment myRoomsFragment;
 	private ControllersFragment myControllersFragment;
 
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * @see android.support.v7.app.ActionBarActivity#onCreate(android.os.Bundle)
+	 * if run for the first time, create the new fragments
+	 * else recover the appropriate fragments
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+//		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 	
@@ -424,6 +438,19 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 			Log.v(TAG, "adding packet to sender");
 		}
 		myHeadlessFragment.addToNetworkSender(switchPacket);
+		
+	}
+
+
+	@Override
+	public boolean isInitialControllerDataLoaded() {
+		return myHeadlessFragment.isInitialControllerDataLoaded();
+	}
+
+
+	@Override
+	public void setInitialControllerDataLoaded(boolean initialControllerDataLoaded) {
+		myHeadlessFragment.setInitialControllerDataLoaded(initialControllerDataLoaded);
 		
 	}
 

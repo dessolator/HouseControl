@@ -36,10 +36,7 @@ import com.example.houseremote.network.SwitchPacket;
  */
 
 public class ControllersFragment extends Fragment {
-	
-	
-	
-	
+
 	private String houseName;
 	private String roomName;
 	private GridView mGrid;
@@ -67,6 +64,7 @@ public class ControllersFragment extends Fragment {
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
+		
 		mCallback = (ReplyListener) getActivity();
 		houseName = ((SelectedHouseProvider) mCallback).getSelectedHouse();
 		roomName = ((SelectedRoomProvider) mCallback).getSelectedRoom();
@@ -76,16 +74,31 @@ public class ControllersFragment extends Fragment {
 
 		mGrid = (GridView) getActivity().findViewById(R.id.controllerGrid);
 		mGrid.setAdapter(mAdapter);
-		unlockInterface();
-		// TODO display the loopyloop thing and block all interaction
-		
+		mGrid.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+				((NetworkCommandListener) mCallback).addToNetworkSender(new SwitchPacket(((Cursor) mAdapter
+						.getItem(position)).getInt(mAdapter.getCursor().getColumnIndex(
+						DBHandler.CONTROL_PIN1_NUMBER)), false));
+			}
+		});
+		registerForContextMenu(mGrid);
+		loadInitialControllerData(mAdapter);
+		getActivity().findViewById(R.id.linlaHeaderProgress).setVisibility(View.VISIBLE);
+
 		super.onActivityCreated(savedInstanceState);
 	}
-
+	
+	private void loadInitialControllerData(GridAdapter mAdapter2) {
+		if(((ControllersAdapterProvider)mCallback).isInitialControllerDataLoaded()) return;
+		((ControllersAdapterProvider)mCallback).setInitialControllerDataLoaded(true);
+		((ReplyListener) mCallback).dataSetChanged(2,mAdapter);
+		
+	}
+	
 	@Override
 	public void onStart() {
 		super.onStart();
-		mCallback.dataSetChanged(2, mAdapter);		
 
 	}
 
@@ -196,21 +209,4 @@ public class ControllersFragment extends Fragment {
 		this.roomIp = roomIp;
 	}
 
-	public void lockInterface(){
-		//TODO
-		
-	}
-	public void unlockInterface(){//TODO
-		mGrid.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-				((NetworkCommandListener) mCallback).addToNetworkSender(new SwitchPacket(((Cursor) mAdapter
-						.getItem(position)).getInt(mAdapter.getCursor().getColumnIndex(
-						DBHandler.CONTROL_PIN1_NUMBER)),false));
-			}
-		});
-		registerForContextMenu(mGrid);
-	}
-	
-	
 }

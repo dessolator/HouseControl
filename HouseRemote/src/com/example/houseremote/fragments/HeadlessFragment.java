@@ -12,8 +12,10 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
+import com.example.houseremote.R;
 import com.example.houseremote.adapters.GridAdapter;
 import com.example.houseremote.adapters.ListAdapter;
 import com.example.houseremote.database.DBHandler;
@@ -37,24 +39,56 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 		RoomsAdapterProvider, HousesAdapterProvider, NetworkCommandListener, SocketProvider,
 		SwitchStateListener, UILockupListener {
 
+	public boolean isInitialControllerDataLoaded() {
+		return initialControllerDataLoaded;
+	}
+	public void setInitialControllerDataLoaded(boolean initialControllerDataLoaded) {
+		this.initialControllerDataLoaded = initialControllerDataLoaded;
+	}
+
+	/*
+	 * UI adapters for other fragments
+	 */
 	private GridAdapter controllerAdapter;
 	private ListAdapter houseAdapter;
 	private ListAdapter roomAdapter;
+
+	/*
+	 * Database Manager
+	 */
 	private DataBaseQueryManager queryManager;
+
+	/*
+	 * Storing Selected Data
+	 */
 	private String selectedHouse;
 	private String selectedRoom;
 	private String selectedRoomIp;
+
+	/*
+	 * Network Threads
+	 */
 	private NetworkListenerAsyncTask mNetworkListener;
 	private NetworkSenderThread mNetworkSender;
+	/*
+	 * Common socket
+	 */
 	private Socket mSocket;
 
-
+	private boolean initialControllerDataLoaded=false;
 	
+	
+	public HeadlessFragment(){
+		mNetworkListener = new NetworkListenerAsyncTask(this, this, this);
+		mNetworkSender = new NetworkSenderThread(this);
+	}
+	/**
+	 * Create the necessary Adapters, Threads and DataBaseAccess also set this
+	 * fragment to be retained
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mNetworkListener = new NetworkListenerAsyncTask(this, this, this);
-		mNetworkSender = new NetworkSenderThread(this);
 		queryManager = new DataBaseQueryManager(getActivity().getContentResolver(), this);
 		houseAdapter = new ListAdapter(getActivity(), null, 0);
 		roomAdapter = new ListAdapter(getActivity(), null, 0);
@@ -63,15 +97,42 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 
 	}
 
+	/**
+	 * Restart network threads if they were at all started
+	 */
 	@Override
 	public void onStart() {
 		super.onStart();
-		if(mSocket!=null)
-			startNetwork();
+		if (mSocket != null)
+			reStartNetwork();
 	}
 
+	/**
+	 * Suspend network threads
+	 */
+	@Override
+	public void onStop() {
+		super.onStop();
+		mNetworkListener.registerPause();
+		mNetworkSender.registerPause();
+	}
+
+	/**
+	 * Stop network threads
+	 */
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		mNetworkListener.registerKill();
+		mNetworkSender.registerKill();
+	}
+
+	/**
+	 * Starts network threads if they weren't started, unpauses them if they
+	 * were paused.
+	 */
 	@SuppressLint("NewApi")
-	private void startNetwork() {
+	private void reStartNetwork() {
 		if (android.os.Build.VERSION.SDK_INT >= 11) {
 			if (!mNetworkListener.getStatus().equals(AsyncTask.Status.RUNNING))
 				mNetworkListener.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void[]) null);
@@ -89,20 +150,23 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 			mNetworkSender.unpause();
 	}
 
-	@Override
-	public void onStop() {
-		super.onStop();
-		mNetworkListener.registerPause();
-		mNetworkSender.registerPause();
-		try {
-			mSocket.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		mNetworkSender.interrupt();
-	}
-
+	/**
+	 * Requeries the appropriate sources:
+	 * if house dataset changed:
+	 * 	requeries the database
+	 * if room dataset changed:
+	 * 	requeries the database
+	 * if controller dataset changed:
+	 * 	requeries the database and server
+	 * 
+	 * @param token The token value of the dataset:
+	 * 	0 for house dataset
+	 * 	1 for room dataset
+	 * 	2 for controller dataset
+	 * 
+	 * @param adapter The adapter to which the results are returned.
+	 * 
+	 */
 	@Override
 	public void dataSetChanged(int token, Object adapter) {
 		String selection;
@@ -149,6 +213,12 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 
 	}
 
+	/**
+	 * Replaces the database cursor on the given adapter.
+	 * @param cursor The new cursor to be used.
+	 * @param adapter The adapter to which the cursor is to be posted.
+	 * 
+	 */
 	@Override
 	public void replaceCursor(Cursor cursor, Object adapter) {
 
@@ -158,6 +228,10 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 
 	}
 
+	/*
+	 * Getters for data.
+	 */
+	
 	public String getSelectedHouse() {
 		return selectedHouse;
 	}
@@ -186,6 +260,9 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 		return queryManager;
 	}
 
+	/*
+	 * Setters for data.
+	 */
 	public void setSelectedHouse(String houseName) {
 		selectedHouse = houseName;
 
@@ -194,30 +271,19 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	public void setSelectedRoomWithIp(String roomName, String roomIp) {
 		selectedRoom = roomName;
 		selectedRoomIp = roomIp;
-		startNetwork();
+		reStartNetwork();
 		mNetworkListener.registerChange();
 		mNetworkSender.registerChange();
 	}
 
-	@Override
-	public void postValueChange(PinStatus newData) {
-		// TODO needs to be passed to activity and then to controllers fragment
-		controllerAdapter.addToStatusSet(newData);
-		Toast.makeText(getActivity(), "switch change", Toast.LENGTH_SHORT).show();
-	}
-
-	@Override
-	public void addToNetworkSender(SwitchPacket switchPacket) {
-		mNetworkSender.addToQueue(switchPacket);
-		synchronized (mNetworkSender) {
-			mNetworkSender.notify();
-		}
-
-	}
-
+	/**
+	 * Opens or returns a socket to the selected server on the passed port.
+	 * @param The port to open the socket to.
+	 * @return The Socket object to the server.
+	 */
 	@Override
 	synchronized public Socket acquireSocket(int port) {
-		if ((mSocket == null)|| mSocket.isClosed()) {
+		if ((mSocket == null) || mSocket.isClosed()) {
 			try {
 				mSocket = new Socket(InetAddress.getByName(selectedRoomIp), port);
 				Log.d("MOO", "OPENING SOCKET");
@@ -230,12 +296,38 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 		return mSocket;
 	}
 
+	/**
+	 * Adds a packet to be sent to the server.
+	 * @param switchPacket The switch packet to be sent to the server.
+	 */
+	@Override
+	public void addToNetworkSender(SwitchPacket switchPacket) {
+		mNetworkSender.addToQueue(switchPacket);
+		synchronized (mNetworkSender) {
+			mNetworkSender.notify();
+		}
+
+	}
+
+	/**
+	 * Posts a PinStatus to the UI.
+	 * @param newData The PinStatus to be posted to the UI.
+	 */
+	@Override
+	public void postValueChange(PinStatus newData) {
+		controllerAdapter.addToStatusSet(newData);
+	}
+
+	/**
+	 * Posts a PinStatusSet to the UI.
+	 * @param pinStatusSet The PinStatusSet to be posted to the UI.
+	 */
 	@Override
 	public void postLookupValues(PinStatusSet pinStatusSet) {
 		controllerAdapter.addStatusSet(pinStatusSet);
-		// TODO needs to be passed to activity and then to controllers fragment
-		Toast.makeText(getActivity(), "switch state found", Toast.LENGTH_SHORT).show();
-
+//		getActivity().setProgressBarIndeterminateVisibility(false);
+		getActivity().findViewById(R.id.linlaHeaderProgress).setVisibility(View.GONE);
+		Toast.makeText(getActivity(), "MOOOO", Toast.LENGTH_SHORT).show();
 	}
 
 }

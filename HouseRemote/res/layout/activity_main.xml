@@ -6,7 +6,8 @@
     android:orientation="horizontal"
     android:showDividers="middle"
     tools:context="com.example.houseremote.MainActivity"
-    tools:ignore="MergeRootFrame" >
+    tools:ignore="MergeRootFrame" 
+    >
 
     <FrameLayout
         android:id="@+id/list"

@@ -64,7 +64,7 @@ public class RoomsFragment extends Fragment {
 		mAdapter=((RoomsAdapterProvider) mCallback).getRoomsAdapter();
 		mAsyncQueryManager=((QueryManagerProvider) mCallback).getQueryManager();
 		
-		mList = (ListView) getActivity().findViewById(R.id.roomList);
+		mList = (ListView) getActivity().findViewById(R.id.roomList);//TODO need to do after view has been created
 		mList.setAdapter(mAdapter);
 		mList.setOnItemClickListener(new OnItemClickListener() {
 			@Override

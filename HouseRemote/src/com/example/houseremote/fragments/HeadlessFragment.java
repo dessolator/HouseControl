@@ -48,41 +48,59 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	private NetworkSenderThread mNetworkSender;
 	private Socket mSocket;
 
+
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		mNetworkListener = new NetworkListenerAsyncTask(this, this, this);
+		mNetworkSender = new NetworkSenderThread(this);
 		queryManager = new DataBaseQueryManager(getActivity().getContentResolver(), this);
 		houseAdapter = new ListAdapter(getActivity(), null, 0);
 		roomAdapter = new ListAdapter(getActivity(), null, 0);
 		controllerAdapter = new GridAdapter(getActivity(), null, 0);
-		mNetworkListener = new NetworkListenerAsyncTask(this, this, this);
-		mNetworkSender = new NetworkSenderThread(this);
 		setRetainInstance(true);
 
 	}
 
-	@SuppressLint("NewApi")
 	@Override
 	public void onStart() {
 		super.onStart();
+		if(mSocket!=null)
+			startNetwork();
+	}
+
+	@SuppressLint("NewApi")
+	private void startNetwork() {
 		if (android.os.Build.VERSION.SDK_INT >= 11) {
 			if (!mNetworkListener.getStatus().equals(AsyncTask.Status.RUNNING))
 				mNetworkListener.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void[]) null);
+			else
+				mNetworkListener.unpause();
 		} else {
 			if (!mNetworkListener.getStatus().equals(AsyncTask.Status.RUNNING))
 				mNetworkListener.execute((Void[]) null);
+			else
+				mNetworkListener.unpause();
 		}
 		if (!mNetworkSender.isAlive())
 			mNetworkSender.start();
+		else
+			mNetworkSender.unpause();
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
-//		mNetworkListener.pause();
-//		mNetworkSender.pause();
-//		mUIManager.pause();
-//		mUIUpdater.pasue();
+		mNetworkListener.registerPause();
+		mNetworkSender.registerPause();
+		try {
+			mSocket.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		mNetworkSender.interrupt();
 	}
 
 	@Override
@@ -176,6 +194,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	public void setSelectedRoomWithIp(String roomName, String roomIp) {
 		selectedRoom = roomName;
 		selectedRoomIp = roomIp;
+		startNetwork();
 		mNetworkListener.registerChange();
 		mNetworkSender.registerChange();
 	}
@@ -198,7 +217,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 
 	@Override
 	synchronized public Socket acquireSocket(int port) {
-		if (mSocket == null) {
+		if ((mSocket == null)|| mSocket.isClosed()) {
 			try {
 				mSocket = new Socket(InetAddress.getByName(selectedRoomIp), port);
 				Log.d("MOO", "OPENING SOCKET");

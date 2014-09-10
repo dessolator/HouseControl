@@ -21,7 +21,8 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void,PinStatusSet,Void> 
 	private DataInputStream mInputStream;
 	private volatile boolean kill;
 	private volatile boolean change;
-
+	private volatile boolean pause;
+	
 	public NetworkListenerAsyncTask(SocketProvider mSocketProvider, SwitchStateListener mSwitchStateListener,UILockupListener mLockupListener) {
 		super();
 		this.mSocketProvider = mSocketProvider;
@@ -29,36 +30,65 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void,PinStatusSet,Void> 
 		this.mSwitchStateListener=mSwitchStateListener;
 	}
 
+	public void unpause(){
+		pause=false;
+		synchronized(this){notify();}
+	}
 
 	@Override
 	protected Void doInBackground(Void... params) {
-		while (!kill) {
-			change = false;
-			mSocket = mSocketProvider.acquireSocket(55000);
-			if (mSocket != null) {
-				try {
-					mInputStream = new DataInputStream(mSocket.getInputStream());
-				} catch (IOException e) {
-				}
+		while(!kill){
+			while(pause){
+				if(kill)break;
+				synchronized(this){try {
+					wait();
+				} catch (InterruptedException e) {
+				}}
 			}
-			while (!change) {
-				if (mSocket == null) {
-					try {
-						synchronized (this) {
-							wait();
-						}
-					} catch (InterruptedException e) {
-					}
-				} else {
+			while(!(kill||pause)){
+				change=false;
+				mSocket=mSocketProvider.acquireSocket(55000);
+				try {
+					mInputStream= new DataInputStream(mSocket.getInputStream());
+				} catch (IOException e1) {
+				}
+				while(!(change||kill|| pause)){
 					try {
 						operateOnData();
 					} catch (IOException e) {
-
+						e.printStackTrace();
 					}
 				}
 			}
 		}
 		return null;
+//		while (!kill) {
+//			change = false;
+//			mSocket = mSocketProvider.acquireSocket(55000);
+//			if (mSocket != null) {
+//				try {
+//					mInputStream = new DataInputStream(mSocket.getInputStream());
+//				} catch (IOException e) {
+//				}
+//			}
+//			while (!change) {
+//				if (mSocket == null) {
+//					try {
+//						synchronized (this) {
+//							wait();
+//						}
+//					} catch (InterruptedException e) {
+//					}
+//				} else {
+//					try {
+//						operateOnData();
+//					} catch (IOException e) {
+//
+//					}
+//				}
+//			}
+//		}
+//		return null;
 	}
 	
 	@Override
@@ -101,11 +131,7 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void,PinStatusSet,Void> 
 	}
 
 	public void registerChange() {
-		Log.d("MOO", "change registered in listener ");
 		change = true;
-		synchronized (this) {
-			notify();
-		}
 
 	}
 
@@ -116,6 +142,8 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void,PinStatusSet,Void> 
 		}
 
 	}
-
+	public void registerPause() {
+		pause = true;
+	}
 
 }

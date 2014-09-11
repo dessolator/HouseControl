@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -20,20 +21,22 @@ import android.widget.ListView;
 import com.example.houseremote.EditRoomActivity;
 import com.example.houseremote.R;
 import com.example.houseremote.adapters.ListAdapter;
-import com.example.houseremote.database.DataBaseQueryManager;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
+import com.example.houseremote.database.DataBaseQueryManager;
 import com.example.houseremote.interfaces.QueryManagerProvider;
 import com.example.houseremote.interfaces.ReplyListener;
+import com.example.houseremote.interfaces.RoomDatabaseChangeListener;
 import com.example.houseremote.interfaces.RoomSelectionListener;
 import com.example.houseremote.interfaces.RoomsAdapterProvider;
 import com.example.houseremote.interfaces.SelectedHouseProvider;
+import com.example.houseremote.observers.RoomObserver;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 
-public class RoomsFragment extends Fragment {
+public class RoomsFragment extends Fragment implements RoomDatabaseChangeListener {
 
 	
 	private String mHouseName;
@@ -41,12 +44,14 @@ public class RoomsFragment extends Fragment {
 	private ListAdapter mAdapter;
 	private RoomSelectionListener mCallback;
 	private DataBaseQueryManager mAsyncQueryManager;
+	private RoomObserver mObserver;
 
 	public RoomsFragment() {
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		mObserver=new RoomObserver(new Handler(),this);
 		setHasOptionsMenu(true);
 		super.onCreate(savedInstanceState);
 		
@@ -64,7 +69,7 @@ public class RoomsFragment extends Fragment {
 		mAdapter=((RoomsAdapterProvider) mCallback).getRoomsAdapter();
 		mAsyncQueryManager=((QueryManagerProvider) mCallback).getQueryManager();
 		
-		mList = (ListView) getActivity().findViewById(R.id.roomList);//TODO need to do after view has been created
+		mList = (ListView) getActivity().findViewById(R.id.roomList);
 		mList.setAdapter(mAdapter);
 		mList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -74,6 +79,7 @@ public class RoomsFragment extends Fragment {
 			}
 		});
 		registerForContextMenu(mList);
+		loadInitialControllerData(mAdapter);
 		super.onActivityCreated(savedInstanceState);
 	}
 	
@@ -81,11 +87,22 @@ public class RoomsFragment extends Fragment {
 	 * Gets called when returning from another activity e.g. editing a room
 	 * Refresh DataSet
 	 */
-	@Override
-	public void onStart() {
-		super.onStart();
+
+	private void loadInitialControllerData(ListAdapter mAdapter2) {
+		if(((RoomsAdapterProvider)mCallback).isInitialRoomDataLoaded()) return;
+		((RoomsAdapterProvider)mCallback).setInitialRoomDataLoaded(true);
 		((ReplyListener) mCallback).dataSetChanged(1,mAdapter);
 		
+	}
+	@Override
+	public void onStart() {
+		getActivity().getContentResolver().registerContentObserver(DBProvider.ROOMS_URI, true, mObserver);
+		super.onStart();
+	}
+	@Override
+	public void onStop() {
+		getActivity().getContentResolver().unregisterContentObserver(mObserver);
+		super.onStop();
 	}
 
 	@Override
@@ -148,6 +165,16 @@ public class RoomsFragment extends Fragment {
 
 	public void replaceData(String houseName){
 		this.mHouseName=houseName;
+	}
+
+	@Override
+	public void roomDatabaseChanged() {
+		((ReplyListener) mCallback).dataSetChanged(1,mAdapter);
+	}
+
+	@Override
+	public void controllerDatabaseChanged() {
+		((ReplyListener) mCallback).dataSetChanged(2,mAdapter);
 	}
 
 }

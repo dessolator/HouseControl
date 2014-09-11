@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -23,6 +24,7 @@ import com.example.houseremote.adapters.GridAdapter;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseQueryManager;
+import com.example.houseremote.interfaces.ControllerDatabaseChangeListener;
 import com.example.houseremote.interfaces.ControllersAdapterProvider;
 import com.example.houseremote.interfaces.NetworkCommandListener;
 import com.example.houseremote.interfaces.QueryManagerProvider;
@@ -30,12 +32,13 @@ import com.example.houseremote.interfaces.ReplyListener;
 import com.example.houseremote.interfaces.SelectedHouseProvider;
 import com.example.houseremote.interfaces.SelectedRoomProvider;
 import com.example.houseremote.network.SwitchPacket;
+import com.example.houseremote.observers.ControllerObserver;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 
-public class ControllersFragment extends Fragment {
+public class ControllersFragment extends Fragment implements ControllerDatabaseChangeListener {
 
 	private String houseName;
 	private String roomName;
@@ -44,6 +47,7 @@ public class ControllersFragment extends Fragment {
 	private GridAdapter mAdapter;
 	private ReplyListener mCallback;
 	private DataBaseQueryManager mAsyncQueryManager;
+	private ControllerObserver mObserver;
 
 
 	public ControllersFragment() {
@@ -51,6 +55,7 @@ public class ControllersFragment extends Fragment {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		mObserver=new ControllerObserver(new Handler(),this);
 		setHasOptionsMenu(true);
 		super.onCreate(savedInstanceState);
 
@@ -98,8 +103,13 @@ public class ControllersFragment extends Fragment {
 	
 	@Override
 	public void onStart() {
+		getActivity().getContentResolver().registerContentObserver(DBProvider.CONTROLLERS_URI, true, mObserver);
 		super.onStart();
-
+	}
+	@Override
+	public void onStop() {
+		getActivity().getContentResolver().unregisterContentObserver(mObserver);
+		super.onStop();
 	}
 
 	@Override
@@ -184,7 +194,7 @@ public class ControllersFragment extends Fragment {
 																			// with
 																			// type
 			cv.put(DBHandler.CONTROLLER_IP, roomIp);
-			cv.put(DBHandler.CONTROLLER_IMAGE_NAME, "bed");// TODO not really
+			cv.put(DBHandler.CONTROLLER_IMAGE_NAME, "light");
 			cv.put(DBHandler.CONTROLLER_TYPE, "lightSwitch");// TODO not really
 			cv.put(DBHandler.CONTROL_PIN1_NUMBER, 0);
 			mAsyncQueryManager.startInsert(0, null, DBProvider.CONTROLLERS_URI, cv);
@@ -207,6 +217,12 @@ public class ControllersFragment extends Fragment {
 		this.houseName = houseName;
 		this.roomName = roomName;
 		this.roomIp = roomIp;
+	}
+
+	@Override
+	public void controllerDatabaseChanged() {
+		((ReplyListener) mCallback).dataSetChanged(2,mAdapter);
+		
 	}
 
 }

@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -20,37 +21,35 @@ import android.widget.ListView;
 import com.example.houseremote.EditHouseActivity;
 import com.example.houseremote.R;
 import com.example.houseremote.adapters.ListAdapter;
-import com.example.houseremote.database.DataBaseQueryManager;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
+import com.example.houseremote.database.DataBaseQueryManager;
+import com.example.houseremote.interfaces.HouseDatabaseChangeListener;
 import com.example.houseremote.interfaces.HouseSelectionListener;
 import com.example.houseremote.interfaces.HousesAdapterProvider;
 import com.example.houseremote.interfaces.QueryManagerProvider;
 import com.example.houseremote.interfaces.ReplyListener;
+import com.example.houseremote.observers.HouseObserver;
 
 /**
  * MAJOR TODOS 
- * TODO WHAT IF CURRENT HOUSE IS DELETED, RESET THE ROOM FRAGMENT AND CALLBACK WITH NULL 
- * TODO WHAT IF CURRENT HOUSE IS EDITED, RESET ROOM FRAGMENT AND CALLBACK WITH NULL 
+ * FORCE REFRESH WHEN RETURNING FROM EDITING ACTIVITIES
  * TODO NAVIGATION MANAGEMENT
- * TODO TEST ORIENTATION CHANGE ALONG WITH BACK ACTIONS 
  * MINOR TODOS 
- * TODO REMOVE DATABASE LOADING REDUNDANCIES IN ROOMS AND HOUSES FRAGMENTS
  * TODO MAKE ACTIVITY ACTIONBARS A BIT MORE CUSTOM ADD UP BUTTON TO PHONE VERSION
  * TODO USE UI DESIGN TO HILIGHT SELECTED ELEMENTS
  * TODO CHECK RESOURCE USAGE, NAMELY CLOSE THE DAMN CURSORS IN ONSTOP ONPAUSE ETC. 
  * TODO ANIMATE THE FRAGMENT TRANSITIONS
- * TODO HAVE THE DATASET AUTOMATICALLY NOTIFIED VIA OBSERVERS/BROADCAST RECEIVERS? 
  * TODO HAVE NEW HOUSE NAME AUTOINCREMENT
  */
 
-public class HousesFragment extends Fragment {
+public class HousesFragment extends Fragment implements HouseDatabaseChangeListener {
 	
 	private ListView mList;
 	private ListAdapter mAdapter;
 	private HouseSelectionListener mCallback;
 	private DataBaseQueryManager asyncQ;
-	private boolean initialDataLoaded=false;
+	private HouseObserver mObserver;
 
 	public HousesFragment() {
 	}
@@ -58,6 +57,7 @@ public class HousesFragment extends Fragment {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		mObserver=new HouseObserver(new Handler(),this);
 		setHasOptionsMenu(true);
 		super.onCreate(savedInstanceState);
 		
@@ -86,15 +86,14 @@ public class HousesFragment extends Fragment {
 			}
 		});
 		registerForContextMenu(mList);
-//		((ReplyListener) mCallback).dataSetChanged(0,mAdapter);
 		loadInitialControllerData(mAdapter);
 		super.onActivityCreated(savedInstanceState);
 		
 	}
 
 	private void loadInitialControllerData(ListAdapter mAdapter2) {
-		if(initialDataLoaded) return;
-		initialDataLoaded=true;
+		if(((HousesAdapterProvider)mCallback).isInitialHouseDataLoaded()) return;
+		((HousesAdapterProvider)mCallback).setInitialHouseDataLoaded(true);
 		((ReplyListener) mCallback).dataSetChanged(0,mAdapter);
 		
 	}
@@ -102,9 +101,13 @@ public class HousesFragment extends Fragment {
 
 	@Override
 	public void onStart() {
+		getActivity().getContentResolver().registerContentObserver(DBProvider.HOUSES_URI, true, mObserver);
 		super.onStart();
-		
-
+	}
+	@Override
+	public void onStop() {
+		getActivity().getContentResolver().unregisterContentObserver(mObserver);
+		super.onStop();
 	}
 
 	@Override
@@ -164,6 +167,27 @@ public class HousesFragment extends Fragment {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+
+	@Override
+	public void houseDatabaseChanged() {
+		((ReplyListener) mCallback).dataSetChanged(0,mAdapter);
+		
+	}
+
+
+	@Override
+	public void roomDatabaseChanged() {
+		((ReplyListener) mCallback).dataSetChanged(1,mAdapter);
+		
+	}
+
+
+	@Override
+	public void controllerDatabaseChanged() {
+		((ReplyListener) mCallback).dataSetChanged(2,mAdapter);
+		
 	}
 
 

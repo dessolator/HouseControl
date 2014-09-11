@@ -1,13 +1,11 @@
 package com.example.houseremote;
 
 import static com.example.houseremote.MainActivity.HEADLESS;
-import static com.example.houseremote.MainActivity.LOGGING;
 import static com.example.houseremote.MainActivity.ROOMS;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -23,83 +21,39 @@ import com.example.houseremote.interfaces.RoomsAdapterProvider;
 import com.example.houseremote.interfaces.SelectedHouseProvider;
 
 public class RoomsActivity extends ActionBarActivity implements RoomSelectionListener, SelectedHouseProvider, RoomsAdapterProvider, QueryManagerProvider,ReplyListener{
-	private static final String TAG = "com.example.houseremote.RoomsActivity";
 	
 	private HeadlessFragment myHeadlessFragment;
-
+	@SuppressWarnings("unused")
 	private RoomsFragment myRoomsFragment;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
-		
-	
-		/*
-		 * if the acitvity was created for the first time,
-		 * create the headless fragment
-		 * and the houses fragment
-		 */
-		if (savedInstanceState == null) {
-			
-			if(LOGGING){
-				Log.v(TAG, "onCreateMainActivity created first time");
-				Log.v(TAG, "creating headless fragment");
-				Log.v(TAG, "creating houses fragment");
-			}
-			myHeadlessFragment = new HeadlessFragment();
-			myHeadlessFragment.setSelectedHouse(getIntent().getStringExtra(DBHandler.HOUSE_NAME));
-			myRoomsFragment = new RoomsFragment();
-			if(LOGGING){
-				Log.v(TAG, "adding house and headless fragments");
-			}
-			getSupportFragmentManager().beginTransaction().add(myHeadlessFragment, HEADLESS).add(R.id.list,myRoomsFragment,ROOMS).commit();
-			
-		} else {
-			if(LOGGING){
-				Log.v(TAG, "onCreateMainActivity restored");
-			}
-			/*
-			 * if coming back to the activity from somewhere
-			 * recover the headless fragment
-			 */
-			if(LOGGING){
-				Log.v(TAG, "attempting to restore headless fragment");
-			}
-			myHeadlessFragment = (HeadlessFragment) getSupportFragmentManager().findFragmentByTag(HEADLESS);
-			
-			
-			/*
-			 * and if on phone try to recover the house fragment if not make a new one
-			 */
-			if(LOGGING){
-				Log.v(TAG, "checking if on phone or tablet");
-			}
-			if (findViewById(R.id.expanded) == null) {
-				if(LOGGING){
-					Log.v(TAG, "on phone");
-					Log.v(TAG, "attempting to recover house fragment");
-				}
-					
-				myRoomsFragment = (RoomsFragment) getSupportFragmentManager().findFragmentByTag(ROOMS);
-				if (myRoomsFragment == null) {
-					if(LOGGING){
-						Log.v(TAG, "room fragment recovery failed, creating new room fragment");
-						Log.v(TAG, "adding room fragment");
-					}
-					myRoomsFragment = new RoomsFragment();
-					getSupportFragmentManager().beginTransaction().add(R.id.expanded, myRoomsFragment, ROOMS).commit();
-				}
-				else {
-					if(LOGGING){
-						Log.v(TAG, "room fragment recovery succeded");
-					}
-				}
-			} 
-		}
+
+		myHeadlessFragment = acquireHeadlessFragment();
+		myRoomsFragment = acquireRoomsFragmentToList();
+
 	}
 
+	private RoomsFragment acquireRoomsFragmentToList() {
+		RoomsFragment temp = (RoomsFragment) getSupportFragmentManager().findFragmentByTag(ROOMS);
+		if(temp==null){
+			temp= new RoomsFragment();
+			getSupportFragmentManager().beginTransaction().add(R.id.list, temp, ROOMS).commit();
+		}
+		return temp;
+	}
+	private HeadlessFragment acquireHeadlessFragment(){
+		HeadlessFragment temp = (HeadlessFragment) getSupportFragmentManager().findFragmentByTag(HEADLESS);
+		if (temp == null){
+			temp= new HeadlessFragment();
+			temp.setSelectedHouse(getIntent().getStringExtra(DBHandler.HOUSE_NAME));
+			getSupportFragmentManager().beginTransaction().add(temp, HEADLESS).commit();
+		}
+		return temp;
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
@@ -151,6 +105,17 @@ public class RoomsActivity extends ActionBarActivity implements RoomSelectionLis
 	@Override
 	public void replaceCursor(Cursor cursor, Object o) {
 		myHeadlessFragment.replaceCursor(cursor, o);
+		
+	}
+
+	@Override
+	public boolean isInitialRoomDataLoaded() {
+		return myHeadlessFragment.isInitialRoomDataLoaded();
+	}
+
+	@Override
+	public void setInitialRoomDataLoaded(boolean b) {
+		myHeadlessFragment.setInitialRoomDataLoaded(b);
 		
 	}
 }

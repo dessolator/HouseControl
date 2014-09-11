@@ -39,13 +39,6 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 		RoomsAdapterProvider, HousesAdapterProvider, NetworkCommandListener, SocketProvider,
 		SwitchStateListener, UILockupListener {
 
-	public boolean isInitialControllerDataLoaded() {
-		return initialControllerDataLoaded;
-	}
-	public void setInitialControllerDataLoaded(boolean initialControllerDataLoaded) {
-		this.initialControllerDataLoaded = initialControllerDataLoaded;
-	}
-
 	/*
 	 * UI adapters for other fragments
 	 */
@@ -75,13 +68,15 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	 */
 	private Socket mSocket;
 
-	private boolean initialControllerDataLoaded=false;
-	
-	
-	public HeadlessFragment(){
+	private boolean initialControllerDataLoaded = false;
+	private boolean initialRoomDataLoaded = false;
+	private boolean initialHouseDataLoaded = false;
+
+	public HeadlessFragment() {
 		mNetworkListener = new NetworkListenerAsyncTask(this, this, this);
 		mNetworkSender = new NetworkSenderThread(this);
 	}
+
 	/**
 	 * Create the necessary Adapters, Threads and DataBaseAccess also set this
 	 * fragment to be retained
@@ -151,20 +146,16 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	}
 
 	/**
-	 * Requeries the appropriate sources:
-	 * if house dataset changed:
-	 * 	requeries the database
-	 * if room dataset changed:
-	 * 	requeries the database
-	 * if controller dataset changed:
-	 * 	requeries the database and server
+	 * Requeries the appropriate sources: if house dataset changed: requeries
+	 * the database if room dataset changed: requeries the database if
+	 * controller dataset changed: requeries the database and server
 	 * 
-	 * @param token The token value of the dataset:
-	 * 	0 for house dataset
-	 * 	1 for room dataset
-	 * 	2 for controller dataset
+	 * @param token
+	 *            The token value of the dataset: 0 for house dataset 1 for room
+	 *            dataset 2 for controller dataset
 	 * 
-	 * @param adapter The adapter to which the results are returned.
+	 * @param adapter
+	 *            The adapter to which the results are returned.
 	 * 
 	 */
 	@Override
@@ -215,8 +206,11 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 
 	/**
 	 * Replaces the database cursor on the given adapter.
-	 * @param cursor The new cursor to be used.
-	 * @param adapter The adapter to which the cursor is to be posted.
+	 * 
+	 * @param cursor
+	 *            The new cursor to be used.
+	 * @param adapter
+	 *            The adapter to which the cursor is to be posted.
 	 * 
 	 */
 	@Override
@@ -231,7 +225,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	/*
 	 * Getters for data.
 	 */
-	
+
 	public String getSelectedHouse() {
 		return selectedHouse;
 	}
@@ -278,7 +272,9 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 
 	/**
 	 * Opens or returns a socket to the selected server on the passed port.
-	 * @param The port to open the socket to.
+	 * 
+	 * @param The
+	 *            port to open the socket to.
 	 * @return The Socket object to the server.
 	 */
 	@Override
@@ -298,7 +294,9 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 
 	/**
 	 * Adds a packet to be sent to the server.
-	 * @param switchPacket The switch packet to be sent to the server.
+	 * 
+	 * @param switchPacket
+	 *            The switch packet to be sent to the server.
 	 */
 	@Override
 	public void addToNetworkSender(SwitchPacket switchPacket) {
@@ -311,7 +309,9 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 
 	/**
 	 * Posts a PinStatus to the UI.
-	 * @param newData The PinStatus to be posted to the UI.
+	 * 
+	 * @param newData
+	 *            The PinStatus to be posted to the UI.
 	 */
 	@Override
 	public void postValueChange(PinStatus newData) {
@@ -320,7 +320,9 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 
 	/**
 	 * Posts a PinStatusSet to the UI.
-	 * @param pinStatusSet The PinStatusSet to be posted to the UI.
+	 * 
+	 * @param pinStatusSet
+	 *            The PinStatusSet to be posted to the UI.
 	 */
 	@Override
 	public void postLookupValues(PinStatusSet pinStatusSet) {
@@ -328,6 +330,36 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 //		getActivity().setProgressBarIndeterminateVisibility(false);
 		getActivity().findViewById(R.id.linlaHeaderProgress).setVisibility(View.GONE);
 		Toast.makeText(getActivity(), "MOOOO", Toast.LENGTH_SHORT).show();
+	}
+
+	@Override
+	public boolean isInitialHouseDataLoaded() {
+		return initialHouseDataLoaded;
+	}
+
+	@Override
+	public void setInitialHouseDataLoaded(boolean b) {
+		this.initialHouseDataLoaded = b;
+
+	}
+
+	@Override
+	public boolean isInitialRoomDataLoaded() {
+		return initialRoomDataLoaded;
+	}
+
+	@Override
+	public void setInitialRoomDataLoaded(boolean b) {
+		this.initialRoomDataLoaded = b;
+
+	}
+
+	public boolean isInitialControllerDataLoaded() {
+		return initialControllerDataLoaded;
+	}
+
+	public void setInitialControllerDataLoaded(boolean initialControllerDataLoaded) {
+		this.initialControllerDataLoaded = initialControllerDataLoaded;
 	}
 
 }

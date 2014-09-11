@@ -32,6 +32,9 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 		HouseSelectionListener, ControllersAdapterProvider, RoomsAdapterProvider, HousesAdapterProvider,
 		QueryManagerProvider, SelectedHouseProvider, SelectedRoomProvider, NetworkCommandListener{
 
+	
+
+
 	/*
 	 * Fragment identification strings
 	 */
@@ -50,7 +53,6 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 	 * Fragments
 	 */
 	private HeadlessFragment myHeadlessFragment;
-	@SuppressWarnings("unused")
 	private HousesFragment myHousesFragment;
 	private RoomsFragment myRoomsFragment;
 	private ControllersFragment myControllersFragment;
@@ -98,7 +100,10 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 		if (temp == null) {
 			temp = new ControllersFragment();
 			getSupportFragmentManager().beginTransaction().add(R.id.expanded, temp, CONTROLLERS).commit();
+			return temp;
 		}
+		dataSetChanged(2, myHeadlessFragment.getControllersAdapter());
+		
 		return temp;
 	}
 
@@ -155,14 +160,12 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 	@Override
 	public void roomSelected(String roomName, String roomIp) {
 		
-		if (myControllersFragment == null) {
+		if (myHeadlessFragment.getSelectedRoom() == null) {
 			
 			myHeadlessFragment.setSelectedRoomWithIp(roomName, roomIp);
 			
-			
-			myControllersFragment = new ControllersFragment();
-
-			getSupportFragmentManager().beginTransaction().replace(R.id.expanded, myControllersFragment, CONTROLLERS).commit();
+			getSupportFragmentManager().beginTransaction().remove(myRoomsFragment).commit();
+			myControllersFragment = acquireControllersFragmentToExpanded();
 			getSupportFragmentManager().executePendingTransactions();
 			getSupportFragmentManager().beginTransaction().replace(R.id.list, myRoomsFragment,ROOMS).commit();
 			return;
@@ -186,7 +189,7 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 			startActivity(i);
 			return;
 		}
-		if (myRoomsFragment == null) {
+		if (myHeadlessFragment.getSelectedHouse() == null) {
 
 			myHeadlessFragment.setSelectedHouse(houseName);
 			myRoomsFragment = new RoomsFragment();
@@ -311,6 +314,32 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 	public void setInitialRoomDataLoaded(boolean b) {
 		myHeadlessFragment.setInitialRoomDataLoaded(b);
 		
+	}
+	@Override
+	public void onBackPressed() {
+		if (findViewById(R.id.expanded) == null) {
+			super.onBackPressed();
+			return;
+		}
+		if(myHeadlessFragment.getSelectedRoom()!=null){
+			myHeadlessFragment.setSelectedRoomWithIp(null, null);
+			myHeadlessFragment.setInitialControllerDataLoaded(false);
+			getSupportFragmentManager().beginTransaction().remove(myControllersFragment).commit();
+			getSupportFragmentManager().beginTransaction().remove(myRoomsFragment).commit();
+			getSupportFragmentManager().beginTransaction().add(R.id.list, myHousesFragment, HOUSES).commit();
+			getSupportFragmentManager().executePendingTransactions();
+			getSupportFragmentManager().beginTransaction().replace(R.id.expanded, myRoomsFragment,ROOMS).commit();
+			return;
+		}
+		if(myHeadlessFragment.getSelectedHouse()!=null){
+			myHeadlessFragment.setSelectedHouse(null);
+			myHeadlessFragment.setInitialRoomDataLoaded(false);
+			getSupportFragmentManager().beginTransaction().remove(myRoomsFragment).commit();
+			return;
+		}
+		super.onBackPressed();
+		
+
 	}
 
 

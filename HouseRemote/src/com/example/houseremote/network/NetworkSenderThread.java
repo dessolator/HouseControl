@@ -57,6 +57,7 @@ public class NetworkSenderThread extends Thread {
 			while (!(kill || pause)) {
 				change = false;
 				mSocket = mSocketProvider.acquireSocket(55000);
+//				if(mSocket==null) throw new UnableToFindHostException();
 				try {
 					mOutputStream = new DataOutputStream(mSocket.getOutputStream());
 				} catch (IOException e1) {

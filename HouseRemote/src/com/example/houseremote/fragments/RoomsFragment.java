@@ -122,7 +122,7 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 			Intent i = new Intent(getActivity(), EditRoomActivity.class);
 			i.putExtra(DBHandler.ROOM_NAME, selectedRoomName);
 			i.putExtra(DBHandler.HOUSE_NAME, mHouseName);
-			startActivity(i);
+			startActivityForResult(i,1);
 			return true;
 		}
 		if (item.getItemId() == R.id.action_delete_room) {
@@ -141,6 +141,15 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 		inflater.inflate(R.menu.room_fragment_menu, menu);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    if (requestCode == 1) {
+	    	((ReplyListener) mCallback).dataSetChanged(1,mAdapter);
+	    	((ReplyListener) mCallback).dataSetChanged(2,mAdapter);
+	        
+	    }
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -157,7 +166,7 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 			Intent i = new Intent(getActivity(), EditRoomActivity.class);
 			i.putExtra(DBHandler.ROOM_NAME, getString(R.string.newRoomName));
 			i.putExtra(DBHandler.HOUSE_NAME, mHouseName);
-			startActivity(i);
+			startActivityForResult(i,1);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

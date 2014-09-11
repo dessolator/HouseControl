@@ -120,6 +120,13 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 	}
 
 	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    if (requestCode == 2) {
+	    	((ReplyListener) mCallback).dataSetChanged(2,mAdapter);	        
+	    }
+	}
+	
+	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
@@ -161,7 +168,7 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 														// house
 			i.putExtra(DBHandler.HOUSE_NAME, houseName);
 			i.putExtra(DBHandler.CONTROLLER_INTERFACE_NAME, controllerName);
-			startActivity(i);// start the activity
+			startActivityForResult(i,2);// start the activity
 			return true;
 		}
 		if (item.getItemId() == R.id.action_delete_controller) {
@@ -170,7 +177,7 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 			String selection = DBHandler.HOUSE_NAME + "=?" + " AND " + DBHandler.ROOM_NAME + "=?" + " AND "
 					+ DBHandler.CONTROLLER_INTERFACE_NAME + "=?";
 			String[] selectionArgs = { houseName, roomName, controllerName };
-			mAsyncQueryManager.startDelete(0, null, DBProvider.CONTROLLERS_URI, selection, selectionArgs);
+			mAsyncQueryManager.startDelete(0, null, DBProvider.CONTROLLERS_URI, selection, selectionArgs);//TODO might need token
 		}
 		return super.onContextItemSelected(item);
 	}
@@ -207,7 +214,7 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 														// house
 			i.putExtra(DBHandler.HOUSE_NAME, houseName);
 			i.putExtra(DBHandler.CONTROLLER_INTERFACE_NAME, "New LigthSwitch");
-			startActivity(i);// start the activity
+			startActivityForResult(i,2);// start the activity
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

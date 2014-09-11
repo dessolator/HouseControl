@@ -33,7 +33,6 @@ import com.example.houseremote.observers.HouseObserver;
 
 /**
  * MAJOR TODOS 
- * FORCE REFRESH WHEN RETURNING FROM EDITING ACTIVITIES
  * TODO NAVIGATION MANAGEMENT
  * MINOR TODOS 
  * TODO MAKE ACTIVITY ACTIONBARS A BIT MORE CUSTOM ADD UP BUTTON TO PHONE VERSION
@@ -129,7 +128,7 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 					.getColumnIndex(DBHandler.HOUSE_NAME));
 			Intent i = new Intent(getActivity(), EditHouseActivity.class);
 			i.putExtra(DBHandler.HOUSE_NAME, selectedHouseName);
-			startActivity(i);
+			startActivityForResult(i,0);
 		}
 		
 		if (item.getItemId() == R.id.action_delete_house) {
@@ -148,6 +147,15 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 	}
 
 	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    if (requestCode == 0) {
+	    	((ReplyListener) mCallback).dataSetChanged(0,mAdapter);
+	    	((ReplyListener) mCallback).dataSetChanged(1,mAdapter);
+	        
+	    }
+	}
+	
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if (id == R.id.action_add_a_house) {
@@ -163,7 +171,7 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 
 			Intent i = new Intent(getActivity(), EditHouseActivity.class);
 			i.putExtra(DBHandler.HOUSE_NAME, getString(R.string.newHouseName));
-			startActivity(i);
+			startActivityForResult(i,0);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

@@ -1,21 +1,21 @@
 package com.example.houseremote;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.houseremote.database.DataBaseQueryManager;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
+import com.example.houseremote.database.DataBaseQueryManager;
 import com.example.houseremote.interfaces.ReplyListener;
 
-public class EditRoomActivity extends Activity implements ReplyListener {
+public class EditRoomActivity extends ActionBarActivity implements ReplyListener {
 
 	String roomName;
 	String houseName;
@@ -26,6 +26,7 @@ public class EditRoomActivity extends Activity implements ReplyListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.activity_edit_room);
 
 		Intent startIntent = getIntent();
@@ -61,6 +62,11 @@ public class EditRoomActivity extends Activity implements ReplyListener {
 	@Override
 	public void dataSetChanged(int token, Object o) {
 
+	}
+	@Override
+	public boolean onNavigateUp() {
+		super.onBackPressed();
+		return true;
 	}
 
 	@Override

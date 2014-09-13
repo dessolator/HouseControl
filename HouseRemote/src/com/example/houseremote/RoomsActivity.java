@@ -29,6 +29,7 @@ public class RoomsActivity extends ActionBarActivity implements RoomSelectionLis
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.activity_main);
 
 		myHeadlessFragment = acquireHeadlessFragment();
@@ -117,5 +118,11 @@ public class RoomsActivity extends ActionBarActivity implements RoomSelectionLis
 	public void setInitialRoomDataLoaded(boolean b) {
 		myHeadlessFragment.setInitialRoomDataLoaded(b);
 		
+	}
+	
+	@Override
+	public boolean onNavigateUp() {
+		super.onBackPressed();
+		return true;
 	}
 }

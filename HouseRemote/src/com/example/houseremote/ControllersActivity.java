@@ -42,6 +42,7 @@ public class ControllersActivity extends ActionBarActivity implements ReplyListe
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.activity_main);
 		myHeadlessFragment = acquireHeadlessFragment();
 		myControllersFragment = acquireControllersFragment();
@@ -153,5 +154,11 @@ public class ControllersActivity extends ActionBarActivity implements ReplyListe
 	public void setInitialControllerDataLoaded(boolean initialControllerDataLoaded) {
 		myHeadlessFragment.setInitialControllerDataLoaded(initialControllerDataLoaded);
 
+	}
+	
+	@Override
+	public boolean onNavigateUp() {
+		super.onBackPressed();
+		return true;
 	}
 }

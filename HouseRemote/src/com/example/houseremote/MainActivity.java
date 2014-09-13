@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -46,8 +45,8 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 	/*
 	 * Logging variables
 	 */
-	private static final String TAG = "com.example.houseremote.MainActivity";
-	public static final boolean LOGGING = true;
+//	private static final String TAG = "com.example.houseremote.MainActivity";
+//	public static final boolean LOGGING = true;
 	
 	/*
 	 * Fragments
@@ -65,7 +64,7 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 	
-		if (savedInstanceState == null) {
+		if (savedInstanceState == null) {//if starting for first time
 			myHeadlessFragment = acquireHeadlessFragment();
 			myHousesFragment = acquireHousesFragmentToList();
 		
@@ -73,20 +72,20 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 			
 			myHeadlessFragment = acquireHeadlessFragment();
 			
-			if (findViewById(R.id.expanded) == null) {			
+			if (findViewById(R.id.expanded) == null) {//if on phone and not for first time
 				myHousesFragment = acquireHousesFragmentToList();
 			} else {
 				
-				if (myHeadlessFragment.getSelectedRoom() != null) {
-//					myHousesFragment = (HousesFragment) getSupportFragmentManager().findFragmentByTag(HOUSES);
+				if (myHeadlessFragment.getSelectedRoom() != null) {//if on tablet and should display rooms and houses fragment
+					myHousesFragment = (HousesFragment) getSupportFragmentManager().findFragmentByTag(HOUSES);
 					myRoomsFragment = acquireRoomsFragmentToList();					
 					myControllersFragment = acquireControllersFragmentToExpanded();
 					
 				} else {
-					if (myHeadlessFragment.getSelectedHouse() != null) {
+					if (myHeadlessFragment.getSelectedHouse() != null) {//if on tablet and should display houses and rooms fragment
 						myHousesFragment = acquireHousesFragmentToList();
 						myRoomsFragment = acquireRoomsFragmentToExpanded();						
-					} else {
+					} else {//if on tablet and should display only houses fragment
 						myHousesFragment = acquireHousesFragmentToList();
 					}
 				}
@@ -101,9 +100,7 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 			temp = new ControllersFragment();
 			getSupportFragmentManager().beginTransaction().add(R.id.expanded, temp, CONTROLLERS).commit();
 			return temp;
-		}
-		dataSetChanged(2, myHeadlessFragment.getControllersAdapter());
-		
+		}		
 		return temp;
 	}
 
@@ -160,7 +157,7 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 	@Override
 	public void roomSelected(String roomName, String roomIp) {
 		
-		if (myHeadlessFragment.getSelectedRoom() == null) {
+		if (myHeadlessFragment.getSelectedRoom() == null) {//if no room was selected
 			
 			myHeadlessFragment.setSelectedRoomWithIp(roomName, roomIp);
 			
@@ -170,7 +167,7 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 			getSupportFragmentManager().beginTransaction().replace(R.id.list, myRoomsFragment,ROOMS).commit();
 			return;
 		}
-		if (myHeadlessFragment.getSelectedRoom() != roomName) {
+		if (myHeadlessFragment.getSelectedRoom() != roomName) {//if a different room was selected
 			
 			myHeadlessFragment.setSelectedRoomWithIp(roomName, roomIp);
 			myControllersFragment.replaceData(myHeadlessFragment.getSelectedHouse(), roomName, roomIp);
@@ -182,14 +179,14 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 	@Override
 	public void houseSelected(String houseName) {
 
-		if (findViewById(R.id.expanded) == null) {
+		if (findViewById(R.id.expanded) == null) {//if on phone start new activity
 			
 			Intent i = new Intent(this, RoomsActivity.class);
 			i.putExtra(DBHandler.HOUSE_NAME, houseName);
 			startActivity(i);
 			return;
 		}
-		if (myHeadlessFragment.getSelectedHouse() == null) {
+		if (myHeadlessFragment.getSelectedHouse() == null) {//if no house was selected previously
 
 			myHeadlessFragment.setSelectedHouse(houseName);
 			myRoomsFragment = new RoomsFragment();
@@ -197,7 +194,7 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 			return;
 		}
 		
-		if (myHeadlessFragment.getSelectedHouse() != houseName) {
+		if (myHeadlessFragment.getSelectedHouse() != houseName) {//if a different house was selected previously
 
 			myHeadlessFragment.setSelectedHouse(houseName);
 			myRoomsFragment.replaceData(houseName);
@@ -252,9 +249,6 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 
 	@Override
 	public void dataSetChanged(int token, Object cookie) {
-		if(LOGGING){
-			Log.v(TAG, "dataSetChanged called"+token);
-		}
 		myHeadlessFragment.dataSetChanged(token, cookie);
 
 	}
@@ -271,9 +265,6 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 	
 	@Override
 	public void addToNetworkSender(SwitchPacket switchPacket) {
-		if(LOGGING){
-			Log.v(TAG, "adding packet to sender");
-		}
 		myHeadlessFragment.addToNetworkSender(switchPacket);
 		
 	}
@@ -326,6 +317,7 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 			myHeadlessFragment.setInitialControllerDataLoaded(false);
 			getSupportFragmentManager().beginTransaction().remove(myControllersFragment).commit();
 			getSupportFragmentManager().beginTransaction().remove(myRoomsFragment).commit();
+			if(myHousesFragment==null){myHousesFragment = new HousesFragment();}
 			getSupportFragmentManager().beginTransaction().add(R.id.list, myHousesFragment, HOUSES).commit();
 			getSupportFragmentManager().executePendingTransactions();
 			getSupportFragmentManager().beginTransaction().replace(R.id.expanded, myRoomsFragment,ROOMS).commit();

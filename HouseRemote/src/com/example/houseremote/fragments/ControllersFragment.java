@@ -89,13 +89,14 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 		});
 		registerForContextMenu(mGrid);
 		loadInitialControllerData(mAdapter);
-		getActivity().findViewById(R.id.linlaHeaderProgress).setVisibility(View.VISIBLE);
+		
 
 		super.onActivityCreated(savedInstanceState);
 	}
 	
 	private void loadInitialControllerData(GridAdapter mAdapter2) {
 		if(((ControllersAdapterProvider)mCallback).isInitialControllerDataLoaded()) return;
+		getActivity().findViewById(R.id.linlaHeaderProgress).setVisibility(View.VISIBLE);
 		((ControllersAdapterProvider)mCallback).setInitialControllerDataLoaded(true);
 		((ReplyListener) mCallback).dataSetChanged(2,mAdapter);
 		

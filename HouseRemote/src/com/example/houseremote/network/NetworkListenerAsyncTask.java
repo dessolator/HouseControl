@@ -3,6 +3,7 @@ package com.example.houseremote.network;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -12,6 +13,8 @@ import com.example.houseremote.interfaces.SwitchStateListener;
 import com.example.houseremote.interfaces.UILockupListener;
 
 public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void> {
+
+	
 
 	private SwitchStateListener mSwitchStateListener;
 	private UILockupListener mLockupListener;
@@ -27,9 +30,13 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 
 	/**
 	 * Constructor for Network Listener.
-	 * @param mSocketProvider The entity providing the socket for the network listener.
-	 * @param mSwitchStateListener The entity listening to individual pin changes.
-	 * @param mLockupListener The entity listening to pin status lookups.
+	 * 
+	 * @param mSocketProvider
+	 *            The entity providing the socket for the network listener.
+	 * @param mSwitchStateListener
+	 *            The entity listening to individual pin changes.
+	 * @param mLockupListener
+	 *            The entity listening to pin status lookups.
 	 */
 	public NetworkListenerAsyncTask(SocketProvider mSocketProvider, SwitchStateListener mSwitchStateListener,
 			UILockupListener mLockupListener) {
@@ -39,12 +46,12 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 		this.mSwitchStateListener = mSwitchStateListener;
 	}
 
-
 	/**
 	 * Listens to the server for any changes to the PinSet.
 	 */
 	@Override
 	protected Void doInBackground(Void... params) {
+
 		while (!kill) {
 			while (pause) {
 				if (kill)
@@ -58,7 +65,15 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 			}
 			while (!(kill || pause)) {
 				change = false;
-				mSocket = mSocketProvider.acquireSocket(55000);
+				try {
+					mSocket = mSocketProvider.acquireSocket(55000);
+				} catch (UnknownHostException e2) {
+					e2.printStackTrace();
+					return null;
+				} catch (IOException e3) {
+					return null;
+
+				}
 				try {
 					mInputStream = new DataInputStream(mSocket.getInputStream());
 				} catch (IOException e1) {
@@ -72,12 +87,15 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 				}
 			}
 		}
+
 		return null;
 	}
 
 	/**
 	 * Posts the values to the UI.
-	 * @param values The PinStatusSet to parse.
+	 * 
+	 * @param values
+	 *            The PinStatusSet to parse.
 	 */
 	@Override
 	protected void onProgressUpdate(PinStatusSet... values) {
@@ -88,10 +106,18 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 			mSwitchStateListener.postValueChange(values[0].get(0));
 		}
 	}
+	
+	@Override
+	protected void onPostExecute(Void result) {
+		mLockupListener.reportFailiureToConnectToServer();
+		super.onPostExecute(result);
+	}
 
 	/**
 	 * Listens to server and publishes changes.
-	 * @throws IOException The exception thrown if the AsyncTask is paused or killed
+	 * 
+	 * @throws IOException
+	 *             The exception thrown if the AsyncTask is paused or killed
 	 */
 	private void operateOnData() throws IOException {
 		Log.d("MOO", "LISTENING");
@@ -119,12 +145,13 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 
 		}
 	}
-	
+
 	/**
 	 * Registers the change in the server the thread should listen to.
 	 */
 	public void registerChange() {
-		if(getStatus()!=AsyncTask.Status.RUNNING) return;
+		if (getStatus() != AsyncTask.Status.RUNNING)
+			return;
 		change = true;
 
 	}
@@ -133,7 +160,8 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 	 * Registers the kill signal to the AsyncTask.
 	 */
 	public void registerKill() {
-		if(getStatus()!=AsyncTask.Status.RUNNING) return;
+		if (getStatus() != AsyncTask.Status.RUNNING)
+			return;
 		kill = true;
 		try {
 			mSocket.close();
@@ -149,20 +177,22 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 	 * Registers the pause signal to the AsyncTask.
 	 */
 	public void registerPause() {
-		if(getStatus()!=AsyncTask.Status.RUNNING) return;
+		if (getStatus() != AsyncTask.Status.RUNNING)
+			return;
 		pause = true;
 		try {
 			mSocket.close();
 		} catch (IOException e) {
 		}
 	}
-	
+
 	/**
 	 * Unpauses the AsyncTask if it is both started and paused.
 	 */
 	public void unpause() {
-		if(getStatus()!=AsyncTask.Status.RUNNING) return;
-		if(pause){
+		if (getStatus() != AsyncTask.Status.RUNNING)
+			return;
+		if (pause) {
 			pause = false;
 			synchronized (this) {
 				notify();

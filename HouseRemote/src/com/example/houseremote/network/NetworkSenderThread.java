@@ -3,6 +3,7 @@ package com.example.houseremote.network;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import android.util.Log;
@@ -10,7 +11,7 @@ import android.util.Log;
 import com.example.houseremote.interfaces.SocketProvider;
 
 public class NetworkSenderThread extends Thread {
-	
+
 	private Socket mSocket;
 	private DataOutputStream mOutputStream;
 	SocketProvider mSocketProvider;
@@ -18,7 +19,7 @@ public class NetworkSenderThread extends Thread {
 	 * Concurrent Queue used to manage messages to be passed to the server.
 	 */
 	private ConcurrentLinkedQueue<SwitchPacket> mQueue;
-	
+
 	/*
 	 * Thread management flags.
 	 */
@@ -28,21 +29,21 @@ public class NetworkSenderThread extends Thread {
 
 	/**
 	 * Constructor for Network Sender.
-	 * @param socketProvider The entity providing the socket for the network sender.
+	 * 
+	 * @param socketProvider
+	 *            The entity providing the socket for the network sender.
 	 */
 	public NetworkSenderThread(SocketProvider socketProvider) {
 		mQueue = new ConcurrentLinkedQueue<SwitchPacket>();
 		mSocketProvider = socketProvider;
 	}
 
-	
-	
-
 	/**
 	 * Polls the message queue and sends requests to the UI.
 	 */
 	@Override
 	public void run() {
+
 		while (!kill) {
 			while (pause) {
 				if (kill)
@@ -56,7 +57,13 @@ public class NetworkSenderThread extends Thread {
 			}
 			while (!(kill || pause)) {
 				change = false;
-				mSocket = mSocketProvider.acquireSocket(55000);
+				try {
+					mSocket = mSocketProvider.acquireSocket(55000);
+				} catch (UnknownHostException e2) {
+					return;
+				} catch (IOException e3) {
+					return;
+				}
 //				if(mSocket==null) throw new UnableToFindHostException();
 				try {
 					mOutputStream = new DataOutputStream(mSocket.getOutputStream());
@@ -71,12 +78,16 @@ public class NetworkSenderThread extends Thread {
 				}
 			}
 		}
+
 	}
 
 	/**
 	 * Polls the message queue and sends requests to the UI.
-	 * @throws InterruptedException Thrown if the Thread is paused or killed.
-	 * @throws IOException Thrown if the Thread is paused or killed.
+	 * 
+	 * @throws InterruptedException
+	 *             Thrown if the Thread is paused or killed.
+	 * @throws IOException
+	 *             Thrown if the Thread is paused or killed.
 	 */
 	private void operateOnData() throws InterruptedException, IOException {
 		while (mQueue.isEmpty()) {
@@ -99,7 +110,9 @@ public class NetworkSenderThread extends Thread {
 
 	/**
 	 * Adds a switch request to the send queue.
-	 * @param switchPacket The SwitchPacket to be added.
+	 * 
+	 * @param switchPacket
+	 *            The SwitchPacket to be added.
 	 */
 	public void addToQueue(SwitchPacket switchPacket) {
 		Log.d("MOO", "adding packet to send");
@@ -109,12 +122,13 @@ public class NetworkSenderThread extends Thread {
 		}
 
 	}
-	
+
 	/**
-	 * Registers the change in the server the thread is sending to. 
+	 * Registers the change in the server the thread is sending to.
 	 */
 	public void registerChange() {
-		if(!isAlive()) return;
+		if (!isAlive())
+			return;
 		Log.d("MOO", "change registered on sender");
 		change = true;
 		synchronized (this) {
@@ -126,18 +140,18 @@ public class NetworkSenderThread extends Thread {
 	 * Registers the kill signal to the Thread.
 	 */
 	public void registerKill() {
-		if(!isAlive()) return;
+		if (!isAlive())
+			return;
 		kill = true;
 		interrupt();
 	}
-
-	
 
 	/**
 	 * Registers the pause signal to the THread.
 	 */
 	public void registerPause() {
-		if(!isAlive()) return;
+		if (!isAlive())
+			return;
 		pause = true;
 		interrupt();
 	}
@@ -146,13 +160,14 @@ public class NetworkSenderThread extends Thread {
 	 * Unpauses the Thread if it is both paused and started.
 	 */
 	public void unpause() {
-		if(!isAlive()) return;
-		if(pause){
+		if (!isAlive())
+			return;
+		if (pause) {
 			pause = false;
 			synchronized (this) {
 				notify();
 			}
 		}
 	}
-	
+
 }

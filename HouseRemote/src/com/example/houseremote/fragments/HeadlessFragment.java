@@ -11,7 +11,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -128,6 +127,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	 */
 	@SuppressLint("NewApi")
 	private void reStartNetwork() {
+		if(mNetworkListener.getStatus().equals(AsyncTask.Status.FINISHED)) return;
 		if (android.os.Build.VERSION.SDK_INT >= 11) {
 			if (!mNetworkListener.getStatus().equals(AsyncTask.Status.RUNNING))
 				mNetworkListener.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void[]) null);
@@ -276,18 +276,15 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	 * @param The
 	 *            port to open the socket to.
 	 * @return The Socket object to the server.
+	 * @throws IOException 
+	 * @throws UnknownHostException 
 	 */
 	@Override
-	synchronized public Socket acquireSocket(int port) {
+	synchronized public Socket acquireSocket(int port) throws UnknownHostException, IOException {
 		if ((mSocket == null) || mSocket.isClosed()) {
-			try {
+
 				mSocket = new Socket(InetAddress.getByName(selectedRoomIp), port);
-				Log.d("MOO", "OPENING SOCKET");
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			
 		}
 		return mSocket;
 	}
@@ -360,6 +357,15 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 
 	public void setInitialControllerDataLoaded(boolean initialControllerDataLoaded) {
 		this.initialControllerDataLoaded = initialControllerDataLoaded;
+	}
+
+	@Override
+	public void reportFailiureToConnectToServer() {
+		if(getActivity()==null) return;
+		getActivity().findViewById(R.id.linlaHeaderProgress).setVisibility(View.GONE);
+		mNetworkListener= new NetworkListenerAsyncTask(this, this, this);
+		mNetworkSender = new NetworkSenderThread(this);
+		Toast.makeText(getActivity(), "Failed To Connect To Host", Toast.LENGTH_SHORT).show();
 	}
 
 }

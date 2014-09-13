@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import android.util.Log;
 
+import com.example.houseremote.interfaces.Sendable;
 import com.example.houseremote.interfaces.SocketProvider;
 
 public class NetworkSenderThread extends Thread {
@@ -18,7 +19,7 @@ public class NetworkSenderThread extends Thread {
 	/*
 	 * Concurrent Queue used to manage messages to be passed to the server.
 	 */
-	private ConcurrentLinkedQueue<SwitchPacket> mQueue;
+	private ConcurrentLinkedQueue<Sendable> mQueue;
 
 	/*
 	 * Thread management flags.
@@ -34,7 +35,7 @@ public class NetworkSenderThread extends Thread {
 	 *            The entity providing the socket for the network sender.
 	 */
 	public NetworkSenderThread(SocketProvider socketProvider) {
-		mQueue = new ConcurrentLinkedQueue<SwitchPacket>();
+		mQueue = new ConcurrentLinkedQueue<Sendable>();
 		mSocketProvider = socketProvider;
 	}
 
@@ -95,16 +96,17 @@ public class NetworkSenderThread extends Thread {
 				wait();
 			}
 		}
-		SwitchPacket mData = mQueue.poll();
-		switch (mData.getType()) {
-		case FLIP:
-			mOutputStream.writeUTF("FLIP_" + mData.getPin());
-			break;
-		case FULLSTATEREAD:
-			Log.d("MOO", "FULL STATE QUERY");
-			mOutputStream.writeUTF("FULLSTATUS_ASDASD");
-			break;
-		}
+//		Sendable mData = mQueue.poll();
+//		switch (mData.getType()) {
+//		case FLIP:
+//			mOutputStream.writeUTF("FLIP_" + mData.getPin());
+//			break;
+//		case FULLSTATEREAD:
+//			Log.d("MOO", "FULL STATE QUERY");
+//			mOutputStream.writeUTF("FULLSTATUS_ASDASD");
+//			break;
+//		}
+		mOutputStream.writeUTF(mQueue.poll().getSendData());
 		mOutputStream.flush();
 	}
 
@@ -114,9 +116,9 @@ public class NetworkSenderThread extends Thread {
 	 * @param switchPacket
 	 *            The SwitchPacket to be added.
 	 */
-	public void addToQueue(SwitchPacket switchPacket) {
+	public void addToQueue(Sendable sendData) {
 		Log.d("MOO", "adding packet to send");
-		mQueue.add(switchPacket);
+		mQueue.add(sendData);
 		synchronized (this) {
 			notify();
 		}
@@ -168,6 +170,11 @@ public class NetworkSenderThread extends Thread {
 				notify();
 			}
 		}
+	}
+
+	public void setKillOnBatchDone(boolean b) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

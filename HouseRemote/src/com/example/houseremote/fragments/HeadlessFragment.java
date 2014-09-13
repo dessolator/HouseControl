@@ -28,11 +28,12 @@ import com.example.houseremote.interfaces.RoomsAdapterProvider;
 import com.example.houseremote.interfaces.SocketProvider;
 import com.example.houseremote.interfaces.SwitchStateListener;
 import com.example.houseremote.interfaces.UILockupListener;
+import com.example.houseremote.network.InitialStateQueryPacket;
 import com.example.houseremote.network.NetworkListenerAsyncTask;
 import com.example.houseremote.network.NetworkSenderThread;
 import com.example.houseremote.network.PinStatus;
 import com.example.houseremote.network.PinStatusSet;
-import com.example.houseremote.network.SwitchPacket;
+import com.example.houseremote.network.PinFlipPacket;
 
 public class HeadlessFragment extends Fragment implements ReplyListener, ControllersAdapterProvider,
 		RoomsAdapterProvider, HousesAdapterProvider, NetworkCommandListener, SocketProvider,
@@ -195,7 +196,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 				/*
 				 * Start NetStatusLookup
 				 */
-				mNetworkSender.addToQueue(new SwitchPacket(0, true));
+				mNetworkSender.addToQueue(new InitialStateQueryPacket());
 
 			}
 			break;
@@ -296,7 +297,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	 *            The switch packet to be sent to the server.
 	 */
 	@Override
-	public void addToNetworkSender(SwitchPacket switchPacket) {
+	public void addToNetworkSender(PinFlipPacket switchPacket) {
 		mNetworkSender.addToQueue(switchPacket);
 		synchronized (mNetworkSender) {
 			mNetworkSender.notify();

@@ -17,7 +17,7 @@ import android.widget.RemoteViews;
 import com.example.houseremote.R;
 import com.example.houseremote.interfaces.SocketProvider;
 import com.example.houseremote.network.NetworkSenderThread;
-import com.example.houseremote.network.SwitchPacket;
+import com.example.houseremote.network.PinFlipPacket;
 
 public class MyWidgetProvider extends AppWidgetProvider implements SocketProvider {
 
@@ -48,8 +48,10 @@ public class MyWidgetProvider extends AppWidgetProvider implements SocketProvide
 		if (intent.getAction().equals(SOME_ACTION)) {
 			Log.d("MOOOO", "LOOOOLOL");
 				NetworkSenderThread mSender = new NetworkSenderThread(this);
+				mSender.addToQueue(new PinFlipPacket(1));
+				mSender.setKillOnBatchDone(true);
 				mSender.start();
-				mSender.addToQueue(new SwitchPacket(1, false));
+				
 //				mSender.registerKill();
 		}
 	}

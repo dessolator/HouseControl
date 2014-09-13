@@ -31,7 +31,7 @@ import com.example.houseremote.interfaces.QueryManagerProvider;
 import com.example.houseremote.interfaces.ReplyListener;
 import com.example.houseremote.interfaces.SelectedHouseProvider;
 import com.example.houseremote.interfaces.SelectedRoomProvider;
-import com.example.houseremote.network.SwitchPacket;
+import com.example.houseremote.network.PinFlipPacket;
 import com.example.houseremote.observers.ControllerObserver;
 
 /**
@@ -82,9 +82,9 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 		mGrid.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-				((NetworkCommandListener) mCallback).addToNetworkSender(new SwitchPacket(((Cursor) mAdapter
+				((NetworkCommandListener) mCallback).addToNetworkSender(new PinFlipPacket(((Cursor) mAdapter
 						.getItem(position)).getInt(mAdapter.getCursor().getColumnIndex(
-						DBHandler.CONTROL_PIN1_NUMBER)), false));
+						DBHandler.CONTROL_PIN1_NUMBER))));
 			}
 		});
 		registerForContextMenu(mGrid);

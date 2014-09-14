@@ -85,8 +85,8 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 		mList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-				mCallback.houseSelected(((Cursor) mAdapter.getItem(position)).getString(mAdapter.getCursor()
-						.getColumnIndex(DBHandler.HOUSE_NAME)));
+				mCallback.houseSelected(((Cursor) mAdapter.getItem(position)).getInt(mAdapter.getCursor()
+						.getColumnIndex(DBHandler.HOUSE_ID)));
 			}
 		});
 		registerForContextMenu(mList);
@@ -126,21 +126,22 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
+		int selectedHouseID;
 		String selectedHouseName;
 
 		if (item.getItemId() == R.id.action_edit_house) {
-			selectedHouseName = ((Cursor) mAdapter.getItem(info.position)).getString(mAdapter.getCursor()
-					.getColumnIndex(DBHandler.HOUSE_NAME));
+			selectedHouseID = ((Cursor) mAdapter.getItem(info.position)).getInt(mAdapter.getCursor()
+					.getColumnIndex(DBHandler.HOUSE_ID));
 			Intent i = new Intent(getActivity(), EditHouseActivity.class);
-			i.putExtra(DBHandler.HOUSE_NAME, selectedHouseName);
+			i.putExtra(DBHandler.HOUSE_ID, selectedHouseID);
 			startActivityForResult(i,0);
 		}
 		
 		if (item.getItemId() == R.id.action_delete_house) {
-			selectedHouseName = ((Cursor) mAdapter.getItem(info.position)).getString(mAdapter.getCursor()
-					.getColumnIndex(DBHandler.HOUSE_NAME));
-			asyncQ.startDelete(0, null, DBProvider.HOUSES_URI, DBHandler.HOUSE_NAME + "=?",
-					new String[] { selectedHouseName });
+			selectedHouseID = ((Cursor) mAdapter.getItem(info.position)).getInt(mAdapter.getCursor()
+					.getColumnIndex(DBHandler.HOUSE_ID));
+			asyncQ.startDelete(0, null, DBProvider.HOUSES_URI, DBHandler.HOUSE_ID + "=?",
+					new String[] { ""+selectedHouseID });
 		}
 		return super.onContextItemSelected(item);
 	}
@@ -172,10 +173,10 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 			cv.put(DBHandler.HOUSE_WIFI_PASS, "");
 			cv.put(DBHandler.HOUSE_IMAGE_NAME, "house");
 
-			asyncQ.startInsert(0, null, DBProvider.HOUSES_URI, cv);
+			asyncQ.startInsert(0, null, DBProvider.HOUSES_URI, cv);//TODO grab the new houseID
 
 			Intent i = new Intent(getActivity(), EditHouseActivity.class);
-			i.putExtra(DBHandler.HOUSE_NAME, getString(R.string.newHouseName));
+			i.putExtra(DBHandler.HOUSE_NAME, getString(R.string.newHouseName));//TODO pass new houseID
 			startActivityForResult(i,0);
 			return true;
 		}

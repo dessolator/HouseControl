@@ -54,19 +54,18 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	/*
 	 * Storing Selected Data
 	 */
-	private String selectedHouse;
-	private String selectedRoom;
-	private String selectedRoomIp;
+	private long selectedHouseID;
+	private long selectedRoomID;
 
 	/*
 	 * Network Threads
 	 */
-	private NetworkListenerAsyncTask mNetworkListener;
-	private NetworkSenderThread mNetworkSender;
+	private NetworkListenerAsyncTask mNetworkListener;// TODO
+	private NetworkSenderThread mNetworkSender;// TODO
 	/*
 	 * Common socket
 	 */
-	private Socket mSocket;
+	private Socket mSocket;// TODO
 
 	private boolean initialControllerDataLoaded = false;
 	private boolean initialRoomDataLoaded = false;
@@ -128,7 +127,8 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	 */
 	@SuppressLint("NewApi")
 	private void reStartNetwork() {
-		if(mNetworkListener.getStatus().equals(AsyncTask.Status.FINISHED)) return;
+		if (mNetworkListener.getStatus().equals(AsyncTask.Status.FINISHED))
+			return;
 		if (android.os.Build.VERSION.SDK_INT >= 11) {
 			if (!mNetworkListener.getStatus().equals(AsyncTask.Status.RUNNING))
 				mNetworkListener.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void[]) null);
@@ -171,26 +171,25 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 			break;
 		// Room data change
 		case 1:
-			if (selectedHouse != null) {
-				String[] roomProjection = { DBHandler.ROOM_ID, DBHandler.ROOM_NAME,
-						DBHandler.ROOM_IMAGE_NAME, DBHandler.CONTROLLER_IP };
-				selection = DBHandler.HOUSE_NAME + "=?";
-				String[] roomSelectionArgs = { selectedHouse };
+			if (selectedHouseID >= 0) {
+				String[] roomProjection = { DBHandler.ROOM_ID, DBHandler.ROOM_NAME, DBHandler.ROOM_IMAGE_NAME };
+				selection = DBHandler.HOUSE_ID + "=?";
+				String[] roomSelectionArgs = { selectedHouseID + "" };
 				queryManager.startQuery(1, roomAdapter, DBProvider.ROOMS_URI, roomProjection, selection,
 						roomSelectionArgs, null);
 			}
 			// Controller data change
 			break;
 		case 2:
-			if (selectedHouse != null && selectedRoom != null) {
+			if (selectedHouseID >= 0 && selectedRoomID >= 0) {
 				/*
 				 * Start DBsearch
 				 */
-				String[] controllerProjection = { DBHandler.CONTROLLER_ID,
-						DBHandler.CONTROLLER_INTERFACE_NAME, DBHandler.CONTROLLER_IMAGE_NAME,
-						DBHandler.CONTROLLER_TYPE, DBHandler.CONTROL_PIN1_NUMBER };
-				selection = DBHandler.HOUSE_NAME + "=?" + " AND " + DBHandler.ROOM_NAME + "=?";
-				String[] controllerSelectionArgs = { selectedHouse, selectedRoom };
+				String[] controllerProjection = { DBHandler.CONTROLLER_ID, DBHandler.CONTROLLER_NAME,
+						DBHandler.CONTROLLER_IMAGE_NAME, DBHandler.CONTROLLER_TYPE, DBHandler.CONTROLLER_IP,
+						DBHandler.CONTROL_PIN_NUMBER };
+				selection = DBHandler.ROOM_ID + "=?";
+				String[] controllerSelectionArgs = {selectedRoomID+"" };
 				queryManager.startQuery(2, controllerAdapter, DBProvider.CONTROLLERS_URI,
 						controllerProjection, selection, controllerSelectionArgs, null);
 				/*
@@ -227,17 +226,14 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	 * Getters for data.
 	 */
 
-	public String getSelectedHouse() {
-		return selectedHouse;
+	public long getSelectedHouseID() {
+		return selectedHouseID;
 	}
 
-	public String getSelectedRoom() {
-		return selectedRoom;
+	public long getSelectedRoomID() {
+		return selectedRoomID;
 	}
 
-	public String getSelectedRoomIp() {
-		return selectedRoomIp;
-	}
 
 	public ListAdapter getRoomsAdapter() {
 		return roomAdapter;
@@ -258,17 +254,16 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	/*
 	 * Setters for data.
 	 */
-	public void setSelectedHouse(String houseName) {
-		selectedHouse = houseName;
+	public void setSelectedHouseID(long houseID) {
+		selectedHouseID = houseID;
 
 	}
 
-	public void setSelectedRoomWithIp(String roomName, String roomIp) {
-		selectedRoom = roomName;
-		selectedRoomIp = roomIp;
-		reStartNetwork();
-		mNetworkListener.registerChange();
-		mNetworkSender.registerChange();
+	public void setSelectedRoomID(long roomID) {
+		selectedRoomID = roomID;
+		reStartNetwork();//TODO 
+		mNetworkListener.registerChange();//TODO
+		mNetworkSender.registerChange();//TODO
 	}
 
 	/**
@@ -277,15 +272,15 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	 * @param The
 	 *            port to open the socket to.
 	 * @return The Socket object to the server.
-	 * @throws IOException 
-	 * @throws UnknownHostException 
+	 * @throws IOException
+	 * @throws UnknownHostException
 	 */
 	@Override
 	synchronized public Socket acquireSocket(int port) throws UnknownHostException, IOException {
 		if ((mSocket == null) || mSocket.isClosed()) {
 
-				mSocket = new Socket(InetAddress.getByName(selectedRoomIp), port);
-			
+			mSocket = new Socket(InetAddress.getByName(selectedRoomIp), port);
+
 		}
 		return mSocket;
 	}
@@ -362,9 +357,10 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 
 	@Override
 	public void reportFailiureToConnectToServer() {
-		if(getActivity()==null) return;
+		if (getActivity() == null)
+			return;
 		getActivity().findViewById(R.id.linlaHeaderProgress).setVisibility(View.GONE);
-		mNetworkListener= new NetworkListenerAsyncTask(this, this, this);
+		mNetworkListener = new NetworkListenerAsyncTask(this, this, this);
 		mNetworkSender = new NetworkSenderThread(this);
 		Toast.makeText(getActivity(), "Failed To Connect To Host", Toast.LENGTH_SHORT).show();
 	}

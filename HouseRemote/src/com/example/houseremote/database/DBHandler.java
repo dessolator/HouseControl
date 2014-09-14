@@ -34,45 +34,40 @@ public class DBHandler extends SQLiteOpenHelper {
 	 * CONTROLER TABLE COLUMNS
 	 */
 	public static final String CONTROLLER_ID = BaseColumns._ID;;
-	public static final String CONTROLLER_INTERFACE_NAME = "controller_interface_name";
+	public static final String CONTROLLER_NAME = "controller_name";
 	public static final String CONTROLLER_IMAGE_NAME = "controller_image_name";
 	public static final String CONTROLLER_TYPE = "controller_type";
-	public static final String CONTROL_PIN1_NUMBER = "control_pin1_number";
+	public static final String CONTROL_PIN_NUMBER = "control_pin1_number";
 	/*
 	 * SQL CREATION STRINGS
 	 */
 	private static final String CREATE_HOUSE_TABLE = "CREATE TABLE "+ HOUSE_TABLE_NAME + "(" 
 			+ HOUSE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " 
-			+ HOUSE_NAME + " STRING UNIQUE NOT NULL , " 
+			+ HOUSE_NAME + " STRING NOT NULL , " 
 			+ HOUSE_WIFI_NAME + " STRING NOT NULL, " 
 			+ HOUSE_WIFI_TYPE + " STRING NOT NULL, "
 			+ HOUSE_IMAGE_NAME + " STRING NOT NULL, "
 			+ HOUSE_WIFI_PASS + " STRING NOT NULL" + ")";
 	
 	private static final String CREATE_ROOM_TABLE = "CREATE TABLE "
-			+ ROOM_TABLE_NAME
-			+ "("
+			+ ROOM_TABLE_NAME + "("
 			+ ROOM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
 			+ ROOM_NAME	+ " STRING NOT NULL, "
-			+ CONTROLLER_IP + " STRING NOT NULL, "
-			+ HOUSE_NAME + " STRING NOT NULL, "
+			+ HOUSE_ID + " INTEGER NOT NULL, "
 			+ ROOM_IMAGE_NAME + " STRING NOT NULL, "
-			+ " FOREIGN KEY(" + HOUSE_NAME + ") REFERENCES " + HOUSE_TABLE_NAME	+ "(" + HOUSE_NAME + ") ON DELETE CASCADE ON UPDATE CASCADE,"
-			+ "UNIQUE("+HOUSE_NAME+","+ROOM_NAME +")"
+			+ " FOREIGN KEY(" + HOUSE_ID + ") REFERENCES " + HOUSE_TABLE_NAME	+ "(" + HOUSE_ID + ") ON DELETE CASCADE ON UPDATE CASCADE"
 			+ ")";
 	
 	private static final String CREATE_CONTROLLER_TABLE = "CREATE TABLE " + CONTROLLER_INTERFACE_TABLE_NAME + "("
 			+ CONTROLLER_ID+ " INTEGER PRIMARY KEY AUTOINCREMENT, "
-			+ CONTROLLER_INTERFACE_NAME	+ " STRING NOT NULL, "
-			+ CONTROLLER_IP	+ " STRING NOT NULL, "//TODO prolly gonna need to reference something...
-			+ CONTROL_PIN1_NUMBER + " INTEGER NOT NULL, "
-			+ HOUSE_NAME + " STRING NOT NULL, "
-			+ CONTROLLER_TYPE + " STRING NOT NULL, "
+			+ CONTROLLER_NAME	+ " STRING NOT NULL, "
+			+ CONTROLLER_IP	+ " STRING NOT NULL, "
+			+ CONTROL_PIN_NUMBER + " INTEGER NOT NULL, "
+			+ CONTROLLER_TYPE + " INTEGER NOT NULL, "
 			+ CONTROLLER_IMAGE_NAME	+ " STRING NOT NULL, "
-			+ ROOM_NAME	+ " STRING NOT NULL, "
-			+ " UNIQUE(" + CONTROLLER_IP + "," + CONTROL_PIN1_NUMBER + "),"
-			+ " FOREIGN KEY(" + ROOM_NAME + ","	+ HOUSE_NAME + ") REFERENCES " + ROOM_TABLE_NAME + "("	+ ROOM_NAME	+ "," + HOUSE_NAME + ") ON DELETE CASCADE ON UPDATE CASCADE,"
-			+ " UNIQUE(" + CONTROLLER_INTERFACE_NAME + "," + ROOM_NAME + "," + HOUSE_NAME + ")"
+			+ ROOM_ID	+ " INTEGER NOT NULL, "
+			+ " UNIQUE(" + CONTROLLER_IP + "," + CONTROL_PIN_NUMBER + "),"
+			+ " FOREIGN KEY(" + ROOM_ID + ") REFERENCES " + ROOM_TABLE_NAME + "(" + ROOM_ID + ") ON DELETE CASCADE ON UPDATE CASCADE"
 			+ ")";
 	
 	

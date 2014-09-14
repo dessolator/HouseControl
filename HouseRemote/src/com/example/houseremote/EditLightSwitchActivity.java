@@ -32,12 +32,12 @@ public class EditLightSwitchActivity extends ActionBarActivity implements ReplyL
 
 		Intent startIntent = getIntent();
 		Button saveButton = (Button) findViewById(R.id.saveLightSwitchButton);
-		String[] projection = { DBHandler.CONTROL_PIN1_NUMBER };
+		String[] projection = { DBHandler.CONTROL_PIN_NUMBER };
 		roomName = startIntent.getExtras().getString(DBHandler.ROOM_NAME);
 		houseName = startIntent.getExtras().getString(DBHandler.HOUSE_NAME);
-		lightSwitchName = startIntent.getExtras().getString(DBHandler.CONTROLLER_INTERFACE_NAME);
+		lightSwitchName = startIntent.getExtras().getString(DBHandler.CONTROLLER_NAME);
 		String selection = DBHandler.HOUSE_NAME + "=?" + " AND " + DBHandler.ROOM_NAME + "=?" + " AND "
-				+ DBHandler.CONTROLLER_INTERFACE_NAME + "=?";
+				+ DBHandler.CONTROLLER_NAME + "=?";
 		String[] selectionArgs = { houseName, roomName, lightSwitchName };
 
 		lightSwitchNameField = ((EditText) findViewById(R.id.lightSwitchNameField));
@@ -53,10 +53,10 @@ public class EditLightSwitchActivity extends ActionBarActivity implements ReplyL
 			@Override
 			public void onClick(View v) {
 				ContentValues cv = new ContentValues();
-				cv.put(DBHandler.CONTROLLER_INTERFACE_NAME, lightSwitchNameField.getText().toString());
-				cv.put(DBHandler.CONTROL_PIN1_NUMBER, lightSwitchPinField.getText().toString());
+				cv.put(DBHandler.CONTROLLER_NAME, lightSwitchNameField.getText().toString());
+				cv.put(DBHandler.CONTROL_PIN_NUMBER, lightSwitchPinField.getText().toString());
 				String selection = DBHandler.HOUSE_NAME + "=?" + " AND " + DBHandler.ROOM_NAME + "=?"
-						+ " AND " + DBHandler.CONTROLLER_INTERFACE_NAME + "=?";
+						+ " AND " + DBHandler.CONTROLLER_NAME + "=?";
 				String[] selectionArgs = { houseName, roomName, lightSwitchName };
 				mAsyncQueryManager.startUpdate(0, null, DBProvider.CONTROLLERS_URI, cv, selection,
 						selectionArgs);
@@ -82,7 +82,7 @@ public class EditLightSwitchActivity extends ActionBarActivity implements ReplyL
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
 				lightSwitchPinField.setText(Integer.toString(cursor.getInt(cursor
-						.getColumnIndex(DBHandler.CONTROL_PIN1_NUMBER))));
+						.getColumnIndex(DBHandler.CONTROL_PIN_NUMBER))));
 			}
 			cursor.close();
 		}

@@ -71,9 +71,8 @@ public class ControllersActivity extends ActionBarActivity implements ReplyListe
 		HeadlessFragment temp = (HeadlessFragment) getSupportFragmentManager().findFragmentByTag(HEADLESS);
 		if (temp == null) {
 			temp = new HeadlessFragment();
-			temp.setSelectedHouse(getIntent().getStringExtra(DBHandler.HOUSE_NAME));
-			temp.setSelectedRoomWithIp(getIntent().getStringExtra(DBHandler.ROOM_NAME),
-					getIntent().getStringExtra(DBHandler.CONTROLLER_IP));
+//			temp.setSelectedHouseID(getIntent().getIntExtra(DBHandler.HOUSE_ID,-1));
+			temp.setSelectedRoomID(getIntent().getLongExtra(DBHandler.ROOM_ID,-1));
 			getSupportFragmentManager().beginTransaction().add(temp, HEADLESS).commit();
 		}
 		return temp;
@@ -116,19 +115,19 @@ public class ControllersActivity extends ActionBarActivity implements ReplyListe
 	}
 
 	@Override
-	public String getSelectedHouse() {
-		return myHeadlessFragment.getSelectedHouse();
+	public long getSelectedHouseID() {
+		return myHeadlessFragment.getSelectedHouseID();
 	}
 
 	@Override
-	public String getSelectedRoom() {
-		return myHeadlessFragment.getSelectedRoom();
+	public long getSelectedRoomID() {
+		return myHeadlessFragment.getSelectedRoomID();
 	}
 
-	@Override
-	public String getSelectedRoomIp() {
-		return myHeadlessFragment.getSelectedRoomIp();
-	}
+//	@Override
+//	public String getSelectedRoomIp() {
+//		return myHeadlessFragment.getSelectedRoomIp();
+//	}
 
 	@Override
 	public GridAdapter getControllersAdapter() {

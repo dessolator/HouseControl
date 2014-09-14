@@ -26,10 +26,10 @@ import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseQueryManager;
 import com.example.houseremote.interfaces.ControllerDatabaseChangeListener;
 import com.example.houseremote.interfaces.ControllersAdapterProvider;
+import com.example.houseremote.interfaces.DBInsertResponder;
 import com.example.houseremote.interfaces.NetworkCommandListener;
 import com.example.houseremote.interfaces.QueryManagerProvider;
 import com.example.houseremote.interfaces.ReplyListener;
-import com.example.houseremote.interfaces.SelectedHouseProvider;
 import com.example.houseremote.interfaces.SelectedRoomProvider;
 import com.example.houseremote.network.PinFlipPacket;
 import com.example.houseremote.observers.ControllerObserver;
@@ -38,24 +38,23 @@ import com.example.houseremote.observers.ControllerObserver;
  * A placeholder fragment containing a simple view.
  */
 
-public class ControllersFragment extends Fragment implements ControllerDatabaseChangeListener {
+public class ControllersFragment extends Fragment implements ControllerDatabaseChangeListener,
+		DBInsertResponder {
 
-	private String houseName;
-	private String roomName;
+//	private int houseID;
+	private long roomID;
 	private GridView mGrid;
-	private String roomIp;
 	private GridAdapter mAdapter;
 	private ReplyListener mCallback;
 	private DataBaseQueryManager mAsyncQueryManager;
 	private ControllerObserver mObserver;
-
 
 	public ControllersFragment() {
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		mObserver=new ControllerObserver(new Handler(),this);
+		mObserver = new ControllerObserver(new Handler(), this);
 		setHasOptionsMenu(true);
 		super.onCreate(savedInstanceState);
 
@@ -69,11 +68,11 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-		
+
 		mCallback = (ReplyListener) getActivity();
-		houseName = ((SelectedHouseProvider) mCallback).getSelectedHouse();
-		roomName = ((SelectedRoomProvider) mCallback).getSelectedRoom();
-		roomIp = ((SelectedRoomProvider) mCallback).getSelectedRoomIp();
+//		houseID = ((SelectedHouseProvider) mCallback).getSelectedHouseID();
+		roomID = ((SelectedRoomProvider) mCallback).getSelectedRoomID();
+//		roomIp = ((SelectedRoomProvider) mCallback).getSelectedRoomIp();
 		mAdapter = ((ControllersAdapterProvider) mCallback).getControllersAdapter();
 		mAsyncQueryManager = ((QueryManagerProvider) mCallback).getQueryManager();
 
@@ -84,29 +83,31 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 				((NetworkCommandListener) mCallback).addToNetworkSender(new PinFlipPacket(((Cursor) mAdapter
 						.getItem(position)).getInt(mAdapter.getCursor().getColumnIndex(
-						DBHandler.CONTROL_PIN1_NUMBER))));
+						DBHandler.CONTROL_PIN_NUMBER))));
 			}
 		});
 		registerForContextMenu(mGrid);
 		loadInitialControllerData(mAdapter);
-		
 
 		super.onActivityCreated(savedInstanceState);
 	}
-	
+
 	private void loadInitialControllerData(GridAdapter mAdapter2) {
-		if(((ControllersAdapterProvider)mCallback).isInitialControllerDataLoaded()) return;
+		if (((ControllersAdapterProvider) mCallback).isInitialControllerDataLoaded())
+			return;
 		getActivity().findViewById(R.id.linlaHeaderProgress).setVisibility(View.VISIBLE);
-		((ControllersAdapterProvider)mCallback).setInitialControllerDataLoaded(true);
-		((ReplyListener) mCallback).dataSetChanged(2,mAdapter);
-		
+		((ControllersAdapterProvider) mCallback).setInitialControllerDataLoaded(true);
+		((ReplyListener) mCallback).dataSetChanged(2, mAdapter);
+
 	}
-	
+
 	@Override
 	public void onStart() {
-		getActivity().getContentResolver().registerContentObserver(DBProvider.CONTROLLERS_URI, true, mObserver);
+		getActivity().getContentResolver().registerContentObserver(DBProvider.CONTROLLERS_URI, true,
+				mObserver);
 		super.onStart();
 	}
+
 	@Override
 	public void onStop() {
 		getActivity().getContentResolver().unregisterContentObserver(mObserver);
@@ -122,63 +123,53 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-	    if (requestCode == 2) {
-	    	((ReplyListener) mCallback).dataSetChanged(2,mAdapter);	        
-	    }
+		if (requestCode == 2) {
+			((ReplyListener) mCallback).dataSetChanged(2, mAdapter);
+		}
 	}
-	
+
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
-		String controllerName;
+		long controllerID;
 
 		if (item.getItemId() == R.id.action_edit_controller) {
-			controllerName = ((Cursor) mAdapter.getItem(info.position)).getString(mAdapter.getCursor()
-					.getColumnIndex(DBHandler.CONTROLLER_INTERFACE_NAME));
+			controllerID = ((Cursor) mAdapter.getItem(info.position)).getLong(mAdapter.getCursor()
+					.getColumnIndex(DBHandler.CONTROLLER_ID));
 
-			String selectedType = ((Cursor) mAdapter.getItem(info.position)).getString(mAdapter.getCursor()
+			int selectedType = ((Cursor) mAdapter.getItem(info.position)).getInt(mAdapter.getCursor()
 					.getColumnIndex(DBHandler.CONTROLLER_TYPE));
-			// TODO
-			// change
-			// switchType
-			// from
-			// string
-			// to
-			// int
-			// to
-			// allow
-			// a
-			// switch
-			// case
-			// below
-			Intent i = null;
 
-			if (selectedType.equals("lightSwitch")) {// TODO change to switch
-														// case
+			Intent i = null;
+			switch (selectedType) {
+			case 0:
 				i = new Intent(getActivity(), EditLightSwitchActivity.class);
-			} else if (selectedType.equals("outletSwitch")) {
-				// Intent i = new Intent(getApplicationContext(),
-				// EditOutletSwitchActivity.class);
-			} else if (selectedType.equals("someSwitch")) {
-				// Intent i = new Intent(getApplicationContext(),
-				// EditSomeSwitchActivity.class);
+				break;
+			case 1:
+//				i = new Intent(getActivity(), EditOutletSwitchActivity.class);
+				break;
+			case 2:
+//				i = new Intent(getActivity(), EditSomeSwitchActivity.class);
+				break;
+
+			default:
+				break;
 			}
 
-			i.putExtra(DBHandler.ROOM_NAME, roomName);// give info about the
-														// house
-			i.putExtra(DBHandler.HOUSE_NAME, houseName);
-			i.putExtra(DBHandler.CONTROLLER_INTERFACE_NAME, controllerName);
-			startActivityForResult(i,2);// start the activity
+//			i.putExtra(DBHandler.ROOM_NAME, roomName);// give info about the
+			// house
+//			i.putExtra(DBHandler.HOUSE_NAME, houseName);
+			i.putExtra(DBHandler.CONTROLLER_ID, controllerID);
+			startActivityForResult(i, 2);// start the activity
 			return true;
 		}
 		if (item.getItemId() == R.id.action_delete_controller) {
-			controllerName = ((Cursor) mAdapter.getItem(info.position)).getString(mAdapter.getCursor()
-					.getColumnIndex(DBHandler.CONTROLLER_INTERFACE_NAME));
-			String selection = DBHandler.HOUSE_NAME + "=?" + " AND " + DBHandler.ROOM_NAME + "=?" + " AND "
-					+ DBHandler.CONTROLLER_INTERFACE_NAME + "=?";
-			String[] selectionArgs = { houseName, roomName, controllerName };
-			mAsyncQueryManager.startDelete(0, null, DBProvider.CONTROLLERS_URI, selection, selectionArgs);//TODO might need token
+			controllerID = ((Cursor) mAdapter.getItem(info.position)).getLong(mAdapter.getCursor()
+					.getColumnIndex(DBHandler.CONTROLLER_ID));
+			String selection = DBHandler.CONTROLLER_ID + "=?";
+			String[] selectionArgs = { controllerID + "" };
+			mAsyncQueryManager.startDelete(0, null, DBProvider.CONTROLLERS_URI, selection, selectionArgs);
 		}
 		return super.onContextItemSelected(item);
 	}
@@ -195,42 +186,32 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 		if (id == R.id.action_add_a_controller) {
 			// TODO present a dialog for which type of controller to make
 			ContentValues cv = new ContentValues();
-			cv.put(DBHandler.HOUSE_NAME, houseName);
-			cv.put(DBHandler.ROOM_NAME, roomName);
-			cv.put(DBHandler.CONTROLLER_INTERFACE_NAME, "New LigthSwitch");// TODO
-																			// change
-																			// with
-																			// type
-			cv.put(DBHandler.CONTROLLER_IP, roomIp);
+			cv.put(DBHandler.ROOM_ID, roomID);
+			cv.put(DBHandler.CONTROLLER_NAME, "New LigthSwitch");
+			cv.put(DBHandler.CONTROLLER_IP, "");//TODO ADD FIELD TO EDITCONTROLLERACTIVITY
 			cv.put(DBHandler.CONTROLLER_IMAGE_NAME, "light");
-			cv.put(DBHandler.CONTROLLER_TYPE, "lightSwitch");// TODO not really
-			cv.put(DBHandler.CONTROL_PIN1_NUMBER, 0);
-			mAsyncQueryManager.startInsert(0, null, DBProvider.CONTROLLERS_URI, cv);
-			Intent i = new Intent(getActivity(), EditLightSwitchActivity.class);// TODO
-																				// switch
-																				// based
-																				// on
-																				// switchtype
-			i.putExtra(DBHandler.ROOM_NAME, roomName);// give info about the
-														// house
-			i.putExtra(DBHandler.HOUSE_NAME, houseName);
-			i.putExtra(DBHandler.CONTROLLER_INTERFACE_NAME, "New LigthSwitch");
-			startActivityForResult(i,2);// start the activity
+			cv.put(DBHandler.CONTROLLER_TYPE, "0");
+			cv.put(DBHandler.CONTROL_PIN_NUMBER, 0);
+			mAsyncQueryManager.startInsert(0, this, DBProvider.CONTROLLERS_URI, cv);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
-	public void replaceData(String houseName, String roomName, String roomIp) {
-		this.houseName = houseName;
-		this.roomName = roomName;
-		this.roomIp = roomIp;
+	public void uponInsertFinished(long controllerID) {
+		Intent i = new Intent(getActivity(), EditLightSwitchActivity.class);
+		i.putExtra(DBHandler.CONTROLLER_ID, controllerID);// give info about the
+		startActivityForResult(i, 2);// start the activity
+	}
+
+	public void replaceData(long roomID) {
+		this.roomID = roomID;
 	}
 
 	@Override
 	public void controllerDatabaseChanged() {
-		((ReplyListener) mCallback).dataSetChanged(2,mAdapter);
-		
+		((ReplyListener) mCallback).dataSetChanged(2, mAdapter);
+
 	}
 
 }

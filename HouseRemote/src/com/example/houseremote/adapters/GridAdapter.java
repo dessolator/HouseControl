@@ -39,12 +39,12 @@ public class GridAdapter extends CursorAdapter {
 	
 	public Drawable getImage(Context context,Cursor cursor){
 		Drawable retVal;
-		if(mStats.get(cursor.getInt(cursor.getColumnIndex(DBHandler.CONTROL_PIN1_NUMBER)))==null){
+		if(mStats.get(cursor.getInt(cursor.getColumnIndex(DBHandler.CONTROL_PIN_NUMBER)))==null){
 		retVal= context.getResources().getDrawable(context.getResources()
 				.getIdentifier("drawable/" + cursor.getString(2), null, context.getPackageName()));
 		}
 		else{
-			String mStateString=mStats.get(cursor.getInt(cursor.getColumnIndex(DBHandler.CONTROL_PIN1_NUMBER)))==0?"_on":"_off";
+			String mStateString=mStats.get(cursor.getInt(cursor.getColumnIndex(DBHandler.CONTROL_PIN_NUMBER)))==0?"_on":"_off";
 			retVal= context.getResources().getDrawable(context.getResources()
 					.getIdentifier("drawable/" + cursor.getString(2)+mStateString, null, context.getPackageName()));
 		}

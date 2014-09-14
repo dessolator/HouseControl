@@ -49,7 +49,7 @@ public class RoomsActivity extends ActionBarActivity implements RoomSelectionLis
 		HeadlessFragment temp = (HeadlessFragment) getSupportFragmentManager().findFragmentByTag(HEADLESS);
 		if (temp == null){
 			temp= new HeadlessFragment();
-			temp.setSelectedHouse(getIntent().getStringExtra(DBHandler.HOUSE_NAME));
+			temp.setSelectedHouseID(getIntent().getIntExtra(DBHandler.HOUSE_ID, -1));
 			getSupportFragmentManager().beginTransaction().add(temp, HEADLESS).commit();
 		}
 		return temp;
@@ -72,19 +72,18 @@ public class RoomsActivity extends ActionBarActivity implements RoomSelectionLis
 	}
 	
 	
-	public void roomSelected(String roomName, String roomIp) {
+	public void roomSelected(long roomID) {
 		
 		Intent i = new Intent(this, ControllersActivity.class);
-		i.putExtra(DBHandler.HOUSE_NAME, myHeadlessFragment.getSelectedHouse());
-		i.putExtra(DBHandler.ROOM_NAME, roomName);
-		i.putExtra(DBHandler.CONTROLLER_IP, roomIp);
+//		i.putExtra(DBHandler.HOUSE_ID, myHeadlessFragment.getSelectedHouse());
+		i.putExtra(DBHandler.ROOM_ID, roomID);
 		startActivity(i);
 		return;
 	}
 
 	@Override
-	public String getSelectedHouse() {
-		return myHeadlessFragment.getSelectedHouse();
+	public long getSelectedHouseID() {
+		return myHeadlessFragment.getSelectedHouseID();
 	}
 
 	@Override

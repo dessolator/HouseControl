@@ -76,13 +76,13 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 				myHousesFragment = acquireHousesFragmentToList();
 			} else {
 				
-				if (myHeadlessFragment.getSelectedRoom() != null) {//if on tablet and should display rooms and houses fragment
+				if (myHeadlessFragment.getSelectedRoomID() >=0) {//if on tablet and should display rooms and houses fragment
 					myHousesFragment = (HousesFragment) getSupportFragmentManager().findFragmentByTag(HOUSES);
 					myRoomsFragment = acquireRoomsFragmentToList();					
 					myControllersFragment = acquireControllersFragmentToExpanded();
 					
 				} else {
-					if (myHeadlessFragment.getSelectedHouse() != null) {//if on tablet and should display houses and rooms fragment
+					if (myHeadlessFragment.getSelectedHouseID() >=0) {//if on tablet and should display houses and rooms fragment
 						myHousesFragment = acquireHousesFragmentToList();
 						myRoomsFragment = acquireRoomsFragmentToExpanded();						
 					} else {//if on tablet and should display only houses fragment
@@ -103,8 +103,6 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 		}		
 		return temp;
 	}
-
-
 	private RoomsFragment acquireRoomsFragmentToExpanded() {
 		RoomsFragment temp = (RoomsFragment) getSupportFragmentManager().findFragmentByTag(ROOMS);
 		if (temp == null) {
@@ -155,11 +153,11 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 	}
 
 	@Override
-	public void roomSelected(String roomName, String roomIp) {
+	public void roomSelected(long roomID) {
 		
-		if (myHeadlessFragment.getSelectedRoom() == null) {//if no room was selected
+		if (myHeadlessFragment.getSelectedRoomID()<0) {//if no room was selected
 			
-			myHeadlessFragment.setSelectedRoomWithIp(roomName, roomIp);
+			myHeadlessFragment.setSelectedRoomID(roomID);
 			
 			getSupportFragmentManager().beginTransaction().remove(myRoomsFragment).commit();
 			myControllersFragment = acquireControllersFragmentToExpanded();
@@ -167,37 +165,37 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 			getSupportFragmentManager().beginTransaction().replace(R.id.list, myRoomsFragment,ROOMS).commit();
 			return;
 		}
-		if (myHeadlessFragment.getSelectedRoom() != roomName) {//if a different room was selected
+		if (myHeadlessFragment.getSelectedRoomID() != roomID) {//if a different room was selected
 			
-			myHeadlessFragment.setSelectedRoomWithIp(roomName, roomIp);
-			myControllersFragment.replaceData(myHeadlessFragment.getSelectedHouse(), roomName, roomIp);
+			myHeadlessFragment.setSelectedRoomID(roomID);
+			myControllersFragment.replaceData(roomID);
 			myHeadlessFragment.dataSetChanged(2, myHeadlessFragment.getControllersAdapter());
 			return;
 		}
 	}
 
 	@Override
-	public void houseSelected(String houseName) {
+	public void houseSelected(long houseID) {
 
 		if (findViewById(R.id.expanded) == null) {//if on phone start new activity
 			
 			Intent i = new Intent(this, RoomsActivity.class);
-			i.putExtra(DBHandler.HOUSE_NAME, houseName);
+			i.putExtra(DBHandler.HOUSE_ID, houseID);
 			startActivity(i);
 			return;
 		}
-		if (myHeadlessFragment.getSelectedHouse() == null) {//if no house was selected previously
+		if (myHeadlessFragment.getSelectedHouseID() <0) {//if no house was selected previously
 
-			myHeadlessFragment.setSelectedHouse(houseName);
+			myHeadlessFragment.setSelectedHouseID(houseID);
 			myRoomsFragment = new RoomsFragment();
 			getSupportFragmentManager().beginTransaction().add(R.id.expanded, myRoomsFragment,ROOMS).commit();
 			return;
 		}
 		
-		if (myHeadlessFragment.getSelectedHouse() != houseName) {//if a different house was selected previously
+		if (myHeadlessFragment.getSelectedHouseID() != houseID) {//if a different house was selected previously
 
-			myHeadlessFragment.setSelectedHouse(houseName);
-			myRoomsFragment.replaceData(houseName);
+			myHeadlessFragment.setSelectedHouseID(houseID);
+			myRoomsFragment.replaceData(houseID);
 			myHeadlessFragment.dataSetChanged(1, myHeadlessFragment.getRoomsAdapter());
 			return;
 		}
@@ -224,18 +222,18 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 	}
 
 	@Override
-	public String getSelectedRoom() {
-		return myHeadlessFragment.getSelectedRoom();
+	public long getSelectedRoomID() {
+		return myHeadlessFragment.getSelectedRoomID();
 	}
 
-	@Override
-	public String getSelectedRoomIp() {
-		return myHeadlessFragment.getSelectedRoomIp();
-	}
+//	@Override
+//	public String getSelectedRoomIp() {
+//		return myHeadlessFragment.getSelectedRoomIp();
+//	}
 
 	@Override
-	public String getSelectedHouse() {
-		return myHeadlessFragment.getSelectedHouse();
+	public long getSelectedHouseID() {
+		return myHeadlessFragment.getSelectedHouseID();
 	}
 
 	/*
@@ -312,8 +310,8 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 			super.onBackPressed();
 			return;
 		}
-		if(myHeadlessFragment.getSelectedRoom()!=null){
-			myHeadlessFragment.setSelectedRoomWithIp(null, null);
+		if(myHeadlessFragment.getSelectedRoomID()>=0){
+			myHeadlessFragment.setSelectedRoomID(-1);
 			myHeadlessFragment.setInitialControllerDataLoaded(false);
 			getSupportFragmentManager().beginTransaction().remove(myControllersFragment).commit();
 			getSupportFragmentManager().beginTransaction().remove(myRoomsFragment).commit();
@@ -323,8 +321,8 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 			getSupportFragmentManager().beginTransaction().replace(R.id.expanded, myRoomsFragment,ROOMS).commit();
 			return;
 		}
-		if(myHeadlessFragment.getSelectedHouse()!=null){
-			myHeadlessFragment.setSelectedHouse(null);
+		if(myHeadlessFragment.getSelectedHouseID()>=0){
+			myHeadlessFragment.setSelectedHouseID(-1);
 			myHeadlessFragment.setInitialRoomDataLoaded(false);
 			getSupportFragmentManager().beginTransaction().remove(myRoomsFragment).commit();
 			return;

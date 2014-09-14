@@ -20,7 +20,8 @@ public class EditHouseActivity extends ActionBarActivity implements ReplyListene
 	private DataBaseQueryManager mAsyncQueryManager;
 	EditText houseNameField;
 	EditText houseWifiNameField;
-	String houseName;
+//	String houseName;
+	long houseID;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -31,13 +32,13 @@ public class EditHouseActivity extends ActionBarActivity implements ReplyListene
 		//Field inits
 		Button saveButton = (Button) findViewById(R.id.saveHouseButton);
 		Intent startIntent = getIntent();
-		String selection = DBHandler.HOUSE_NAME + "=?";
-		houseName = startIntent.getExtras().getString(DBHandler.HOUSE_NAME);
-		String[] selectionArgs = { houseName };
+		String selection = DBHandler.HOUSE_ID + "=?";
+		houseID = startIntent.getLongExtra(DBHandler.HOUSE_ID, -1);
+		String[] selectionArgs = { ""+houseID };
 		
 		houseNameField = ((EditText) findViewById(R.id.houseNameField));
 		houseWifiNameField = ((EditText) findViewById(R.id.houseWifiField));
-		houseNameField.setText(houseName);
+//		houseNameField.setText(houseName);
 		mAsyncQueryManager = new DataBaseQueryManager(getContentResolver(), this);
 
 		mAsyncQueryManager.startQuery(0, null, DBProvider.HOUSES_URI, null, selection, selectionArgs, null);
@@ -47,8 +48,8 @@ public class EditHouseActivity extends ActionBarActivity implements ReplyListene
 			@Override
 			public void onClick(View v) {
 				
-				String selection = DBHandler.HOUSE_NAME + "=?";
-				String[] selectionArgs = { houseName };
+				String selection = DBHandler.HOUSE_ID + "=?";
+				String[] selectionArgs = { ""+houseID };
 				ContentValues cv = new ContentValues();
 				cv.put(DBHandler.HOUSE_NAME, houseNameField.getText().toString());
 				cv.put(DBHandler.HOUSE_WIFI_NAME, houseWifiNameField.getText().toString());
@@ -76,11 +77,14 @@ public class EditHouseActivity extends ActionBarActivity implements ReplyListene
 			if (cursor.moveToFirst()) {
 				houseWifiNameField
 						.setText(cursor.getString(cursor.getColumnIndex(DBHandler.HOUSE_WIFI_NAME)));
+				houseNameField
+				.setText(cursor.getString(cursor.getColumnIndex(DBHandler.HOUSE_NAME)));
 			}
 			cursor.close();
 		}
 
 	}
+
 
 	
 

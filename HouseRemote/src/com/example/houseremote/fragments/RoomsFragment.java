@@ -24,6 +24,7 @@ import com.example.houseremote.adapters.ListAdapter;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseQueryManager;
+import com.example.houseremote.interfaces.DBInsertResponder;
 import com.example.houseremote.interfaces.QueryManagerProvider;
 import com.example.houseremote.interfaces.ReplyListener;
 import com.example.houseremote.interfaces.RoomDatabaseChangeListener;
@@ -36,10 +37,10 @@ import com.example.houseremote.observers.RoomObserver;
  * A placeholder fragment containing a simple view.
  */
 
-public class RoomsFragment extends Fragment implements RoomDatabaseChangeListener {
+public class RoomsFragment extends Fragment implements RoomDatabaseChangeListener, DBInsertResponder {
 
 	
-	private String mHouseName;
+	private long mHouseID;
 	private ListView mList;
 	private ListAdapter mAdapter;
 	private RoomSelectionListener mCallback;
@@ -58,14 +59,13 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		
 		return inflater.inflate(R.layout.fragment_rooms, container, false);
 	}
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		mCallback=(RoomSelectionListener) getActivity();
-		mHouseName=((SelectedHouseProvider) mCallback).getSelectedHouse();
+		mHouseID=((SelectedHouseProvider) mCallback).getSelectedHouseID();
 		mAdapter=((RoomsAdapterProvider) mCallback).getRoomsAdapter();
 		mAsyncQueryManager=((QueryManagerProvider) mCallback).getQueryManager();
 		
@@ -74,8 +74,7 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 		mList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-				mCallback.roomSelected(((Cursor) mAdapter.getItem(position)).getString(mAdapter.getCursor().getColumnIndex(DBHandler.ROOM_NAME)),
-						((Cursor) mAdapter.getItem(position)).getString(mAdapter.getCursor().getColumnIndex(DBHandler.CONTROLLER_IP)));
+				mCallback.roomSelected(((Cursor) mAdapter.getItem(position)).getLong(mAdapter.getCursor().getColumnIndex(DBHandler.ROOM_ID)));
 			}
 		});
 		registerForContextMenu(mList);
@@ -104,32 +103,31 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 		getActivity().getContentResolver().unregisterContentObserver(mObserver);
 		super.onStop();
 	}
-
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		getActivity().getMenuInflater().inflate(R.menu.room_fragment_context_menu, menu);
 		super.onCreateContextMenu(menu, v, menuInfo);
 
 	}
-
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-		String selectedRoomName;
+//		String selectedRoomName;
+		long selectedRoomID;
 		if (item.getItemId() == R.id.action_edit_room) {
-			selectedRoomName = ((Cursor) mAdapter.getItem(info.position)).getString(mAdapter.getCursor()
-					.getColumnIndex(DBHandler.ROOM_NAME));
+			selectedRoomID = ((Cursor) mAdapter.getItem(info.position)).getLong(mAdapter.getCursor()
+					.getColumnIndex(DBHandler.ROOM_ID));
 			Intent i = new Intent(getActivity(), EditRoomActivity.class);
-			i.putExtra(DBHandler.ROOM_NAME, selectedRoomName);
-			i.putExtra(DBHandler.HOUSE_NAME, mHouseName);
+			i.putExtra(DBHandler.ROOM_ID, selectedRoomID);
+//			i.putExtra(DBHandler.HOUSE_NAME, mHouseName);
 			startActivityForResult(i,1);
 			return true;
 		}
 		if (item.getItemId() == R.id.action_delete_room) {
-			selectedRoomName = ((Cursor) mAdapter.getItem(info.position)).getString(mAdapter.getCursor()
-					.getColumnIndex(DBHandler.ROOM_NAME));
-			String selection = DBHandler.HOUSE_NAME + "=?" + " AND " + DBHandler.ROOM_NAME + "=?";
-			String[] selectionArgs = { mHouseName, selectedRoomName };
+			selectedRoomID = ((Cursor) mAdapter.getItem(info.position)).getLong(mAdapter.getCursor()
+					.getColumnIndex(DBHandler.ROOM_ID));
+			String selection = DBHandler.ROOM_ID + "=?";
+			String[] selectionArgs = {selectedRoomID+""};
 			mAsyncQueryManager.startDelete(0, null, DBProvider.ROOMS_URI, selection, selectionArgs);
 			return true;
 		}
@@ -159,21 +157,23 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 			ContentValues cv = new ContentValues();
 			cv.put(DBHandler.ROOM_NAME, getString(R.string.newRoomName));
 			cv.put(DBHandler.CONTROLLER_IP, "");
-			cv.put(DBHandler.HOUSE_NAME, mHouseName);
+			cv.put(DBHandler.HOUSE_ID, mHouseID);
 			cv.put(DBHandler.ROOM_IMAGE_NAME, "bed");
-			mAsyncQueryManager.startInsert(0, null, DBProvider.ROOMS_URI, cv);
+			mAsyncQueryManager.startInsert(0, this, DBProvider.ROOMS_URI, cv);
 
-			Intent i = new Intent(getActivity(), EditRoomActivity.class);
-			i.putExtra(DBHandler.ROOM_NAME, getString(R.string.newRoomName));
-			i.putExtra(DBHandler.HOUSE_NAME, mHouseName);
-			startActivityForResult(i,1);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
-	public void replaceData(String houseName){
-		this.mHouseName=houseName;
+	public void uponInsertFinished(long roomID) {
+		Intent i = new Intent(getActivity(), EditRoomActivity.class);
+		i.putExtra(DBHandler.ROOM_ID, roomID);
+		startActivityForResult(i,1);
+	}
+
+	public void replaceData(long houseID){
+		this.mHouseID=houseID;
 	}
 
 	@Override

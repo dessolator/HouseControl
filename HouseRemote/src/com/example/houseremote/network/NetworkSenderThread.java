@@ -27,6 +27,9 @@ public class NetworkSenderThread extends Thread {
 	private volatile boolean kill;
 	private volatile boolean change;
 	private volatile boolean pause;
+	private boolean paused = false;
+	private boolean dead = false;
+	private boolean started = false;
 
 	/**
 	 * Constructor for Network Sender.
@@ -44,14 +47,16 @@ public class NetworkSenderThread extends Thread {
 	 */
 	@Override
 	public void run() {
-
+		started=true;
 		while (!kill) {
 			while (pause) {
 				if (kill)
 					break;
 				synchronized (this) {
 					try {
+						paused=true;
 						wait();
+						paused=false;
 					} catch (InterruptedException e) {
 					}
 				}
@@ -79,6 +84,7 @@ public class NetworkSenderThread extends Thread {
 				}
 			}
 		}
+		dead=true;
 
 	}
 
@@ -174,6 +180,69 @@ public class NetworkSenderThread extends Thread {
 
 	public void setKillOnBatchDone(boolean b) {
 		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean isSenderPaused() {
+		return paused;
+	}
+
+	public boolean isSenderAlive() {
+		return ((!dead) && started);
+	}
+	
+	public void resmeSender() {
+		try {
+			if (dead)
+				throw new SenderIsDeadException();
+			if (!started)
+				throw new SenderNotStartedException();
+			if (!paused)
+				throw new SenderNotPausedException();
+		} catch (SenderIsDeadException e) {
+			e.printStackTrace();
+		} catch (SenderNotStartedException e) {
+			e.printStackTrace();
+		} catch (SenderNotPausedException e) {
+			e.printStackTrace();
+		}
+		unpause();
+		
+	}
+
+	public void pauseSender() {
+		try {
+			if (dead)
+				throw new SenderIsDeadException();
+			if (!started)
+				throw new SenderNotStartedException();
+			if (paused)
+				throw new SenderAlreadyPausedException();
+		} catch (SenderIsDeadException e) {
+			e.printStackTrace();
+		} catch (SenderNotStartedException e) {
+			e.printStackTrace();
+		} catch (SenderAlreadyPausedException e) {
+			e.printStackTrace();
+		}
+		registerPause();
+		
+	}
+
+	public void killSender() {
+		try {
+			if (dead)
+				throw new SenderIsDeadException();
+			if (!started)
+				throw new SenderNotStartedException();
+			if (paused)
+				unpause();
+		} catch (SenderIsDeadException e) {
+			e.printStackTrace();
+		} catch (SenderNotStartedException e) {
+			e.printStackTrace();
+		}
+		registerKill();
 		
 	}
 

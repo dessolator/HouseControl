@@ -25,7 +25,7 @@ import com.example.houseremote.interfaces.RoomSelectionListener;
 import com.example.houseremote.interfaces.RoomsAdapterProvider;
 import com.example.houseremote.interfaces.SelectedHouseProvider;
 import com.example.houseremote.interfaces.SelectedRoomProvider;
-import com.example.houseremote.network.PinFlipPacket;
+import com.example.houseremote.interfaces.Sendable;
 
 public class MainActivity extends ActionBarActivity implements ReplyListener, RoomSelectionListener,
 		HouseSelectionListener, ControllersAdapterProvider, RoomsAdapterProvider, HousesAdapterProvider,
@@ -262,8 +262,8 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 	 */
 	
 	@Override
-	public void addToNetworkSender(PinFlipPacket switchPacket) {
-		myHeadlessFragment.addToNetworkSender(switchPacket);
+	public void addToNetworkSender(String senderIp, Sendable switchPacket) {
+		myHeadlessFragment.addToNetworkSender(senderIp, switchPacket);
 		
 	}
 

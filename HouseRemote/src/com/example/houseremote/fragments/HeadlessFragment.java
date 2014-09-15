@@ -1,13 +1,14 @@
 package com.example.houseremote.fragments;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Stack;
 
-import android.annotation.SuppressLint;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
@@ -25,19 +26,17 @@ import com.example.houseremote.interfaces.HousesAdapterProvider;
 import com.example.houseremote.interfaces.NetworkCommandListener;
 import com.example.houseremote.interfaces.ReplyListener;
 import com.example.houseremote.interfaces.RoomsAdapterProvider;
-import com.example.houseremote.interfaces.SocketProvider;
+import com.example.houseremote.interfaces.Sendable;
 import com.example.houseremote.interfaces.SwitchStateListener;
 import com.example.houseremote.interfaces.UILockupListener;
 import com.example.houseremote.network.InitialStateQueryPacket;
-import com.example.houseremote.network.NetworkListenerAsyncTask;
-import com.example.houseremote.network.NetworkSenderThread;
+import com.example.houseremote.network.NetworkSet;
 import com.example.houseremote.network.PinStatus;
 import com.example.houseremote.network.PinStatusSet;
-import com.example.houseremote.network.PinFlipPacket;
 
 public class HeadlessFragment extends Fragment implements ReplyListener, ControllersAdapterProvider,
-		RoomsAdapterProvider, HousesAdapterProvider, NetworkCommandListener, SocketProvider,
-		SwitchStateListener, UILockupListener {
+		RoomsAdapterProvider, HousesAdapterProvider, NetworkCommandListener, SwitchStateListener,
+		UILockupListener {
 
 	/*
 	 * UI adapters for other fragments
@@ -57,23 +56,13 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	private long selectedHouseID;
 	private long selectedRoomID;
 
-	/*
-	 * Network Threads
-	 */
-	private NetworkListenerAsyncTask mNetworkListener;// TODO
-	private NetworkSenderThread mNetworkSender;// TODO
-	/*
-	 * Common socket
-	 */
-	private Socket mSocket;// TODO
-
 	private boolean initialControllerDataLoaded = false;
 	private boolean initialRoomDataLoaded = false;
 	private boolean initialHouseDataLoaded = false;
+	private HashMap<String, NetworkSet> mNetSets;
 
 	public HeadlessFragment() {
-		mNetworkListener = new NetworkListenerAsyncTask(this, this, this);
-		mNetworkSender = new NetworkSenderThread(this);
+		mNetSets = new HashMap<String, NetworkSet>();
 	}
 
 	/**
@@ -97,8 +86,10 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	@Override
 	public void onStart() {
 		super.onStart();
-		if (mSocket != null)
-			reStartNetwork();
+		Iterator<Map.Entry<String, NetworkSet>> iter = mNetSets.entrySet().iterator();
+		while (iter.hasNext()) {
+			iter.next().getValue().resume();
+		}
 	}
 
 	/**
@@ -107,8 +98,10 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	@Override
 	public void onStop() {
 		super.onStop();
-		mNetworkListener.registerPause();
-		mNetworkSender.registerPause();
+		Iterator<Map.Entry<String, NetworkSet>> iter = mNetSets.entrySet().iterator();
+		while (iter.hasNext()) {
+			iter.next().getValue().pause();
+		}
 	}
 
 	/**
@@ -117,33 +110,72 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		mNetworkListener.registerKill();
-		mNetworkSender.registerKill();
+		Iterator<Map.Entry<String, NetworkSet>> iter = mNetSets.entrySet().iterator();
+		while (iter.hasNext()) {
+			iter.next().getValue().kill();
+		}
 	}
 
-	/**
-	 * Starts network threads if they weren't started, unpauses them if they
-	 * were paused.
-	 */
-	@SuppressLint("NewApi")
-	private void reStartNetwork() {
-		if (mNetworkListener.getStatus().equals(AsyncTask.Status.FINISHED))
-			return;
-		if (android.os.Build.VERSION.SDK_INT >= 11) {
-			if (!mNetworkListener.getStatus().equals(AsyncTask.Status.RUNNING))
-				mNetworkListener.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void[]) null);
-			else
-				mNetworkListener.unpause();
-		} else {
-			if (!mNetworkListener.getStatus().equals(AsyncTask.Status.RUNNING))
-				mNetworkListener.execute((Void[]) null);
-			else
-				mNetworkListener.unpause();
+	public void onControllersDataChanged() {
+		Cursor c = controllerAdapter.getCursor();
+		c.moveToPosition(-1);
+		ArrayList<String> ips = new ArrayList<String>();
+		while (c.moveToNext()) {
+			ips.add(c.getString(c.getColumnIndex(DBHandler.CONTROLLER_IP)));
 		}
-		if (!mNetworkSender.isAlive())
-			mNetworkSender.start();
-		else
-			mNetworkSender.unpause();
+		addNetSetsForIps(ips);
+
+	}
+
+	private void addNetSetsForIps(ArrayList<String> ips) {
+		// get a list of NetworkSets that don't need to be modified
+		ArrayList<String> temp = new ArrayList<String>();
+		for (String ip : ips) {
+			if (mNetSets.containsKey(ip)) {
+				temp.add(ip);
+			}
+		}
+		// put all the modifiable ons on the stack
+		Stack<NetworkSet> modifiable = new Stack<NetworkSet>();
+		Iterator<Map.Entry<String, NetworkSet>> iter = mNetSets.entrySet().iterator();
+		while (iter.hasNext()) {
+			Map.Entry<String, NetworkSet> entry = iter.next();
+			if (!ips.contains(entry.getKey())) {
+				modifiable.push(entry.getValue());
+				iter.remove();
+			}
+		}
+		// for each ip that doesn't yet have a NetworkSet either modify an old
+		// one or make a new one
+		for (String ip : ips) {
+			if (!temp.contains(ip)) {
+				try {
+					if (!modifiable.isEmpty()) {
+						NetworkSet mod = modifiable.pop();
+						mod.registerChange(ip);
+						mNetSets.put(ip, mod);
+					} else {
+						NetworkSet mod = new NetworkSet(this, ip);
+						mNetSets.put(ip, mod);
+						mod.init();
+					}
+				} catch (UnknownHostException e) {
+					mNetSets.remove(ip).kill();
+					reportFailiureToConnectToServer(ip);
+					e.printStackTrace();
+				} catch (IOException e) {
+					mNetSets.remove(ip).kill();
+					reportFailiureToConnectToServer(ip);
+					e.printStackTrace();
+				}
+
+			}
+		}
+		// get rid of extra NetworkSets
+		while (!modifiable.isEmpty()) {
+			modifiable.pop().kill();
+		}
+
 	}
 
 	/**
@@ -189,13 +221,18 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 						DBHandler.CONTROLLER_IMAGE_NAME, DBHandler.CONTROLLER_TYPE, DBHandler.CONTROLLER_IP,
 						DBHandler.CONTROL_PIN_NUMBER };
 				selection = DBHandler.ROOM_ID + "=?";
-				String[] controllerSelectionArgs = {selectedRoomID+"" };
+				String[] controllerSelectionArgs = { selectedRoomID + "" };
 				queryManager.startQuery(2, controllerAdapter, DBProvider.CONTROLLERS_URI,
 						controllerProjection, selection, controllerSelectionArgs, null);
 				/*
 				 * Start NetStatusLookup
 				 */
-				mNetworkSender.addToQueue(new InitialStateQueryPacket());
+				Iterator<Map.Entry<String, NetworkSet>> iter = mNetSets.entrySet().iterator();
+				while (iter.hasNext()) {
+					iter.next().getValue().addToSenderQueue(new InitialStateQueryPacket());
+					;
+				}
+//				mNetworkSender.addToQueue(new InitialStateQueryPacket());
 
 			}
 			break;
@@ -234,7 +271,6 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 		return selectedRoomID;
 	}
 
-
 	public ListAdapter getRoomsAdapter() {
 		return roomAdapter;
 	}
@@ -261,9 +297,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 
 	public void setSelectedRoomID(long roomID) {
 		selectedRoomID = roomID;
-		reStartNetwork();//TODO 
-		mNetworkListener.registerChange();//TODO
-		mNetworkSender.registerChange();//TODO
+		onControllersDataChanged();
 	}
 
 	/**
@@ -275,15 +309,15 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	 * @throws IOException
 	 * @throws UnknownHostException
 	 */
-	@Override
-	synchronized public Socket acquireSocket(int port) throws UnknownHostException, IOException {
-		if ((mSocket == null) || mSocket.isClosed()) {
-
-			mSocket = new Socket(InetAddress.getByName(selectedRoomIp), port);
-
-		}
-		return mSocket;
-	}
+//	@Override
+//	synchronized public Socket acquireSocket(int port) throws UnknownHostException, IOException {
+//		if ((mSocket == null) || mSocket.isClosed()) {
+//
+//			mSocket = new Socket(InetAddress.getByName(selectedRoomIp), port);
+//
+//		}
+//		return mSocket;
+//	}
 
 	/**
 	 * Adds a packet to be sent to the server.
@@ -292,11 +326,8 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	 *            The switch packet to be sent to the server.
 	 */
 	@Override
-	public void addToNetworkSender(PinFlipPacket switchPacket) {
-		mNetworkSender.addToQueue(switchPacket);
-		synchronized (mNetworkSender) {
-			mNetworkSender.notify();
-		}
+	public void addToNetworkSender(String senderIp, Sendable switchPacket) {
+		mNetSets.get(senderIp).addToSenderQueue(switchPacket);
 
 	}
 
@@ -355,14 +386,14 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 		this.initialControllerDataLoaded = initialControllerDataLoaded;
 	}
 
-	@Override
-	public void reportFailiureToConnectToServer() {
+//	@Override
+	public void reportFailiureToConnectToServer(String ip) {
 		if (getActivity() == null)
 			return;
-		getActivity().findViewById(R.id.linlaHeaderProgress).setVisibility(View.GONE);
-		mNetworkListener = new NetworkListenerAsyncTask(this, this, this);
-		mNetworkSender = new NetworkSenderThread(this);
-		Toast.makeText(getActivity(), "Failed To Connect To Host", Toast.LENGTH_SHORT).show();
+//		getActivity().findViewById(R.id.linlaHeaderProgress).setVisibility(View.GONE);// TODO
+//		mNetworkListener = new NetworkListenerAsyncTask(this, this, this);
+//		mNetworkSender = new NetworkSenderThread(this);
+		Toast.makeText(getActivity(), "Failed To Connect To Host" + ip, Toast.LENGTH_SHORT).show();
 	}
 
 }

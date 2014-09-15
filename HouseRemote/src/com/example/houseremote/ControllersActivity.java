@@ -19,7 +19,7 @@ import com.example.houseremote.interfaces.QueryManagerProvider;
 import com.example.houseremote.interfaces.ReplyListener;
 import com.example.houseremote.interfaces.SelectedHouseProvider;
 import com.example.houseremote.interfaces.SelectedRoomProvider;
-import com.example.houseremote.network.PinFlipPacket;
+import com.example.houseremote.interfaces.Sendable;
 
 /**
  * Activity displaying the elements on a controller and controlling them.
@@ -140,8 +140,8 @@ public class ControllersActivity extends ActionBarActivity implements ReplyListe
 	}
 
 	@Override
-	public void addToNetworkSender(PinFlipPacket switchPacket) {
-		myHeadlessFragment.addToNetworkSender(switchPacket);
+	public void addToNetworkSender(String senderIp, Sendable switchPacket) {
+		myHeadlessFragment.addToNetworkSender(senderIp, switchPacket);
 	}
 
 	@Override

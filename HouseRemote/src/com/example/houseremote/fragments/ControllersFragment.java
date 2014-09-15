@@ -41,7 +41,6 @@ import com.example.houseremote.observers.ControllerObserver;
 public class ControllersFragment extends Fragment implements ControllerDatabaseChangeListener,
 		DBInsertResponder {
 
-//	private int houseID;
 	private long roomID;
 	private GridView mGrid;
 	private GridAdapter mAdapter;
@@ -81,9 +80,12 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 		mGrid.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-				((NetworkCommandListener) mCallback).addToNetworkSender(new PinFlipPacket(((Cursor) mAdapter
-						.getItem(position)).getInt(mAdapter.getCursor().getColumnIndex(
-						DBHandler.CONTROL_PIN_NUMBER))));
+				((NetworkCommandListener) mCallback).addToNetworkSender(
+						((Cursor) mAdapter.getItem(position)).getString(mAdapter.getCursor().getColumnIndex(
+								DBHandler.CONTROLLER_IP)),
+						new PinFlipPacket(((Cursor) mAdapter.getItem(position)).getInt(mAdapter.getCursor()
+								.getColumnIndex(DBHandler.CONTROL_PIN_NUMBER))));
+
 			}
 		});
 		registerForContextMenu(mGrid);
@@ -188,7 +190,8 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 			ContentValues cv = new ContentValues();
 			cv.put(DBHandler.ROOM_ID, roomID);
 			cv.put(DBHandler.CONTROLLER_NAME, "New LigthSwitch");
-			cv.put(DBHandler.CONTROLLER_IP, "");//TODO ADD FIELD TO EDITCONTROLLERACTIVITY
+			cv.put(DBHandler.CONTROLLER_IP, "");// TODO ADD FIELD TO
+												// EDITCONTROLLERACTIVITY
 			cv.put(DBHandler.CONTROLLER_IMAGE_NAME, "light");
 			cv.put(DBHandler.CONTROLLER_TYPE, "0");
 			cv.put(DBHandler.CONTROL_PIN_NUMBER, 0);

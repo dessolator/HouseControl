@@ -6,6 +6,6 @@ public interface UILockupListener {
 
 	void postLookupValues(PinStatusSet pinStatusSet);
 
-	void reportFailiureToConnectToServer();
+//	void reportFailiureToConnectToServer();
 
 }

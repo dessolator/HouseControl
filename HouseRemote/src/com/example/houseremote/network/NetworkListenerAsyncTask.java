@@ -14,8 +14,6 @@ import com.example.houseremote.interfaces.UILockupListener;
 
 public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void> {
 
-	
-
 	private SwitchStateListener mSwitchStateListener;
 	private UILockupListener mLockupListener;
 	private Socket mSocket;
@@ -24,9 +22,12 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 	/*
 	 * Thread management flags.
 	 */
-	private volatile boolean kill;
-	private volatile boolean change;
-	private volatile boolean pause;
+	private volatile boolean kill = false;
+	private volatile boolean change = false;
+	private volatile boolean pause = false;
+	private boolean paused = false;
+	private boolean dead = false;
+	private boolean started = false;
 
 	/**
 	 * Constructor for Network Listener.
@@ -51,14 +52,16 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 	 */
 	@Override
 	protected Void doInBackground(Void... params) {
-
+		started = true;
 		while (!kill) {
 			while (pause) {
 				if (kill)
 					break;
 				synchronized (this) {
 					try {
+						paused = true;
 						wait();
+						paused = false;
 					} catch (InterruptedException e) {
 					}
 				}
@@ -86,6 +89,7 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 					}
 				}
 			}
+			dead = true;
 		}
 
 		return null;
@@ -106,12 +110,12 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 			mSwitchStateListener.postValueChange(values[0].get(0));
 		}
 	}
-	
-	@Override
-	protected void onPostExecute(Void result) {
-		mLockupListener.reportFailiureToConnectToServer();
-		super.onPostExecute(result);
-	}
+
+//	@Override
+//	protected void onPostExecute(Void result) {
+//		mLockupListener.reportFailiureToConnectToServer();
+//		super.onPostExecute(result);
+//	}
 
 	/**
 	 * Listens to server and publishes changes.
@@ -198,6 +202,68 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 				notify();
 			}
 		}
+	}
+
+	public boolean isListenerPaused() {
+		return paused;
+	}
+
+	public boolean isListenerAlive() {
+		return ((!dead) && started);
+	}
+
+	public void resumeListener() {
+		try {
+			if (dead)
+				throw new ListenerIsDeadException();
+			if (!started)
+				throw new ListenerNotStartedException();
+			if (!paused)
+				throw new ListenerNotPausedException();
+		} catch (ListenerIsDeadException e) {
+			e.printStackTrace();
+		} catch (ListenerNotStartedException e) {
+			e.printStackTrace();
+		} catch (ListenerNotPausedException e) {
+			e.printStackTrace();
+		}
+		unpause();
+	}
+
+	public void pauseListener() {
+		try {
+			if (dead)
+				throw new ListenerIsDeadException();
+			if (!started)
+				throw new ListenerNotStartedException();
+			if (paused)
+				throw new ListenerAlreadyPausedException();
+		} catch (ListenerIsDeadException e) {
+			e.printStackTrace();
+		} catch (ListenerNotStartedException e) {
+			e.printStackTrace();
+		} catch (ListenerAlreadyPausedException e) {
+			e.printStackTrace();
+		}
+		registerPause();
+
+	}
+
+	public void killListener() {
+		try {
+			if (dead)
+				throw new ListenerIsDeadException();
+			if (!started)
+				throw new ListenerNotStartedException();
+			if (paused)
+				unpause();
+		} catch (ListenerIsDeadException e) {
+			e.printStackTrace();
+		} catch (ListenerNotStartedException e) {
+			e.printStackTrace();
+		}
+		registerKill();
+
 	}
 
 }

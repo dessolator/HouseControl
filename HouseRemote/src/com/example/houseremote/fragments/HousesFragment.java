@@ -18,18 +18,18 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.example.houseremote.EditHouseActivity;
 import com.example.houseremote.R;
-import com.example.houseremote.adapters.ListAdapter;
+import com.example.houseremote.activities.EditHouseActivity;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseQueryManager;
-import com.example.houseremote.interfaces.HouseDatabaseChangeListener;
+import com.example.houseremote.database.adapters.ListAdapter;
+import com.example.houseremote.database.interfaces.HouseDatabaseChangeListener;
+import com.example.houseremote.database.interfaces.HousesAdapterProvider;
+import com.example.houseremote.database.interfaces.QueryManagerProvider;
+import com.example.houseremote.database.interfaces.ReplyListener;
+import com.example.houseremote.database.observers.HouseObserver;
 import com.example.houseremote.interfaces.HouseSelectionListener;
-import com.example.houseremote.interfaces.HousesAdapterProvider;
-import com.example.houseremote.interfaces.QueryManagerProvider;
-import com.example.houseremote.interfaces.ReplyListener;
-import com.example.houseremote.observers.HouseObserver;
 
 /**
  * MAJOR TODOS 

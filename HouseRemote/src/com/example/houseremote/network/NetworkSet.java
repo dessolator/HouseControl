@@ -9,8 +9,8 @@ import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 
 import com.example.houseremote.fragments.HeadlessFragment;
-import com.example.houseremote.interfaces.Sendable;
-import com.example.houseremote.interfaces.SocketProvider;
+import com.example.houseremote.network.interfaces.Sendable;
+import com.example.houseremote.network.interfaces.SocketProvider;
 
 public class NetworkSet implements SocketProvider{
 	NetworkListenerAsyncTask mNetworkListener;

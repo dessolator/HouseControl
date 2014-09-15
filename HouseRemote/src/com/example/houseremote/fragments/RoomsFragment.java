@@ -18,20 +18,20 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.example.houseremote.EditRoomActivity;
 import com.example.houseremote.R;
-import com.example.houseremote.adapters.ListAdapter;
+import com.example.houseremote.activities.EditRoomActivity;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseQueryManager;
-import com.example.houseremote.interfaces.DBInsertResponder;
-import com.example.houseremote.interfaces.QueryManagerProvider;
-import com.example.houseremote.interfaces.ReplyListener;
-import com.example.houseremote.interfaces.RoomDatabaseChangeListener;
+import com.example.houseremote.database.adapters.ListAdapter;
+import com.example.houseremote.database.interfaces.DBInsertResponder;
+import com.example.houseremote.database.interfaces.QueryManagerProvider;
+import com.example.houseremote.database.interfaces.ReplyListener;
+import com.example.houseremote.database.interfaces.RoomDatabaseChangeListener;
+import com.example.houseremote.database.interfaces.RoomsAdapterProvider;
+import com.example.houseremote.database.observers.RoomObserver;
 import com.example.houseremote.interfaces.RoomSelectionListener;
-import com.example.houseremote.interfaces.RoomsAdapterProvider;
 import com.example.houseremote.interfaces.SelectedHouseProvider;
-import com.example.houseremote.observers.RoomObserver;
 
 /**
  * A placeholder fragment containing a simple view.

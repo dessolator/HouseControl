@@ -8,8 +8,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import android.util.Log;
 
-import com.example.houseremote.interfaces.Sendable;
-import com.example.houseremote.interfaces.SocketProvider;
+import com.example.houseremote.network.exceptions.SenderAlreadyPausedException;
+import com.example.houseremote.network.exceptions.SenderIsDeadException;
+import com.example.houseremote.network.exceptions.SenderNotPausedException;
+import com.example.houseremote.network.exceptions.SenderNotStartedException;
+import com.example.houseremote.network.interfaces.Sendable;
+import com.example.houseremote.network.interfaces.SocketProvider;
 
 public class NetworkSenderThread extends Thread {
 

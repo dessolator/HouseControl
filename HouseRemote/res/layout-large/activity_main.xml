@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:divider="@drawable/div"
     android:orientation="horizontal"
-    tools:context="com.example.houseremote.MainActivity"
+    tools:context="com.example.houseremote.activities.MainActivity"
     tools:ignore="MergeRootFrame" >
 
     <FrameLayout

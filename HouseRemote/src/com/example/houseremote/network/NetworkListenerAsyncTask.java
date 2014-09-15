@@ -8,9 +8,14 @@ import java.net.UnknownHostException;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.example.houseremote.interfaces.SocketProvider;
-import com.example.houseremote.interfaces.SwitchStateListener;
-import com.example.houseremote.interfaces.UILockupListener;
+import com.example.houseremote.network.dataclasses.PinStatusSet;
+import com.example.houseremote.network.exceptions.ListenerAlreadyPausedException;
+import com.example.houseremote.network.exceptions.ListenerIsDeadException;
+import com.example.houseremote.network.exceptions.ListenerNotPausedException;
+import com.example.houseremote.network.exceptions.ListenerNotStartedException;
+import com.example.houseremote.network.interfaces.SocketProvider;
+import com.example.houseremote.network.interfaces.SwitchStateListener;
+import com.example.houseremote.network.interfaces.UILockupListener;
 
 public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void> {
 

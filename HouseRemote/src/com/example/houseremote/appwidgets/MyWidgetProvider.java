@@ -15,9 +15,9 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.example.houseremote.R;
-import com.example.houseremote.interfaces.SocketProvider;
 import com.example.houseremote.network.NetworkSenderThread;
-import com.example.houseremote.network.PinFlipPacket;
+import com.example.houseremote.network.dataclasses.PinFlipPacket;
+import com.example.houseremote.network.interfaces.SocketProvider;
 
 public class MyWidgetProvider extends AppWidgetProvider implements SocketProvider {
 

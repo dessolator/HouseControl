@@ -16,23 +16,23 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.houseremote.R;
-import com.example.houseremote.adapters.GridAdapter;
-import com.example.houseremote.adapters.ListAdapter;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseQueryManager;
-import com.example.houseremote.interfaces.ControllersAdapterProvider;
-import com.example.houseremote.interfaces.HousesAdapterProvider;
-import com.example.houseremote.interfaces.NetworkCommandListener;
-import com.example.houseremote.interfaces.ReplyListener;
-import com.example.houseremote.interfaces.RoomsAdapterProvider;
-import com.example.houseremote.interfaces.Sendable;
-import com.example.houseremote.interfaces.SwitchStateListener;
-import com.example.houseremote.interfaces.UILockupListener;
-import com.example.houseremote.network.InitialStateQueryPacket;
+import com.example.houseremote.database.adapters.GridAdapter;
+import com.example.houseremote.database.adapters.ListAdapter;
+import com.example.houseremote.database.interfaces.ControllersAdapterProvider;
+import com.example.houseremote.database.interfaces.HousesAdapterProvider;
+import com.example.houseremote.database.interfaces.ReplyListener;
+import com.example.houseremote.database.interfaces.RoomsAdapterProvider;
 import com.example.houseremote.network.NetworkSet;
-import com.example.houseremote.network.PinStatus;
-import com.example.houseremote.network.PinStatusSet;
+import com.example.houseremote.network.dataclasses.InitialStateQueryPacket;
+import com.example.houseremote.network.dataclasses.PinStatus;
+import com.example.houseremote.network.dataclasses.PinStatusSet;
+import com.example.houseremote.network.interfaces.NetworkCommandListener;
+import com.example.houseremote.network.interfaces.Sendable;
+import com.example.houseremote.network.interfaces.SwitchStateListener;
+import com.example.houseremote.network.interfaces.UILockupListener;
 
 public class HeadlessFragment extends Fragment implements ReplyListener, ControllersAdapterProvider,
 		RoomsAdapterProvider, HousesAdapterProvider, NetworkCommandListener, SwitchStateListener,

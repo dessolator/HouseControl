@@ -18,21 +18,21 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 
-import com.example.houseremote.EditLightSwitchActivity;
 import com.example.houseremote.R;
-import com.example.houseremote.adapters.GridAdapter;
+import com.example.houseremote.activities.EditLightSwitchActivity;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseQueryManager;
-import com.example.houseremote.interfaces.ControllerDatabaseChangeListener;
-import com.example.houseremote.interfaces.ControllersAdapterProvider;
-import com.example.houseremote.interfaces.DBInsertResponder;
-import com.example.houseremote.interfaces.NetworkCommandListener;
-import com.example.houseremote.interfaces.QueryManagerProvider;
-import com.example.houseremote.interfaces.ReplyListener;
+import com.example.houseremote.database.adapters.GridAdapter;
+import com.example.houseremote.database.interfaces.ControllerDatabaseChangeListener;
+import com.example.houseremote.database.interfaces.ControllersAdapterProvider;
+import com.example.houseremote.database.interfaces.DBInsertResponder;
+import com.example.houseremote.database.interfaces.QueryManagerProvider;
+import com.example.houseremote.database.interfaces.ReplyListener;
+import com.example.houseremote.database.observers.ControllerObserver;
 import com.example.houseremote.interfaces.SelectedRoomProvider;
-import com.example.houseremote.network.PinFlipPacket;
-import com.example.houseremote.observers.ControllerObserver;
+import com.example.houseremote.network.dataclasses.PinFlipPacket;
+import com.example.houseremote.network.interfaces.NetworkCommandListener;
 
 /**
  * A placeholder fragment containing a simple view.

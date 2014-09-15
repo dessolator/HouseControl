@@ -2,8 +2,8 @@ package com.example.houseremote.database;
 
 import java.lang.ref.WeakReference;
 
-import com.example.houseremote.interfaces.DBInsertResponder;
-import com.example.houseremote.interfaces.ReplyListener;
+import com.example.houseremote.database.interfaces.DBInsertResponder;
+import com.example.houseremote.database.interfaces.ReplyListener;
 
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;

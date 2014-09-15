@@ -16,7 +16,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.example.houseremote.MainActivity"
+            android:name="com.example.houseremote.activities.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,23 +25,23 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.houseremote.EditHouseActivity"
+            android:name="com.example.houseremote.activities.EditHouseActivity"
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name="com.example.houseremote.ControllersActivity"
+            android:name="com.example.houseremote.activities.ControllersActivity"
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name="com.example.houseremote.RoomsActivity"
+   			android:name="com.example.houseremote.activities.RoomsActivity"
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name="com.example.houseremote.EditRoomActivity"
+            android:name="com.example.houseremote.activities.EditRoomActivity"
             android:label="@string/app_name" >
         </activity>
-        <activity
-            android:name="com.example.houseremote.EditLightSwitchActivity"
+       		<activity
+       		android:name="com.example.houseremote.activities.EditLightSwitchActivity"
             android:label="@string/app_name" >
         </activity>
 

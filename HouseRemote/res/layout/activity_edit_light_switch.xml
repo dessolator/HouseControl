@@ -38,6 +38,18 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="number" />
+    <TextView
+        android:id="@+id/lightSwitchIp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lightSwitchIpView" />
+
+    <EditText
+        android:id="@+id/lightSwitchIpField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="phone" />
 
     <Button
         android:id="@+id/saveLightSwitchButton"

@@ -24,6 +24,7 @@ import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseQueryManager;
 import com.example.houseremote.database.adapters.ListAdapter;
+import com.example.houseremote.database.interfaces.DBInsertResponder;
 import com.example.houseremote.database.interfaces.HouseDatabaseChangeListener;
 import com.example.houseremote.database.interfaces.HousesAdapterProvider;
 import com.example.houseremote.database.interfaces.QueryManagerProvider;
@@ -38,16 +39,17 @@ import com.example.houseremote.interfaces.HouseSelectionListener;
  * TODO SETUP ACTIVITY FOR CONTROLLERS (SHOW AVAILABLE WIFIs -> AVAILABLE CONTROLLERS -> AVAILABLE SWITCHES) (Avoid manual adition of nodes)
  * TODO ADD WIDGET SETUP ACTIVITY
  * MINOR TODOS 
+ * TODO DATABASE IDs START FROM 1 ADJUST FOR STUPIDITY
  * TODO WIDGET
  * TODO REDESIGN DATABASE
  * TODO USE UI DESIGN TO HILIGHT SELECTED ELEMENTS
- * TODO CHECK RESOURCE USAGE, NAMELY CLOSE THE DAMN CURSORS IN ONSTOP ONPAUSE ETC. 
+ * TODO CHECK RESOURCE USAGE, NAMELY CLOSE THE DAMN CURSORS IN ONSTOP ONPAUSE ETC. (MAT analysis)
  * TODO ANIMATE THE FRAGMENT TRANSITIONS
  * TODO HAVE NEW HOUSE NAME AUTOINCREMENT
  * TODO ADD AND RESCALE IMAGES
  */
 
-public class HousesFragment extends Fragment implements HouseDatabaseChangeListener {
+public class HousesFragment extends Fragment implements HouseDatabaseChangeListener, DBInsertResponder {
 	
 	private ListView mList;
 	private ListAdapter mAdapter;
@@ -127,7 +129,7 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
 		int selectedHouseID;
-		String selectedHouseName;
+//		String selectedHouseName;
 
 		if (item.getItemId() == R.id.action_edit_house) {
 			selectedHouseID = ((Cursor) mAdapter.getItem(info.position)).getInt(mAdapter.getCursor()
@@ -173,16 +175,32 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 			cv.put(DBHandler.HOUSE_WIFI_PASS, "");
 			cv.put(DBHandler.HOUSE_IMAGE_NAME, "house");
 
-			asyncQ.startInsert(0, null, DBProvider.HOUSES_URI, cv);//TODO grab the new houseID
+			asyncQ.startInsert(0, this, DBProvider.HOUSES_URI, cv);//TODO grab the new houseID
 
-			Intent i = new Intent(getActivity(), EditHouseActivity.class);
-			i.putExtra(DBHandler.HOUSE_NAME, getString(R.string.newHouseName));//TODO pass new houseID
-			startActivityForResult(i,0);
+//			Intent i = new Intent(getActivity(), EditHouseActivity.class);
+//			i.putExtra(DBHandler.HOUSE_NAME, getString(R.string.newHouseName));//TODO pass new houseID
+//			startActivityForResult(i,0);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
+	
+//	@Override
+//	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//	    if (requestCode == 1) {
+//	    	((ReplyListener) mCallback).dataSetChanged(1,mAdapter);
+//	    	((ReplyListener) mCallback).dataSetChanged(2,mAdapter);
+//	        
+//	    }
+//	}
+	
+	
+	public void uponInsertFinished(long houseID) {
+		Intent i = new Intent(getActivity(), EditHouseActivity.class);
+		i.putExtra(DBHandler.HOUSE_ID, houseID);
+		startActivityForResult(i,0);
+	}
+	
 
 	@Override
 	public void houseDatabaseChanged() {

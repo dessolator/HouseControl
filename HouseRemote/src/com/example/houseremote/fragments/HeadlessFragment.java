@@ -1,7 +1,5 @@
 package com.example.houseremote.fragments;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -53,8 +51,8 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	/*
 	 * Storing Selected Data
 	 */
-	private long selectedHouseID;
-	private long selectedRoomID;
+	private long selectedHouseID = -1;
+	private long selectedRoomID = -1;
 
 	private boolean initialControllerDataLoaded = false;
 	private boolean initialRoomDataLoaded = false;
@@ -86,9 +84,11 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	@Override
 	public void onStart() {
 		super.onStart();
-		Iterator<Map.Entry<String, NetworkSet>> iter = mNetSets.entrySet().iterator();
-		while (iter.hasNext()) {
-			iter.next().getValue().resume();
+		if(selectedRoomID>=0){
+			Iterator<Map.Entry<String, NetworkSet>> iter = mNetSets.entrySet().iterator();
+			while (iter.hasNext()) {
+				iter.next().getValue().resume();
+			}
 		}
 	}
 
@@ -98,9 +98,11 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	@Override
 	public void onStop() {
 		super.onStop();
+		if(selectedRoomID>=0){
 		Iterator<Map.Entry<String, NetworkSet>> iter = mNetSets.entrySet().iterator();
 		while (iter.hasNext()) {
 			iter.next().getValue().pause();
+		}
 		}
 	}
 
@@ -110,9 +112,12 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		if(selectedRoomID>=0){
 		Iterator<Map.Entry<String, NetworkSet>> iter = mNetSets.entrySet().iterator();
 		while (iter.hasNext()) {
 			iter.next().getValue().kill();
+			iter.remove();
+		}
 		}
 	}
 
@@ -149,24 +154,15 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 		// one or make a new one
 		for (String ip : ips) {
 			if (!temp.contains(ip)) {
-				try {
-					if (!modifiable.isEmpty()) {
-						NetworkSet mod = modifiable.pop();
-						mod.registerChange(ip);
-						mNetSets.put(ip, mod);
-					} else {
-						NetworkSet mod = new NetworkSet(this, ip);
-						mNetSets.put(ip, mod);
-						mod.init();
-					}
-				} catch (UnknownHostException e) {
-					mNetSets.remove(ip).kill();
-					reportFailiureToConnectToServer(ip);
-					e.printStackTrace();
-				} catch (IOException e) {
-					mNetSets.remove(ip).kill();
-					reportFailiureToConnectToServer(ip);
-					e.printStackTrace();
+
+				if (!modifiable.isEmpty()) {
+					NetworkSet mod = modifiable.pop();
+					mod.registerChange(ip);
+					mNetSets.put(ip, mod);
+				} else {
+					NetworkSet mod = new NetworkSet(this, ip);
+					mNetSets.put(ip, mod);
+					mod.init();
 				}
 
 			}
@@ -205,7 +201,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 		case 1:
 			if (selectedHouseID >= 0) {
 				String[] roomProjection = { DBHandler.ROOM_ID, DBHandler.ROOM_NAME, DBHandler.ROOM_IMAGE_NAME };
-				selection = DBHandler.HOUSE_ID + "=?";
+				selection = DBHandler.HOUSE_ID_ALT + "=?";
 				String[] roomSelectionArgs = { selectedHouseID + "" };
 				queryManager.startQuery(1, roomAdapter, DBProvider.ROOMS_URI, roomProjection, selection,
 						roomSelectionArgs, null);
@@ -220,18 +216,15 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 				String[] controllerProjection = { DBHandler.CONTROLLER_ID, DBHandler.CONTROLLER_NAME,
 						DBHandler.CONTROLLER_IMAGE_NAME, DBHandler.CONTROLLER_TYPE, DBHandler.CONTROLLER_IP,
 						DBHandler.CONTROL_PIN_NUMBER };
-				selection = DBHandler.ROOM_ID + "=?";
+				selection = DBHandler.ROOM_ID_ALT + "=?";
 				String[] controllerSelectionArgs = { selectedRoomID + "" };
 				queryManager.startQuery(2, controllerAdapter, DBProvider.CONTROLLERS_URI,
 						controllerProjection, selection, controllerSelectionArgs, null);
 				/*
 				 * Start NetStatusLookup
 				 */
-				Iterator<Map.Entry<String, NetworkSet>> iter = mNetSets.entrySet().iterator();
-				while (iter.hasNext()) {
-					iter.next().getValue().addToSenderQueue(new InitialStateQueryPacket());
-					;
-				}
+
+				
 //				mNetworkSender.addToQueue(new InitialStateQueryPacket());
 
 			}
@@ -256,6 +249,16 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 		Cursor temp = ((CursorAdapter) adapter).swapCursor(cursor);
 		if (temp != null)
 			temp.close();
+		if (adapter == controllerAdapter) {
+			onControllersDataChanged();
+			Iterator<Map.Entry<String, NetworkSet>> iter = mNetSets.entrySet().iterator();
+			if (iter.hasNext())
+				getActivity().findViewById(R.id.linlaHeaderProgress).setVisibility(View.VISIBLE);
+			while (iter.hasNext()) {
+				iter.next().getValue().addToSenderQueue(new InitialStateQueryPacket());
+				;
+			}
+		}
 
 	}
 
@@ -296,8 +299,15 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	}
 
 	public void setSelectedRoomID(long roomID) {
+		if(roomID<=0){
+			Iterator<Map.Entry<String, NetworkSet>> iter = mNetSets.entrySet().iterator();
+			while (iter.hasNext()) {
+				iter.next().getValue().kill();
+				iter.remove();
+			}
+		}
 		selectedRoomID = roomID;
-		onControllersDataChanged();
+
 	}
 
 	/**
@@ -386,6 +396,12 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 		this.initialControllerDataLoaded = initialControllerDataLoaded;
 	}
 
+	
+	public void connectFailedOnIp(String ip){
+		mNetSets.remove(ip).kill();
+		reportFailiureToConnectToServer(ip);
+	}
+	
 //	@Override
 	public void reportFailiureToConnectToServer(String ip) {
 		if (getActivity() == null)

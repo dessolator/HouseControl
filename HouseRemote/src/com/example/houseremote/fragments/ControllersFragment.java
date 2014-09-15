@@ -97,7 +97,6 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 	private void loadInitialControllerData(GridAdapter mAdapter2) {
 		if (((ControllersAdapterProvider) mCallback).isInitialControllerDataLoaded())
 			return;
-		getActivity().findViewById(R.id.linlaHeaderProgress).setVisibility(View.VISIBLE);
 		((ControllersAdapterProvider) mCallback).setInitialControllerDataLoaded(true);
 		((ReplyListener) mCallback).dataSetChanged(2, mAdapter);
 
@@ -188,7 +187,7 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 		if (id == R.id.action_add_a_controller) {
 			// TODO present a dialog for which type of controller to make
 			ContentValues cv = new ContentValues();
-			cv.put(DBHandler.ROOM_ID, roomID);
+			cv.put(DBHandler.ROOM_ID_ALT, roomID);
 			cv.put(DBHandler.CONTROLLER_NAME, "New LigthSwitch");
 			cv.put(DBHandler.CONTROLLER_IP, "");// TODO ADD FIELD TO
 												// EDITCONTROLLERACTIVITY

@@ -11,8 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.houseremote.R;
-import com.example.houseremote.R.id;
-import com.example.houseremote.R.layout;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseQueryManager;

@@ -156,8 +156,7 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 
 			ContentValues cv = new ContentValues();
 			cv.put(DBHandler.ROOM_NAME, getString(R.string.newRoomName));
-			cv.put(DBHandler.CONTROLLER_IP, "");
-			cv.put(DBHandler.HOUSE_ID, mHouseID);
+			cv.put(DBHandler.HOUSE_ID_ALT, mHouseID);
 			cv.put(DBHandler.ROOM_IMAGE_NAME, "bed");
 			mAsyncQueryManager.startInsert(0, this, DBProvider.ROOMS_URI, cv);
 

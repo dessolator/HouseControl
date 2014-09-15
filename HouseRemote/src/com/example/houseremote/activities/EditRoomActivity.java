@@ -11,8 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.houseremote.R;
-import com.example.houseremote.R.id;
-import com.example.houseremote.R.layout;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseQueryManager;
@@ -20,10 +18,10 @@ import com.example.houseremote.database.interfaces.ReplyListener;
 
 public class EditRoomActivity extends ActionBarActivity implements ReplyListener {
 
-	String roomName;
-	String houseName;
+	long roomID;
+//	String houseName;
 	EditText roomNameField;
-	EditText roomIpField;
+//	EditText roomIpField;
 	DataBaseQueryManager mAsyncQueryManager;
 
 	@Override
@@ -34,13 +32,12 @@ public class EditRoomActivity extends ActionBarActivity implements ReplyListener
 
 		Intent startIntent = getIntent();
 		Button saveButton = (Button) findViewById(R.id.saveRoomButton);
-		roomName = startIntent.getExtras().getString(DBHandler.ROOM_NAME);
-		houseName = startIntent.getExtras().getString(DBHandler.HOUSE_NAME);
-		String selection = DBHandler.HOUSE_NAME + "=?" + " AND " + DBHandler.ROOM_NAME + "=?";
-		String[] selectionArgs = { houseName, roomName };
+		roomID = startIntent.getExtras().getLong(DBHandler.ROOM_ID);
+//		houseName = startIntent.getExtras().getString(DBHandler.HOUSE_NAME);
+		String selection = DBHandler.ROOM_ID + "=?";
+		String[] selectionArgs = {roomID+"" };
 		roomNameField = (EditText) findViewById(R.id.roomNameField);
-		roomNameField.setText(roomName);
-		roomIpField = (EditText) findViewById(R.id.roomIpField);
+//		roomIpField = (EditText) findViewById(R.id.roomIpField);
 		mAsyncQueryManager = new DataBaseQueryManager(getContentResolver(), this);
 		
 		mAsyncQueryManager.startQuery(0, null, DBProvider.ROOMS_URI, null, selection, selectionArgs, null);
@@ -49,11 +46,11 @@ public class EditRoomActivity extends ActionBarActivity implements ReplyListener
 
 			@Override
 			public void onClick(View v) {
-				String selection = DBHandler.ROOM_NAME + "=?" + " AND " + DBHandler.HOUSE_NAME + "=?";
-				String[] selectionArgs = { roomName, houseName };
+				String selection = DBHandler.ROOM_ID + "=?";
+				String[] selectionArgs = { roomID+"" };
 				ContentValues cv = new ContentValues();
 				cv.put(DBHandler.ROOM_NAME, roomNameField.getText().toString());
-				cv.put(DBHandler.CONTROLLER_IP, roomIpField.getText().toString());
+//				cv.put(DBHandler.CONTROLLER_IP, roomIpField.getText().toString());
 				mAsyncQueryManager.startUpdate(0, null, DBProvider.ROOMS_URI, cv, selection, selectionArgs);
 				onBackPressed();
 
@@ -76,7 +73,8 @@ public class EditRoomActivity extends ActionBarActivity implements ReplyListener
 	public void replaceCursor(Cursor cursor,Object o) {
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
-				roomIpField.setText(cursor.getString(cursor.getColumnIndex(DBHandler.CONTROLLER_IP)));
+//				roomIpField.setText(cursor.getString(cursor.getColumnIndex(DBHandler.CONTROLLER_IP)));
+				roomNameField.setText(cursor.getString(cursor.getColumnIndex(DBHandler.ROOM_NAME)));
 			}
 			cursor.close();
 		}

@@ -18,6 +18,7 @@
     <string name="roomIpView">Room Controler IP:</string>
     <string name="lightSwitchNameView">Lightswitch Name:</string>
     <string name="lightSwitchPinView">Lightswitch Pin:</string>
+    <string name="lightSwitchIpView">Lightswitch Ip:</string>
     <string name="saveButton">Save</string>
     <string name="newHouseName">New House</string>
     <string name="newRoomName">New Room</string>

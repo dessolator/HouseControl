@@ -9,9 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.houseremote.R;
-import com.example.houseremote.R.id;
-import com.example.houseremote.R.layout;
-import com.example.houseremote.R.menu;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DataBaseQueryManager;
 import com.example.houseremote.database.adapters.GridAdapter;

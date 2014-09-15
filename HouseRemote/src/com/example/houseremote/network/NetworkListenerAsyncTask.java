@@ -172,9 +172,11 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 		if (getStatus() != AsyncTask.Status.RUNNING)
 			return;
 		kill = true;
+		if(mSocket!=null){
 		try {
 			mSocket.close();
 		} catch (IOException e) {
+		}
 		}
 		synchronized (this) {
 			notify();

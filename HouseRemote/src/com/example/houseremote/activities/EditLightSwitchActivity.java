@@ -11,8 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.houseremote.R;
-import com.example.houseremote.R.id;
-import com.example.houseremote.R.layout;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseQueryManager;
@@ -20,12 +18,11 @@ import com.example.houseremote.database.interfaces.ReplyListener;
 
 public class EditLightSwitchActivity extends ActionBarActivity implements ReplyListener {
 
-	String houseName;
-	String roomName;
-	String lightSwitchName;
+	long controllerID;
 	DataBaseQueryManager mAsyncQueryManager;
 	EditText lightSwitchNameField;
 	EditText lightSwitchPinField;
+	EditText lightSwitchIpField;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,17 +32,15 @@ public class EditLightSwitchActivity extends ActionBarActivity implements ReplyL
 
 		Intent startIntent = getIntent();
 		Button saveButton = (Button) findViewById(R.id.saveLightSwitchButton);
-		String[] projection = { DBHandler.CONTROL_PIN_NUMBER };
-		roomName = startIntent.getExtras().getString(DBHandler.ROOM_NAME);
-		houseName = startIntent.getExtras().getString(DBHandler.HOUSE_NAME);
-		lightSwitchName = startIntent.getExtras().getString(DBHandler.CONTROLLER_NAME);
-		String selection = DBHandler.HOUSE_NAME + "=?" + " AND " + DBHandler.ROOM_NAME + "=?" + " AND "
-				+ DBHandler.CONTROLLER_NAME + "=?";
-		String[] selectionArgs = { houseName, roomName, lightSwitchName };
+		String[] projection = { DBHandler.CONTROL_PIN_NUMBER,DBHandler.CONTROLLER_NAME,DBHandler.CONTROLLER_IP };
+		controllerID = startIntent.getExtras().getLong(DBHandler.CONTROLLER_ID);
+		String selection = DBHandler.CONTROLLER_ID + "=?";
+		String[] selectionArgs = { ""+controllerID };
 
 		lightSwitchNameField = ((EditText) findViewById(R.id.lightSwitchNameField));
-		lightSwitchNameField.setText(lightSwitchName);
+		
 		lightSwitchPinField = ((EditText) findViewById(R.id.lightSwitchPinField));
+		lightSwitchIpField = ((EditText) findViewById(R.id.lightSwitchIpField));
 		mAsyncQueryManager = new DataBaseQueryManager(getContentResolver(), this);
 
 		mAsyncQueryManager.startQuery(0, null, DBProvider.CONTROLLERS_URI, projection, selection,
@@ -58,9 +53,9 @@ public class EditLightSwitchActivity extends ActionBarActivity implements ReplyL
 				ContentValues cv = new ContentValues();
 				cv.put(DBHandler.CONTROLLER_NAME, lightSwitchNameField.getText().toString());
 				cv.put(DBHandler.CONTROL_PIN_NUMBER, lightSwitchPinField.getText().toString());
-				String selection = DBHandler.HOUSE_NAME + "=?" + " AND " + DBHandler.ROOM_NAME + "=?"
-						+ " AND " + DBHandler.CONTROLLER_NAME + "=?";
-				String[] selectionArgs = { houseName, roomName, lightSwitchName };
+				cv.put(DBHandler.CONTROLLER_IP, lightSwitchIpField.getText().toString());
+				String selection = DBHandler.CONTROLLER_ID + "=?";
+				String[] selectionArgs = { ""+controllerID };
 				mAsyncQueryManager.startUpdate(0, null, DBProvider.CONTROLLERS_URI, cv, selection,
 						selectionArgs);
 				onBackPressed();
@@ -86,6 +81,10 @@ public class EditLightSwitchActivity extends ActionBarActivity implements ReplyL
 			if (cursor.moveToFirst()) {
 				lightSwitchPinField.setText(Integer.toString(cursor.getInt(cursor
 						.getColumnIndex(DBHandler.CONTROL_PIN_NUMBER))));
+				lightSwitchNameField.setText(cursor.getString(cursor
+						.getColumnIndex(DBHandler.CONTROLLER_NAME)));
+				lightSwitchIpField.setText(cursor.getString(cursor
+						.getColumnIndex(DBHandler.CONTROLLER_IP)));
 			}
 			cursor.close();
 		}

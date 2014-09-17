@@ -5,5 +5,4 @@ import com.example.houseremote.database.DataBaseQueryManager;
 public interface QueryManagerProvider{
 		DataBaseQueryManager getQueryManager();
 
-//		void restartFullStateRead();
 	}

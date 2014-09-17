@@ -3,12 +3,10 @@ package com.example.houseremote.network.dataclasses;
 import java.util.ArrayList;
 
 public class PinStatusSet {
-//	HashMap<Integer,PinStatus> mPins;
-	ArrayList<PinStatus> mPins;
+	private ArrayList<PinStatus> mPins;
 
 	
 	public PinStatusSet(){
-//		mPins=new HashMap<Integer, PinStatus>();
 		mPins=new ArrayList<PinStatus>();
 	}
 	
@@ -25,7 +23,7 @@ public class PinStatusSet {
 	}
 
 	public int getState(int position) {
-		return mPins.get(position).pinState;
+		return mPins.get(position).getPinState();
 	}
 
 	public ArrayList<PinStatus> getArray() {

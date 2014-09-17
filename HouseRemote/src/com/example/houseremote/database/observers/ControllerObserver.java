@@ -18,7 +18,7 @@ public class ControllerObserver extends ContentObserver {
 
 	@Override
 	public void onChange(boolean selfChange) {
-		onChange(selfChange,null);
+		mCallback.controllerDatabaseChanged();
 	}
 
 	@SuppressLint("NewApi")

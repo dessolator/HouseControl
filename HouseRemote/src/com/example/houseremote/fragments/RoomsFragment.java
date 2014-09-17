@@ -90,7 +90,7 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 	private void loadInitialControllerData(ListAdapter mAdapter2) {
 		if(((RoomsAdapterProvider)mCallback).isInitialRoomDataLoaded()) return;
 		((RoomsAdapterProvider)mCallback).setInitialRoomDataLoaded(true);
-		((ReplyListener) mCallback).dataSetChanged(1,mAdapter);
+		((ReplyListener) mCallback).reloadRoomData();
 		
 	}
 	@Override
@@ -112,14 +112,12 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-//		String selectedRoomName;
 		long selectedRoomID;
 		if (item.getItemId() == R.id.action_edit_room) {
 			selectedRoomID = ((Cursor) mAdapter.getItem(info.position)).getLong(mAdapter.getCursor()
 					.getColumnIndex(DBHandler.ROOM_ID));
 			Intent i = new Intent(getActivity(), EditRoomActivity.class);
 			i.putExtra(DBHandler.ROOM_ID, selectedRoomID);
-//			i.putExtra(DBHandler.HOUSE_NAME, mHouseName);
 			startActivityForResult(i,1);
 			return true;
 		}
@@ -143,8 +141,8 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    if (requestCode == 1) {
-	    	((ReplyListener) mCallback).dataSetChanged(1,mAdapter);
-	    	((ReplyListener) mCallback).dataSetChanged(2,mAdapter);
+	    	((ReplyListener) mCallback).reloadRoomData();
+	    	((ReplyListener) mCallback).reloadControllerData();
 	        
 	    }
 	}
@@ -177,12 +175,12 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 
 	@Override
 	public void roomDatabaseChanged() {
-		((ReplyListener) mCallback).dataSetChanged(1,mAdapter);
+		((ReplyListener) mCallback).reloadRoomData();
 	}
 
 	@Override
 	public void controllerDatabaseChanged() {
-		((ReplyListener) mCallback).dataSetChanged(2,mAdapter);
+		((ReplyListener) mCallback).reloadControllerData();
 	}
 
 }

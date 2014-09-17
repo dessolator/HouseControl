@@ -6,7 +6,7 @@ public class InitialStateQueryPacket implements Sendable{
 
 	@Override
 	public String getSendData() {
-		return ("FULLSTATUS_ASDASD");//TODO check in status
+		return ("FULLSTATUS_QUERY");//TODO check in server
 	}
 
 }

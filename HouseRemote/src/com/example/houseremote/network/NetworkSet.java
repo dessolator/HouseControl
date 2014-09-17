@@ -13,18 +13,20 @@ import com.example.houseremote.network.interfaces.Sendable;
 import com.example.houseremote.network.interfaces.SocketProvider;
 
 public class NetworkSet implements SocketProvider {
-	NetworkListenerAsyncTask mNetworkListener;
-	NetworkSenderThread mNetworkSender;
-	String ip;
-	Socket mSocket;
-	HeadlessFragment hf;
-	boolean kill;
+	private NetworkListenerAsyncTask mNetworkListener;
+	private NetworkSenderThread mNetworkSender;
+	private String ip;
+	private Socket mSocket;
+	private HeadlessFragment hf;
+	private boolean kill;
+	private int port;
 
-	public NetworkSet(HeadlessFragment hf, String ip) {
+	public NetworkSet(HeadlessFragment hf, String ip, int port) {
 		super();
+		this.port = port;
 		this.ip = ip;
 		this.hf = hf;
-		mNetworkListener = new NetworkListenerAsyncTask(this, hf, hf);
+		mNetworkListener = new NetworkListenerAsyncTask(this, hf);
 		mNetworkSender = new NetworkSenderThread(this);
 	}
 
@@ -50,7 +52,7 @@ public class NetworkSet implements SocketProvider {
 	}
 
 	private void revive() {
-		mNetworkListener = new NetworkListenerAsyncTask(this, hf, hf);
+		mNetworkListener = new NetworkListenerAsyncTask(this, hf);
 		mNetworkSender = new NetworkSenderThread(this);
 		kill=false;
 		
@@ -89,14 +91,14 @@ public class NetworkSet implements SocketProvider {
 	}
 
 	@Override
-	synchronized public Socket acquireSocket(int port) throws UnknownHostException, IOException {
+	synchronized public Socket acquireSocket() throws UnknownHostException, IOException {
 		if(kill) return null;
 		if(mSocket==null || mSocket.isClosed())
-			mSocket = new Socket(InetAddress.getByName(ip),55000);
-		return mSocket;// TODO port number is getting ignored
+			mSocket = new Socket(InetAddress.getByName(ip),port);//TODO apparently throws connectexception as well...
+		return mSocket;
 	}
 
-	public void registerChange(String ip){
+	public void registerChange(String ip, int port){
 		if(kill){
 			init();
 		}
@@ -108,6 +110,7 @@ public class NetworkSet implements SocketProvider {
 		} catch (IOException e) {
 		}
 	}
+		this.port = port;
 		this.ip = ip;
 	}
 

@@ -5,5 +5,5 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public interface SocketProvider{
-	public Socket acquireSocket(int port) throws   UnknownHostException, IOException;
+	public Socket acquireSocket() throws   UnknownHostException, IOException;
 }

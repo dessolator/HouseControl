@@ -22,7 +22,9 @@ import com.example.houseremote.network.interfaces.SocketProvider;
 public class MyWidgetProvider extends AppWidgetProvider implements SocketProvider {
 
 	private static String SOME_ACTION = "SOME ACTION";
-	Socket mSocket;
+	private Socket mSocket;
+	
+	
 	@SuppressLint("NewApi")
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -51,15 +53,13 @@ public class MyWidgetProvider extends AppWidgetProvider implements SocketProvide
 				mSender.addToQueue(new PinFlipPacket(1));
 				mSender.setKillOnBatchDone(true);
 				mSender.start();
-				
-//				mSender.registerKill();
 		}
 	}
 
-	synchronized public Socket acquireSocket(int port) throws UnknownHostException, IOException {
+	synchronized public Socket acquireSocket() throws UnknownHostException, IOException {
 		if ((mSocket == null) || mSocket.isClosed()) {
 
-				mSocket = new Socket(InetAddress.getByName("192.168.1.101"), port);
+				mSocket = new Socket(InetAddress.getByName("192.168.1.101"), 55000);
 			
 		}
 		return mSocket;

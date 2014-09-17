@@ -4,7 +4,7 @@ import com.example.houseremote.network.dataclasses.PinStatusSet;
 
 public interface UILockupListener {
 
-	void postLookupValues(PinStatusSet pinStatusSet);
+	
 
 
 }

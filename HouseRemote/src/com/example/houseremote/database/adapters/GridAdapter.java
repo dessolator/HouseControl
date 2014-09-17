@@ -60,14 +60,14 @@ public class GridAdapter extends CursorAdapter {
 
 	public void addStatusSet(PinStatusSet ps) {
 		for(PinStatus p: ps.getArray()){
-			mStats.put(p.pinNumber, p.pinState);
+			mStats.put(p.getPinNumber(), p.getPinState());
 		}
 		notifyDataSetChanged();
 		
 	}
 
 	public void addToStatusSet(PinStatus newData) {
-		mStats.put(newData.pinNumber, newData.pinState);
+		mStats.put(newData.getPinNumber(), newData.getPinState());
 		notifyDataSetChanged();
 		
 	}

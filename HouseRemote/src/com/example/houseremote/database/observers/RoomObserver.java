@@ -18,7 +18,8 @@ public class RoomObserver extends ContentObserver {
 
 	@Override
 	public void onChange(boolean selfChange) {
-		onChange(selfChange,null);
+		mCallback.roomDatabaseChanged();
+		mCallback.controllerDatabaseChanged();
 	}
 
 	@SuppressLint("NewApi")

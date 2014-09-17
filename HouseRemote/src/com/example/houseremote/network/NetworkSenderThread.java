@@ -31,6 +31,10 @@ public class NetworkSenderThread extends Thread {
 	private volatile boolean kill;
 	private volatile boolean change;
 	private volatile boolean pause;
+	private boolean killOnBatchDone=false;
+	/*
+	 * Thread state flags.
+	 */
 	private boolean paused = false;
 	private boolean dead = false;
 	private boolean started = false;
@@ -68,20 +72,24 @@ public class NetworkSenderThread extends Thread {
 			while (!(kill || pause)) {
 				change = false;
 				try {
-					mSocket = mSocketProvider.acquireSocket(55000);
+					mSocket = mSocketProvider.acquireSocket();
 				} catch (UnknownHostException e2) {
+					e2.printStackTrace();
 					return;
 				} catch (IOException e3) {
+					e3.printStackTrace();
 					return;
 				}
-//				if(mSocket==null) throw new UnableToFindHostException();
 				try {
+					if(mSocket==null){
+						continue;
+					}
 					mOutputStream = new DataOutputStream(mSocket.getOutputStream());
 				} catch (IOException e1) {
 				}
 				while (!(change || kill || pause)) {
 					try {
-						operateOnData();
+						sendPacket();
 					} catch (InterruptedException e) {
 					} catch (IOException e) {
 					}
@@ -100,22 +108,17 @@ public class NetworkSenderThread extends Thread {
 	 * @throws IOException
 	 *             Thrown if the Thread is paused or killed.
 	 */
-	private void operateOnData() throws InterruptedException, IOException {
+	private void sendPacket() throws InterruptedException, IOException {
 		while (mQueue.isEmpty()) {
+			if(killOnBatchDone){
+				kill=true;
+				mSocket.close();
+				return;
+			}
 			synchronized (this) {
 				wait();
 			}
 		}
-//		Sendable mData = mQueue.poll();
-//		switch (mData.getType()) {
-//		case FLIP:
-//			mOutputStream.writeUTF("FLIP_" + mData.getPin());
-//			break;
-//		case FULLSTATEREAD:
-//			Log.d("MOO", "FULL STATE QUERY");
-//			mOutputStream.writeUTF("FULLSTATUS_ASDASD");
-//			break;
-//		}
 		mOutputStream.writeUTF(mQueue.poll().getSendData());
 		mOutputStream.flush();
 	}
@@ -183,7 +186,10 @@ public class NetworkSenderThread extends Thread {
 	}
 
 	public void setKillOnBatchDone(boolean b) {
-		// TODO Auto-generated method stub
+		if(!started){
+			killOnBatchDone=b;//TODO investigate potential use instead of kill
+		}
+//		else //TODO throw exceptions
 		
 	}
 

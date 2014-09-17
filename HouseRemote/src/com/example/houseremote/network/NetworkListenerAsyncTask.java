@@ -15,12 +15,10 @@ import com.example.houseremote.network.exceptions.ListenerNotPausedException;
 import com.example.houseremote.network.exceptions.ListenerNotStartedException;
 import com.example.houseremote.network.interfaces.SocketProvider;
 import com.example.houseremote.network.interfaces.SwitchStateListener;
-import com.example.houseremote.network.interfaces.UILockupListener;
 
 public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void> {
 
 	private SwitchStateListener mSwitchStateListener;
-	private UILockupListener mLockupListener;
 	private Socket mSocket;
 	private SocketProvider mSocketProvider;
 	private DataInputStream mInputStream;
@@ -30,6 +28,9 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 	private volatile boolean kill = false;
 	private volatile boolean change = false;
 	private volatile boolean pause = false;
+	/*
+	 * Thread state flags.
+	 */
 	private boolean paused = false;
 	private boolean dead = false;
 	private boolean started = false;
@@ -44,11 +45,9 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 	 * @param mLockupListener
 	 *            The entity listening to pin status lookups.
 	 */
-	public NetworkListenerAsyncTask(SocketProvider mSocketProvider, SwitchStateListener mSwitchStateListener,
-			UILockupListener mLockupListener) {
+	public NetworkListenerAsyncTask(SocketProvider mSocketProvider, SwitchStateListener mSwitchStateListener) {
 		super();
 		this.mSocketProvider = mSocketProvider;
-		this.mLockupListener = mLockupListener;
 		this.mSwitchStateListener = mSwitchStateListener;
 	}
 
@@ -74,7 +73,7 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 			while (!(kill || pause)) {
 				change = false;
 				try {
-					mSocket = mSocketProvider.acquireSocket(55000);
+					mSocket = mSocketProvider.acquireSocket();
 				} catch (UnknownHostException e2) {
 					e2.printStackTrace();
 					return null;
@@ -88,7 +87,8 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 				}
 				while (!(change || kill || pause)) {
 					try {
-						operateOnData();
+						String mData = mInputStream.readUTF();// close socket interrupts...
+						operateOnData(mData);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -110,17 +110,12 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 	protected void onProgressUpdate(PinStatusSet... values) {
 		super.onProgressUpdate(values);
 		if (values[0].size() > 1) {
-			mLockupListener.postLookupValues(values[0]);
+			mSwitchStateListener.postLookupValues(values[0]);
 		} else {
 			mSwitchStateListener.postValueChange(values[0].get(0));
 		}
 	}
 
-//	@Override
-//	protected void onPostExecute(Void result) {
-//		mLockupListener.reportFailiureToConnectToServer();
-//		super.onPostExecute(result);
-//	}
 
 	/**
 	 * Listens to server and publishes changes.
@@ -128,9 +123,8 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 	 * @throws IOException
 	 *             The exception thrown if the AsyncTask is paused or killed
 	 */
-	private void operateOnData() throws IOException {
+	private void operateOnData(String mData){
 		Log.d("MOO", "LISTENING");
-		String mData = mInputStream.readUTF();// close socket interrupts...
 		String[] mSplitData = mData.split("_");
 		if (mSplitData[0].trim().equals("FULLSTATUSREPLY")) {
 			Log.d("MOO", "FULL STATE QUERY RECEIVED");

@@ -48,9 +48,6 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 	private DataBaseQueryManager mAsyncQueryManager;
 	private ControllerObserver mObserver;
 
-	public ControllersFragment() {
-	}
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		mObserver = new ControllerObserver(new Handler(), this);
@@ -69,9 +66,7 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 	public void onActivityCreated(Bundle savedInstanceState) {
 
 		mCallback = (ReplyListener) getActivity();
-//		houseID = ((SelectedHouseProvider) mCallback).getSelectedHouseID();
 		roomID = ((SelectedRoomProvider) mCallback).getSelectedRoomID();
-//		roomIp = ((SelectedRoomProvider) mCallback).getSelectedRoomIp();
 		mAdapter = ((ControllersAdapterProvider) mCallback).getControllersAdapter();
 		mAsyncQueryManager = ((QueryManagerProvider) mCallback).getQueryManager();
 
@@ -98,7 +93,7 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 		if (((ControllersAdapterProvider) mCallback).isInitialControllerDataLoaded())
 			return;
 		((ControllersAdapterProvider) mCallback).setInitialControllerDataLoaded(true);
-		((ReplyListener) mCallback).dataSetChanged(2, mAdapter);
+		((ReplyListener) mCallback).reloadControllerData();
 
 	}
 
@@ -125,7 +120,7 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == 2) {
-			((ReplyListener) mCallback).dataSetChanged(2, mAdapter);
+			((ReplyListener) mCallback).reloadControllerData();
 		}
 	}
 
@@ -158,9 +153,6 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 				break;
 			}
 
-//			i.putExtra(DBHandler.ROOM_NAME, roomName);// give info about the
-			// house
-//			i.putExtra(DBHandler.HOUSE_NAME, houseName);
 			i.putExtra(DBHandler.CONTROLLER_ID, controllerID);
 			startActivityForResult(i, 2);// start the activity
 			return true;
@@ -189,8 +181,7 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 			ContentValues cv = new ContentValues();
 			cv.put(DBHandler.ROOM_ID_ALT, roomID);
 			cv.put(DBHandler.CONTROLLER_NAME, "New LigthSwitch");
-			cv.put(DBHandler.CONTROLLER_IP, "");// TODO ADD FIELD TO
-												// EDITCONTROLLERACTIVITY
+			cv.put(DBHandler.CONTROLLER_IP, "");
 			cv.put(DBHandler.CONTROLLER_IMAGE_NAME, "light");
 			cv.put(DBHandler.CONTROLLER_TYPE, "0");
 			cv.put(DBHandler.CONTROL_PIN_NUMBER, 0);
@@ -212,7 +203,7 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 
 	@Override
 	public void controllerDatabaseChanged() {
-		((ReplyListener) mCallback).dataSetChanged(2, mAdapter);
+		((ReplyListener) mCallback).reloadControllerData();
 
 	}
 

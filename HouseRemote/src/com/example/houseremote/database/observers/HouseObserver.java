@@ -18,7 +18,9 @@ public class HouseObserver extends ContentObserver {
 
 	@Override
 	public void onChange(boolean selfChange) {
-		onChange(selfChange,null);
+		mCallback.houseDatabaseChanged();
+		mCallback.roomDatabaseChanged();
+		mCallback.controllerDatabaseChanged();
 	}
 
 	@SuppressLint("NewApi")

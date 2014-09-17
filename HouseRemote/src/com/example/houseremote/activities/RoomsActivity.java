@@ -24,8 +24,6 @@ import com.example.houseremote.interfaces.SelectedHouseProvider;
 public class RoomsActivity extends ActionBarActivity implements RoomSelectionListener, SelectedHouseProvider, RoomsAdapterProvider, QueryManagerProvider,ReplyListener{
 	
 	private HeadlessFragment myHeadlessFragment;
-	@SuppressWarnings("unused")
-	private RoomsFragment myRoomsFragment;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +32,7 @@ public class RoomsActivity extends ActionBarActivity implements RoomSelectionLis
 		setContentView(R.layout.activity_main);
 
 		myHeadlessFragment = acquireHeadlessFragment();
-		myRoomsFragment = acquireRoomsFragmentToList();
+		acquireRoomsFragmentToList();
 
 	}
 
@@ -76,7 +74,6 @@ public class RoomsActivity extends ActionBarActivity implements RoomSelectionLis
 	public void roomSelected(long roomID) {
 		
 		Intent i = new Intent(this, ControllersActivity.class);
-//		i.putExtra(DBHandler.HOUSE_ID, myHeadlessFragment.getSelectedHouse());
 		i.putExtra(DBHandler.ROOM_ID, roomID);
 		startActivity(i);
 		return;
@@ -95,12 +92,6 @@ public class RoomsActivity extends ActionBarActivity implements RoomSelectionLis
 	@Override
 	public DataBaseQueryManager getQueryManager() {
 		return myHeadlessFragment.getQueryManager();
-	}
-
-	@Override
-	public void dataSetChanged(int token, Object cookie) {
-		myHeadlessFragment.dataSetChanged(token, cookie);
-		
 	}
 
 	@Override
@@ -124,5 +115,23 @@ public class RoomsActivity extends ActionBarActivity implements RoomSelectionLis
 	public boolean onNavigateUp() {
 		super.onBackPressed();
 		return true;
+	}
+
+	@Override
+	public void reloadControllerData() {
+		myHeadlessFragment.reloadControllerData();
+		
+	}
+
+	@Override
+	public void reloadHouseData() {
+		myHeadlessFragment.reloadHouseData();
+		
+	}
+
+	@Override
+	public void reloadRoomData() {
+		myHeadlessFragment.reloadRoomData();
+		
 	}
 }

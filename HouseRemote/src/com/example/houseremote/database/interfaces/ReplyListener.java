@@ -2,10 +2,15 @@ package com.example.houseremote.database.interfaces;
 
 import android.database.Cursor;
 
+
 public interface ReplyListener {
+	
+	void replaceCursor(Cursor cursor, Object cookie);
+	
+	void reloadControllerData();
 
-	void dataSetChanged(int token, Object cookie);
+	void reloadHouseData();
 
-	void replaceCursor(Cursor cursor, Object o);
+	void reloadRoomData();
 
 }

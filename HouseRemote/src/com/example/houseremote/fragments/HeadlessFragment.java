@@ -37,6 +37,19 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 		UILockupListener {
 
 	/*
+	 * String constants for DB lookups
+	 */
+	private static final String[] houseProjection = { DBHandler.HOUSE_ID, DBHandler.HOUSE_NAME, DBHandler.HOUSE_IMAGE_NAME };
+	private static final String[] roomProjection = { DBHandler.ROOM_ID, DBHandler.ROOM_NAME, DBHandler.ROOM_IMAGE_NAME };
+	private static final String[] controllerProjection = { DBHandler.CONTROLLER_ID, DBHandler.CONTROLLER_NAME,
+		DBHandler.CONTROLLER_IMAGE_NAME, DBHandler.CONTROLLER_TYPE, DBHandler.CONTROLLER_IP,
+		DBHandler.CONTROL_PIN_NUMBER };
+	private static final String roomSelection = DBHandler.HOUSE_ID_ALT + "=?";
+	private static final String controllerSelection = DBHandler.ROOM_ID_ALT + "=?";
+	
+	
+	
+	/*
 	 * UI adapters for other fragments
 	 */
 	private GridAdapter controllerAdapter;
@@ -51,17 +64,14 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	/*
 	 * Storing Selected Data
 	 */
-	private long selectedHouseID = -1;
-	private long selectedRoomID = -1;
+	private long selectedHouseID;
+	private long selectedRoomID;
 
 	private boolean initialControllerDataLoaded = false;
 	private boolean initialRoomDataLoaded = false;
 	private boolean initialHouseDataLoaded = false;
-	private HashMap<String, NetworkSet> mNetSets;
+	private HashMap<String, NetworkSet> mNetSets = new HashMap<String, NetworkSet>();
 
-	public HeadlessFragment() {
-		mNetSets = new HashMap<String, NetworkSet>();
-	}
 
 	/**
 	 * Create the necessary Adapters, Threads and DataBaseAccess also set this
@@ -84,7 +94,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	@Override
 	public void onStart() {
 		super.onStart();
-		if(selectedRoomID>=0){
+		if(selectedRoomID>0){
 			Iterator<Map.Entry<String, NetworkSet>> iter = mNetSets.entrySet().iterator();
 			while (iter.hasNext()) {
 				iter.next().getValue().resume();
@@ -98,7 +108,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	@Override
 	public void onStop() {
 		super.onStop();
-		if(selectedRoomID>=0){
+		if(selectedRoomID>0){
 		Iterator<Map.Entry<String, NetworkSet>> iter = mNetSets.entrySet().iterator();
 		while (iter.hasNext()) {
 			iter.next().getValue().pause();
@@ -112,7 +122,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		if(selectedRoomID>=0){
+		if(selectedRoomID>0){
 		Iterator<Map.Entry<String, NetworkSet>> iter = mNetSets.entrySet().iterator();
 		while (iter.hasNext()) {
 			iter.next().getValue().kill();
@@ -136,7 +146,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 		// get a list of NetworkSets that don't need to be modified
 		ArrayList<String> temp = new ArrayList<String>();
 		for (String ip : ips) {
-			if (mNetSets.containsKey(ip)) {
+			if (mNetSets.containsKey(ip)) {//TODO check if the ports are the same as well if not change port and registerChange
 				temp.add(ip);
 			}
 		}
@@ -157,10 +167,10 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 
 				if (!modifiable.isEmpty()) {
 					NetworkSet mod = modifiable.pop();
-					mod.registerChange(ip);
+					mod.registerChange(ip,55000);//TODO read ports from IPs somehow
 					mNetSets.put(ip, mod);
 				} else {
-					NetworkSet mod = new NetworkSet(this, ip);
+					NetworkSet mod = new NetworkSet(this, ip, 55000);//TODO read ports from IPs somehow
 					mNetSets.put(ip, mod);
 					mod.init();
 				}
@@ -174,65 +184,6 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 
 	}
 
-	/**
-	 * Requeries the appropriate sources: if house dataset changed: requeries
-	 * the database if room dataset changed: requeries the database if
-	 * controller dataset changed: requeries the database and server
-	 * 
-	 * @param token
-	 *            The token value of the dataset: 0 for house dataset 1 for room
-	 *            dataset 2 for controller dataset
-	 * 
-	 * @param adapter
-	 *            The adapter to which the results are returned.
-	 * 
-	 */
-	@Override
-	public void dataSetChanged(int token, Object adapter) {
-		String selection;
-		switch (token) {
-		// House data change
-		case 0:
-			String[] houseProjection = { DBHandler.HOUSE_ID, DBHandler.HOUSE_NAME, DBHandler.HOUSE_IMAGE_NAME };
-			queryManager
-					.startQuery(0, houseAdapter, DBProvider.HOUSES_URI, houseProjection, null, null, null);
-			break;
-		// Room data change
-		case 1:
-			if (selectedHouseID >= 0) {
-				String[] roomProjection = { DBHandler.ROOM_ID, DBHandler.ROOM_NAME, DBHandler.ROOM_IMAGE_NAME };
-				selection = DBHandler.HOUSE_ID_ALT + "=?";
-				String[] roomSelectionArgs = { selectedHouseID + "" };
-				queryManager.startQuery(1, roomAdapter, DBProvider.ROOMS_URI, roomProjection, selection,
-						roomSelectionArgs, null);
-			}
-			// Controller data change
-			break;
-		case 2:
-			if (selectedHouseID >= 0 && selectedRoomID >= 0) {
-				/*
-				 * Start DBsearch
-				 */
-				String[] controllerProjection = { DBHandler.CONTROLLER_ID, DBHandler.CONTROLLER_NAME,
-						DBHandler.CONTROLLER_IMAGE_NAME, DBHandler.CONTROLLER_TYPE, DBHandler.CONTROLLER_IP,
-						DBHandler.CONTROL_PIN_NUMBER };
-				selection = DBHandler.ROOM_ID_ALT + "=?";
-				String[] controllerSelectionArgs = { selectedRoomID + "" };
-				queryManager.startQuery(2, controllerAdapter, DBProvider.CONTROLLERS_URI,
-						controllerProjection, selection, controllerSelectionArgs, null);
-				/*
-				 * Start NetStatusLookup
-				 */
-
-				
-//				mNetworkSender.addToQueue(new InitialStateQueryPacket());
-
-			}
-			break;
-		default:
-		}
-
-	}
 
 	/**
 	 * Replaces the database cursor on the given adapter.
@@ -311,25 +262,6 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	}
 
 	/**
-	 * Opens or returns a socket to the selected server on the passed port.
-	 * 
-	 * @param The
-	 *            port to open the socket to.
-	 * @return The Socket object to the server.
-	 * @throws IOException
-	 * @throws UnknownHostException
-	 */
-//	@Override
-//	synchronized public Socket acquireSocket(int port) throws UnknownHostException, IOException {
-//		if ((mSocket == null) || mSocket.isClosed()) {
-//
-//			mSocket = new Socket(InetAddress.getByName(selectedRoomIp), port);
-//
-//		}
-//		return mSocket;
-//	}
-
-	/**
 	 * Adds a packet to be sent to the server.
 	 * 
 	 * @param switchPacket
@@ -361,9 +293,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	@Override
 	public void postLookupValues(PinStatusSet pinStatusSet) {
 		controllerAdapter.addStatusSet(pinStatusSet);
-//		getActivity().setProgressBarIndeterminateVisibility(false);
 		getActivity().findViewById(R.id.linlaHeaderProgress).setVisibility(View.GONE);
-		Toast.makeText(getActivity(), "MOOOO", Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -402,14 +332,44 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 		reportFailiureToConnectToServer(ip);
 	}
 	
-//	@Override
 	public void reportFailiureToConnectToServer(String ip) {
-		if (getActivity() == null)
-			return;
-//		getActivity().findViewById(R.id.linlaHeaderProgress).setVisibility(View.GONE);// TODO
-//		mNetworkListener = new NetworkListenerAsyncTask(this, this, this);
-//		mNetworkSender = new NetworkSenderThread(this);
+		if (getActivity() == null)	return;
 		Toast.makeText(getActivity(), "Failed To Connect To Host" + ip, Toast.LENGTH_SHORT).show();
+	}
+
+	@Override
+	public void reloadControllerData() {
+		if (selectedHouseID > 0 && selectedRoomID > 0) {
+			/*
+			 * Start DBsearch
+			 */
+			
+			String[] controllerSelectionArgs = { selectedRoomID + "" };
+			queryManager.startQuery(2, controllerAdapter, DBProvider.CONTROLLERS_URI,
+					controllerProjection, controllerSelection, controllerSelectionArgs, null);
+
+
+		}
+		
+	}
+
+	@Override
+	public void reloadHouseData() {
+		
+		queryManager
+				.startQuery(0, houseAdapter, DBProvider.HOUSES_URI, houseProjection, null, null, null);
+		
+	}
+
+	@Override
+	public void reloadRoomData() {
+		if (selectedHouseID > 0) {
+			
+			String[] roomSelectionArgs = { selectedHouseID + "" };
+			queryManager.startQuery(1, roomAdapter, DBProvider.ROOMS_URI, roomProjection, roomSelection,
+					roomSelectionArgs, null);
+		}
+		
 	}
 
 }

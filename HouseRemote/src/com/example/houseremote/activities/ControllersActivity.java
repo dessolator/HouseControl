@@ -33,8 +33,6 @@ public class ControllersActivity extends ActionBarActivity implements ReplyListe
 	/*
 	 * Fragments
 	 */
-	@SuppressWarnings("unused")
-	private ControllersFragment myControllersFragment;
 	private HeadlessFragment myHeadlessFragment;
 
 	/**
@@ -46,7 +44,7 @@ public class ControllersActivity extends ActionBarActivity implements ReplyListe
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.activity_main);
 		myHeadlessFragment = acquireHeadlessFragment();
-		myControllersFragment = acquireControllersFragment();
+		acquireControllersFragment();
 	}
 
 	/**
@@ -72,7 +70,6 @@ public class ControllersActivity extends ActionBarActivity implements ReplyListe
 		HeadlessFragment temp = (HeadlessFragment) getSupportFragmentManager().findFragmentByTag(HEADLESS);
 		if (temp == null) {
 			temp = new HeadlessFragment();
-//			temp.setSelectedHouseID(getIntent().getIntExtra(DBHandler.HOUSE_ID,-1));
 			temp.setSelectedRoomID(getIntent().getLongExtra(DBHandler.ROOM_ID,-1));
 			getSupportFragmentManager().beginTransaction().add(temp, HEADLESS).commit();
 		}
@@ -104,10 +101,6 @@ public class ControllersActivity extends ActionBarActivity implements ReplyListe
 	/*
 	 * Passalong functions, getters and setters.
 	 */
-	@Override
-	public void dataSetChanged(int token, Object cookie) {
-		myHeadlessFragment.dataSetChanged(token, cookie);
-	}
 
 	@Override
 	public void replaceCursor(Cursor cursor, Object o) {
@@ -124,11 +117,6 @@ public class ControllersActivity extends ActionBarActivity implements ReplyListe
 	public long getSelectedRoomID() {
 		return myHeadlessFragment.getSelectedRoomID();
 	}
-
-//	@Override
-//	public String getSelectedRoomIp() {
-//		return myHeadlessFragment.getSelectedRoomIp();
-//	}
 
 	@Override
 	public GridAdapter getControllersAdapter() {
@@ -160,5 +148,23 @@ public class ControllersActivity extends ActionBarActivity implements ReplyListe
 	public boolean onNavigateUp() {
 		super.onBackPressed();
 		return true;
+	}
+
+	@Override
+	public void reloadControllerData() {
+		myHeadlessFragment.reloadControllerData();
+		
+	}
+
+	@Override
+	public void reloadHouseData() {
+		myHeadlessFragment.reloadHouseData();
+		
+	}
+
+	@Override
+	public void reloadRoomData() {
+		myHeadlessFragment.reloadRoomData();
+		
 	}
 }

@@ -13,7 +13,7 @@ import com.example.houseremote.R;
 
 public class ListAdapter extends CursorAdapter {
 
-	LayoutInflater li;
+	private LayoutInflater li;
 
 	public ListAdapter(Context context, Cursor c, int flags) {
 		super(context, c, flags);

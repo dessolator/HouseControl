@@ -1,7 +1,6 @@
 package com.example.houseremote.activities;
 
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -16,13 +15,18 @@ import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseQueryManager;
 import com.example.houseremote.database.interfaces.ReplyListener;
 
+/**
+ * @author Ivan Kesler
+ * 
+ */
 public class EditLightSwitchActivity extends ActionBarActivity implements ReplyListener {
 
-	long controllerID;
-	DataBaseQueryManager mAsyncQueryManager;
-	EditText lightSwitchNameField;
-	EditText lightSwitchPinField;
-	EditText lightSwitchIpField;
+	private static final String selection = DBHandler.CONTROLLER_ID + "=?";
+	private long controllerID;
+	private DataBaseQueryManager mAsyncQueryManager;
+	private EditText lightSwitchNameField;
+	private EditText lightSwitchPinField;
+	private EditText lightSwitchIpField;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,23 +34,20 @@ public class EditLightSwitchActivity extends ActionBarActivity implements ReplyL
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.activity_edit_light_switch);
 
-		Intent startIntent = getIntent();
-		Button saveButton = (Button) findViewById(R.id.saveLightSwitchButton);
-		String[] projection = { DBHandler.CONTROL_PIN_NUMBER,DBHandler.CONTROLLER_NAME,DBHandler.CONTROLLER_IP };
-		controllerID = startIntent.getExtras().getLong(DBHandler.CONTROLLER_ID);
-		String selection = DBHandler.CONTROLLER_ID + "=?";
-		String[] selectionArgs = { ""+controllerID };
+		String[] projection = { DBHandler.CONTROL_PIN_NUMBER, DBHandler.CONTROLLER_NAME,
+				DBHandler.CONTROLLER_IP };
+		controllerID = getIntent().getExtras().getLong(DBHandler.CONTROLLER_ID);
+		String[] selectionArgs = { "" + controllerID };
 
 		lightSwitchNameField = ((EditText) findViewById(R.id.lightSwitchNameField));
-		
 		lightSwitchPinField = ((EditText) findViewById(R.id.lightSwitchPinField));
 		lightSwitchIpField = ((EditText) findViewById(R.id.lightSwitchIpField));
-		mAsyncQueryManager = new DataBaseQueryManager(getContentResolver(), this);
 
+		mAsyncQueryManager = new DataBaseQueryManager(getContentResolver(), this);
 		mAsyncQueryManager.startQuery(0, null, DBProvider.CONTROLLERS_URI, projection, selection,
 				selectionArgs, null);
 
-		saveButton.setOnClickListener(new OnClickListener() {
+		((Button) findViewById(R.id.saveLightSwitchButton)).setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -54,8 +55,7 @@ public class EditLightSwitchActivity extends ActionBarActivity implements ReplyL
 				cv.put(DBHandler.CONTROLLER_NAME, lightSwitchNameField.getText().toString());
 				cv.put(DBHandler.CONTROL_PIN_NUMBER, lightSwitchPinField.getText().toString());
 				cv.put(DBHandler.CONTROLLER_IP, lightSwitchIpField.getText().toString());
-				String selection = DBHandler.CONTROLLER_ID + "=?";
-				String[] selectionArgs = { ""+controllerID };
+				String[] selectionArgs = { "" + controllerID };
 				mAsyncQueryManager.startUpdate(0, null, DBProvider.CONTROLLERS_URI, cv, selection,
 						selectionArgs);
 				onBackPressed();
@@ -65,30 +65,39 @@ public class EditLightSwitchActivity extends ActionBarActivity implements ReplyL
 		});
 	}
 
-	@Override
-	public void dataSetChanged(int token, Object o) {
-	}
 
 	@Override
 	public boolean onNavigateUp() {
 		super.onBackPressed();
 		return true;
 	}
-	
+
 	@Override
 	public void replaceCursor(Cursor cursor, Object o) {
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
-				lightSwitchPinField.setText(Integer.toString(cursor.getInt(cursor
-						.getColumnIndex(DBHandler.CONTROL_PIN_NUMBER))));
-				lightSwitchNameField.setText(cursor.getString(cursor
-						.getColumnIndex(DBHandler.CONTROLLER_NAME)));
-				lightSwitchIpField.setText(cursor.getString(cursor
-						.getColumnIndex(DBHandler.CONTROLLER_IP)));
+				lightSwitchPinField.setText(Integer.toString(cursor.getInt(cursor.getColumnIndex(DBHandler.CONTROL_PIN_NUMBER))));
+				lightSwitchNameField.setText(cursor.getString(cursor.getColumnIndex(DBHandler.CONTROLLER_NAME)));
+				lightSwitchIpField.setText(cursor.getString(cursor.getColumnIndex(DBHandler.CONTROLLER_IP)));
 			}
 			cursor.close();
 		}
 
+	}
+
+	@Override
+	public void reloadControllerData() {
+		
+	}
+
+	@Override
+	public void reloadHouseData() {
+		
+	}
+
+	@Override
+	public void reloadRoomData() {
+		
 	}
 
 }

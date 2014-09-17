@@ -5,6 +5,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
+/**
+ * @author Marko Ilic
+ *
+ */
 public class DBHandler extends SQLiteOpenHelper {
 
 	/*

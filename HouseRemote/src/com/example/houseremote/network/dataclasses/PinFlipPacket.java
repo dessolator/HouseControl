@@ -4,7 +4,7 @@ import com.example.houseremote.network.interfaces.Sendable;
 
 public class PinFlipPacket implements Sendable {
 
-	int pin;
+	private int pin;
 
 	public PinFlipPacket(int pin) {
 		this.pin = pin;

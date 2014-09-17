@@ -38,8 +38,11 @@ import com.example.houseremote.interfaces.HouseSelectionListener;
  * TODO SETUP SERVICE TO LISTEN TO WIDGET CLICKS
  * TODO SETUP ACTIVITY FOR CONTROLLERS (SHOW AVAILABLE WIFIs -> AVAILABLE CONTROLLERS -> AVAILABLE SWITCHES) (Avoid manual adition of nodes)
  * TODO ADD WIDGET SETUP ACTIVITY
+ * TODO WHAT IF CONNECTING TO ALL SERVERS FAILS???? keep the spinny thing looping?
+ * TODO THE WIDGET IS ONE BIG TODO...
  * MINOR TODOS 
- * TODO DATABASE IDs START FROM 1 ADJUST FOR STUPIDITY
+ * TODO LOOK INTO NETWORK DATATYPES... THEY'RE... UGLY...
+ * TODO SWITCH SERVER-CLIENT COMMUNICATION FROM STRINGS TO MASK-MANAGED INTS
  * TODO WIDGET
  * TODO REDESIGN DATABASE
  * TODO USE UI DESIGN TO HILIGHT SELECTED ELEMENTS
@@ -47,6 +50,7 @@ import com.example.houseremote.interfaces.HouseSelectionListener;
  * TODO ANIMATE THE FRAGMENT TRANSITIONS
  * TODO HAVE NEW HOUSE NAME AUTOINCREMENT
  * TODO ADD AND RESCALE IMAGES
+ * TODO ADD ABILITY TO SELECT IMAGES FOR ROOMS/HOUSES/CONTROLLERS
  */
 
 public class HousesFragment extends Fragment implements HouseDatabaseChangeListener, DBInsertResponder {
@@ -57,9 +61,6 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 	private DataBaseQueryManager asyncQ;
 	private HouseObserver mObserver;
 
-	public HousesFragment() {
-	}
-		
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -79,10 +80,12 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
+		
 		mCallback=(HouseSelectionListener) getActivity();
 		mAdapter=((HousesAdapterProvider) mCallback).getHousesAdapter();
 		asyncQ=((QueryManagerProvider) mCallback).getQueryManager();
 		mList = (ListView) getActivity().findViewById(R.id.houseList);
+		
 		mList.setAdapter(mAdapter);
 		mList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -100,7 +103,7 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 	private void loadInitialControllerData(ListAdapter mAdapter2) {
 		if(((HousesAdapterProvider)mCallback).isInitialHouseDataLoaded()) return;
 		((HousesAdapterProvider)mCallback).setInitialHouseDataLoaded(true);
-		((ReplyListener) mCallback).dataSetChanged(0,mAdapter);
+		((ReplyListener) mCallback).reloadHouseData();
 		
 	}
 
@@ -129,7 +132,6 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
 		int selectedHouseID;
-//		String selectedHouseName;
 
 		if (item.getItemId() == R.id.action_edit_house) {
 			selectedHouseID = ((Cursor) mAdapter.getItem(info.position)).getInt(mAdapter.getCursor()
@@ -157,8 +159,8 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    if (requestCode == 0) {
-	    	((ReplyListener) mCallback).dataSetChanged(0,mAdapter);
-	    	((ReplyListener) mCallback).dataSetChanged(1,mAdapter);
+	    	((ReplyListener) mCallback).reloadHouseData();
+	    	((ReplyListener) mCallback).reloadRoomData();
 	        
 	    }
 	}
@@ -175,24 +177,11 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 			cv.put(DBHandler.HOUSE_WIFI_PASS, "");
 			cv.put(DBHandler.HOUSE_IMAGE_NAME, "house");
 
-			asyncQ.startInsert(0, this, DBProvider.HOUSES_URI, cv);//TODO grab the new houseID
-
-//			Intent i = new Intent(getActivity(), EditHouseActivity.class);
-//			i.putExtra(DBHandler.HOUSE_NAME, getString(R.string.newHouseName));//TODO pass new houseID
-//			startActivityForResult(i,0);
+			asyncQ.startInsert(0, this, DBProvider.HOUSES_URI, cv);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
-//	@Override
-//	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//	    if (requestCode == 1) {
-//	    	((ReplyListener) mCallback).dataSetChanged(1,mAdapter);
-//	    	((ReplyListener) mCallback).dataSetChanged(2,mAdapter);
-//	        
-//	    }
-//	}
 	
 	
 	public void uponInsertFinished(long houseID) {
@@ -204,21 +193,21 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 
 	@Override
 	public void houseDatabaseChanged() {
-		((ReplyListener) mCallback).dataSetChanged(0,mAdapter);
+		((ReplyListener) mCallback).reloadHouseData();
 		
 	}
 
 
 	@Override
 	public void roomDatabaseChanged() {
-		((ReplyListener) mCallback).dataSetChanged(1,mAdapter);
+		((ReplyListener) mCallback).reloadRoomData();
 		
 	}
 
 
 	@Override
 	public void controllerDatabaseChanged() {
-		((ReplyListener) mCallback).dataSetChanged(2,mAdapter);
+		((ReplyListener) mCallback).reloadControllerData();
 		
 	}
 

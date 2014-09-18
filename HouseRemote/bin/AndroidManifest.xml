@@ -16,7 +16,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.example.houseremote.activities.MainActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,35 +25,35 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.houseremote.activities.EditHouseActivity"
+            android:name=".activities.EditHouseActivity"
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name="com.example.houseremote.activities.ControllersActivity"
+            android:name=".activities.ControllersActivity"
             android:label="@string/app_name" >
         </activity>
         <activity
-   			android:name="com.example.houseremote.activities.RoomsActivity"
+            android:name=".activities.RoomsActivity"
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name="com.example.houseremote.activities.EditRoomActivity"
+            android:name=".activities.EditRoomActivity"
             android:label="@string/app_name" >
         </activity>
-       		<activity
-       		android:name="com.example.houseremote.activities.EditLightSwitchActivity"
+        <activity
+            android:name=".activities.EditLightSwitchActivity"
             android:label="@string/app_name" >
         </activity>
 
         <provider
-            android:name="com.example.houseremote.database.DBProvider"
+            android:name=".database.DBProvider"
             android:authorities="com.example.houseremote.database.dbprovider"
             android:exported="true"
             android:readPermission="true"
             android:writePermission="true" />
 
         <receiver
-            android:name="com.example.houseremote.appwidgets.MyWidgetProvider"
+            android:name=".appwidgets.MyWidgetProvider"
             android:icon="@drawable/ic_launcher"
             android:label="HouseRemote SwitchControl Widget" >
             <intent-filter>
@@ -64,6 +64,11 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info" />
         </receiver>
+
+        <activity
+            android:name=".AutoSearchActivity"
+            android:label="@string/title_activity_auto_search" >
+        </activity>
     </application>
 
 </manifest>

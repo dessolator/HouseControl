@@ -182,8 +182,9 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 			cv.put(DBHandler.ROOM_ID_ALT, roomID);
 			cv.put(DBHandler.CONTROLLER_NAME, "New LigthSwitch");
 			cv.put(DBHandler.CONTROLLER_IP, "");
+			cv.put(DBHandler.CONTROLLER_PORT, 55000);//TODO add to edit controller
 			cv.put(DBHandler.CONTROLLER_IMAGE_NAME, "light");
-			cv.put(DBHandler.CONTROLLER_TYPE, "0");
+			cv.put(DBHandler.CONTROLLER_TYPE, 0);
 			cv.put(DBHandler.CONTROL_PIN_NUMBER, 0);
 			mAsyncQueryManager.startInsert(0, this, DBProvider.CONTROLLERS_URI, cv);
 			return true;

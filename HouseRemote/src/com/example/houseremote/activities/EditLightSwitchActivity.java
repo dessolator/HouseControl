@@ -35,7 +35,7 @@ public class EditLightSwitchActivity extends ActionBarActivity implements ReplyL
 		setContentView(R.layout.activity_edit_light_switch);
 
 		String[] projection = { DBHandler.CONTROL_PIN_NUMBER, DBHandler.CONTROLLER_NAME,
-				DBHandler.CONTROLLER_IP };
+				DBHandler.CONTROLLER_IP, DBHandler.CONTROLLER_PORT };
 		controllerID = getIntent().getExtras().getLong(DBHandler.CONTROLLER_ID);
 		String[] selectionArgs = { "" + controllerID };
 

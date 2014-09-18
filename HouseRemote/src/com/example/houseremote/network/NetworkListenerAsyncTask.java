@@ -87,6 +87,7 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 				}
 				while (!(change || kill || pause)) {
 					try {
+						Log.d("MOO", "LISTENING");
 						String mData = mInputStream.readUTF();// close socket interrupts...
 						operateOnData(mData);
 					} catch (IOException e) {
@@ -124,7 +125,6 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 	 *             The exception thrown if the AsyncTask is paused or killed
 	 */
 	private void operateOnData(String mData){
-		Log.d("MOO", "LISTENING");
 		String[] mSplitData = mData.split("_");
 		if (mSplitData[0].trim().equals("FULLSTATUSREPLY")) {
 			Log.d("MOO", "FULL STATE QUERY RECEIVED");

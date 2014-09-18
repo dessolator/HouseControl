@@ -35,7 +35,7 @@ public class DBHandler extends SQLiteOpenHelper {
 	public static final String ROOM_ID_ALT = "room_id";
 	public static final String ROOM_NAME = "room_name";
 	public static final String ROOM_IMAGE_NAME = "room_image_name";
-	public static final String CONTROLLER_IP = "controller_ip";
+	
 	/*
 	 * CONTROLER TABLE COLUMNS
 	 */
@@ -44,6 +44,8 @@ public class DBHandler extends SQLiteOpenHelper {
 	public static final String CONTROLLER_IMAGE_NAME = "controller_image_name";
 	public static final String CONTROLLER_TYPE = "controller_type";
 	public static final String CONTROL_PIN_NUMBER = "control_pin1_number";
+	public static final String CONTROLLER_IP = "controller_ip";
+	public static final String CONTROLLER_PORT = "controller_port";
 	/*
 	 * SQL CREATION STRINGS
 	 */
@@ -67,6 +69,7 @@ public class DBHandler extends SQLiteOpenHelper {
 			+ CONTROLLER_ID+ " INTEGER PRIMARY KEY, "
 			+ CONTROLLER_NAME	+ " STRING NOT NULL, "
 			+ CONTROLLER_IP	+ " STRING NOT NULL, "
+			+ CONTROLLER_PORT + " INTEGER NOT NULL, "
 			+ CONTROL_PIN_NUMBER + " INTEGER NOT NULL, "
 			+ CONTROLLER_TYPE + " INTEGER NOT NULL, "
 			+ CONTROLLER_IMAGE_NAME	+ " STRING NOT NULL, "
@@ -74,6 +77,7 @@ public class DBHandler extends SQLiteOpenHelper {
 			+ " UNIQUE(" + CONTROLLER_IP + "," + CONTROL_PIN_NUMBER + "),"
 			+ " FOREIGN KEY(" + ROOM_ID_ALT + ") REFERENCES " + ROOM_TABLE_NAME + "(" + ROOM_ID + ") ON DELETE CASCADE ON UPDATE CASCADE"
 			+ ")";
+	
 	
 	
 	

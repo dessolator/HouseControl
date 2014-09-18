@@ -27,14 +27,13 @@ import com.example.houseremote.network.NetworkSet;
 import com.example.houseremote.network.dataclasses.InitialStateQueryPacket;
 import com.example.houseremote.network.dataclasses.PinStatus;
 import com.example.houseremote.network.dataclasses.PinStatusSet;
+import com.example.houseremote.network.dataclasses.ServerInfo;
 import com.example.houseremote.network.interfaces.NetworkCommandListener;
 import com.example.houseremote.network.interfaces.Sendable;
 import com.example.houseremote.network.interfaces.SwitchStateListener;
-import com.example.houseremote.network.interfaces.UILockupListener;
 
 public class HeadlessFragment extends Fragment implements ReplyListener, ControllersAdapterProvider,
-		RoomsAdapterProvider, HousesAdapterProvider, NetworkCommandListener, SwitchStateListener,
-		UILockupListener {
+		RoomsAdapterProvider, HousesAdapterProvider, NetworkCommandListener, SwitchStateListener {
 
 	/*
 	 * String constants for DB lookups
@@ -42,7 +41,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	private static final String[] houseProjection = { DBHandler.HOUSE_ID, DBHandler.HOUSE_NAME, DBHandler.HOUSE_IMAGE_NAME };
 	private static final String[] roomProjection = { DBHandler.ROOM_ID, DBHandler.ROOM_NAME, DBHandler.ROOM_IMAGE_NAME };
 	private static final String[] controllerProjection = { DBHandler.CONTROLLER_ID, DBHandler.CONTROLLER_NAME,
-		DBHandler.CONTROLLER_IMAGE_NAME, DBHandler.CONTROLLER_TYPE, DBHandler.CONTROLLER_IP,
+		DBHandler.CONTROLLER_IMAGE_NAME, DBHandler.CONTROLLER_TYPE, DBHandler.CONTROLLER_IP, DBHandler.CONTROLLER_PORT,
 		DBHandler.CONTROL_PIN_NUMBER };
 	private static final String roomSelection = DBHandler.HOUSE_ID_ALT + "=?";
 	private static final String controllerSelection = DBHandler.ROOM_ID_ALT + "=?";
@@ -133,21 +132,25 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 
 	public void onControllersDataChanged() {
 		Cursor c = controllerAdapter.getCursor();
+		if(c==null) return;
 		c.moveToPosition(-1);
-		ArrayList<String> ips = new ArrayList<String>();
+		ArrayList<ServerInfo> ips = new ArrayList<ServerInfo>();
 		while (c.moveToNext()) {
-			ips.add(c.getString(c.getColumnIndex(DBHandler.CONTROLLER_IP)));
+			ips.add(new ServerInfo(c.getString(c.getColumnIndex(DBHandler.CONTROLLER_IP)),c.getInt(c.getColumnIndex(DBHandler.CONTROLLER_PORT))));
 		}
 		addNetSetsForIps(ips);
 
 	}
 
-	private void addNetSetsForIps(ArrayList<String> ips) {
+	private void addNetSetsForIps(ArrayList<ServerInfo> ips) {
 		// get a list of NetworkSets that don't need to be modified
-		ArrayList<String> temp = new ArrayList<String>();
-		for (String ip : ips) {
-			if (mNetSets.containsKey(ip)) {//TODO check if the ports are the same as well if not change port and registerChange
-				temp.add(ip);
+		ArrayList<ServerInfo> temp = new ArrayList<ServerInfo>();
+		for (ServerInfo item : ips) {
+			if (mNetSets.containsKey(item.getIp())) {
+				if(mNetSets.get(item.getIp()).getPort()!=item.getPort()){
+					mNetSets.get(item.getIp()).registerChange(item.getIp(), item.getPort());
+				}
+					temp.add(item);
 			}
 		}
 		// put all the modifiable ons on the stack
@@ -162,16 +165,16 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 		}
 		// for each ip that doesn't yet have a NetworkSet either modify an old
 		// one or make a new one
-		for (String ip : ips) {
-			if (!temp.contains(ip)) {
+		for (ServerInfo item : ips) {
+			if (!temp.contains(item.getIp())) {
 
 				if (!modifiable.isEmpty()) {
 					NetworkSet mod = modifiable.pop();
-					mod.registerChange(ip,55000);//TODO read ports from IPs somehow
-					mNetSets.put(ip, mod);
+					mod.registerChange(item.getIp(),item.getPort());
+					mNetSets.put(item.getIp(), mod);
 				} else {
-					NetworkSet mod = new NetworkSet(this, ip, 55000);//TODO read ports from IPs somehow
-					mNetSets.put(ip, mod);
+					NetworkSet mod = new NetworkSet(this, item.getIp(), item.getPort());
+					mNetSets.put(item.getIp(), mod);
 					mod.init();
 				}
 

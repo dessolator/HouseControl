@@ -114,4 +114,8 @@ public class NetworkSet implements SocketProvider {
 		this.ip = ip;
 	}
 
+	public int getPort() {
+		return port;
+	}
+
 }

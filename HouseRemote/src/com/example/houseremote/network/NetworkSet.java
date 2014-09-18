@@ -11,6 +11,8 @@ import android.os.AsyncTask;
 import com.example.houseremote.fragments.HeadlessFragment;
 import com.example.houseremote.network.interfaces.Sendable;
 import com.example.houseremote.network.interfaces.SocketProvider;
+import com.example.houseremote.network.threads.NetworkListenerAsyncTask;
+import com.example.houseremote.network.threads.NetworkSenderThread;
 
 public class NetworkSet implements SocketProvider {
 	private NetworkListenerAsyncTask mNetworkListener;
@@ -46,7 +48,7 @@ public class NetworkSet implements SocketProvider {
 
 		}
 
-		if (!mNetworkSender.isAlive())
+		if (!mNetworkSender.isThreadAlive())
 			mNetworkSender.start();
 
 	}
@@ -62,26 +64,26 @@ public class NetworkSet implements SocketProvider {
 		if(kill){
 			init();
 		}
-		if (mNetworkListener.isListenerPaused())
-			mNetworkListener.resumeListener();
-		if (mNetworkSender.isSenderPaused())
-			mNetworkSender.resmeSender();
+		if (mNetworkListener.isThreadPaused())
+			mNetworkListener.resumeThread();
+		if (mNetworkSender.isThreadPaused())
+			mNetworkSender.resumeThread();
 
 	}
 
 	public void pause() {
-		if (mNetworkListener.isListenerAlive() && !mNetworkListener.isListenerPaused())
-			mNetworkListener.pauseListener();
-		if (mNetworkSender.isSenderAlive() && !mNetworkSender.isSenderPaused())
-			mNetworkSender.pauseSender();
+		if (mNetworkListener.isThreadAlive() && !mNetworkListener.isThreadPaused())
+			mNetworkListener.pauseThread();
+		if (mNetworkSender.isThreadAlive() && !mNetworkSender.isThreadPaused())
+			mNetworkSender.pauseThread();
 	}
 
 	public void kill() {
 		kill=true;
-		if (mNetworkListener.isListenerAlive())
-			mNetworkListener.killListener();
-		if (mNetworkSender.isSenderAlive())
-			mNetworkSender.killSender();
+		if (mNetworkListener.isThreadAlive())
+			mNetworkListener.killThread();
+		if (mNetworkSender.isThreadAlive())
+			mNetworkSender.killThread();
 
 	}
 

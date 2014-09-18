@@ -1,9 +1,9 @@
 package com.example.houseremote.fragments;
 
 import com.example.houseremote.R;
-import com.example.houseremote.network.BroadcastAsyncTask;
 import com.example.houseremote.network.dataclasses.ServerInfo;
 import com.example.houseremote.network.interfaces.BroadCastListener;
+import com.example.houseremote.network.threads.BroadcastAsyncTask;
 
 import android.content.Context;
 import android.os.Bundle;

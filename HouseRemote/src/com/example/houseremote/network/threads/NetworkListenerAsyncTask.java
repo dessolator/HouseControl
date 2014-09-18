@@ -1,4 +1,4 @@
-package com.example.houseremote.network;
+package com.example.houseremote.network.threads;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -9,14 +9,15 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.houseremote.network.dataclasses.PinStatusSet;
-import com.example.houseremote.network.exceptions.ListenerAlreadyPausedException;
-import com.example.houseremote.network.exceptions.ListenerIsDeadException;
-import com.example.houseremote.network.exceptions.ListenerNotPausedException;
-import com.example.houseremote.network.exceptions.ListenerNotStartedException;
+import com.example.houseremote.network.exceptions.ThreadAlreadyPausedException;
+import com.example.houseremote.network.exceptions.ThreadIsDeadException;
+import com.example.houseremote.network.exceptions.ThreadNotPausedException;
+import com.example.houseremote.network.exceptions.ThreadNotStartedException;
+import com.example.houseremote.network.interfaces.ControlledThread;
 import com.example.houseremote.network.interfaces.SocketProvider;
 import com.example.houseremote.network.interfaces.SwitchStateListener;
 
-public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void> {
+public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void> implements ControlledThread {
 
 	private SwitchStateListener mSwitchStateListener;
 	private Socket mSocket;
@@ -205,66 +206,67 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 		}
 	}
 
-	public boolean isListenerPaused() {
+	public boolean isThreadPaused() {
 		return paused;
 	}
 
-	public boolean isListenerAlive() {
+	public boolean isThreadAlive() {
 		return ((!dead) && started);
 	}
 
-	public void resumeListener() {
+	public void resumeThread() {
 		try {
 			if (dead)
-				throw new ListenerIsDeadException();
+				throw new ThreadIsDeadException();
 			if (!started)
-				throw new ListenerNotStartedException();
+				throw new ThreadNotStartedException();
 			if (!paused)
-				throw new ListenerNotPausedException();
-		} catch (ListenerIsDeadException e) {
+				throw new ThreadNotPausedException();
+		} catch (ThreadIsDeadException e) {
 			e.printStackTrace();
-		} catch (ListenerNotStartedException e) {
+		} catch (ThreadNotStartedException e) {
 			e.printStackTrace();
-		} catch (ListenerNotPausedException e) {
+		} catch (ThreadNotPausedException e) {
 			e.printStackTrace();
 		}
 		unpause();
 	}
 
-	public void pauseListener() {
+	public void pauseThread() {
 		try {
 			if (dead)
-				throw new ListenerIsDeadException();
+				throw new ThreadIsDeadException();
 			if (!started)
-				throw new ListenerNotStartedException();
+				throw new ThreadNotStartedException();
 			if (paused)
-				throw new ListenerAlreadyPausedException();
-		} catch (ListenerIsDeadException e) {
+				throw new ThreadAlreadyPausedException();
+		} catch (ThreadIsDeadException e) {
 			e.printStackTrace();
-		} catch (ListenerNotStartedException e) {
+		} catch (ThreadNotStartedException e) {
 			e.printStackTrace();
-		} catch (ListenerAlreadyPausedException e) {
+		} catch (ThreadAlreadyPausedException e) {
 			e.printStackTrace();
 		}
 		registerPause();
 
 	}
 
-	public void killListener() {
+	public void killThread() {
 		try {
 			if (dead)
-				throw new ListenerIsDeadException();
+				throw new ThreadIsDeadException();
 			if (!started)
-				throw new ListenerNotStartedException();
+				throw new ThreadNotStartedException();
 			if (paused)
 				unpause();
-		} catch (ListenerIsDeadException e) {
+		} catch (ThreadIsDeadException e) {
 			e.printStackTrace();
-		} catch (ListenerNotStartedException e) {
+		} catch (ThreadNotStartedException e) {
 			e.printStackTrace();
 		}
 		registerKill();
 
 	}
+
 
 }

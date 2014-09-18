@@ -1,4 +1,4 @@
-package com.example.houseremote.network;
+package com.example.houseremote.network.threads;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -8,14 +8,15 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import android.util.Log;
 
-import com.example.houseremote.network.exceptions.SenderAlreadyPausedException;
-import com.example.houseremote.network.exceptions.SenderIsDeadException;
-import com.example.houseremote.network.exceptions.SenderNotPausedException;
-import com.example.houseremote.network.exceptions.SenderNotStartedException;
+import com.example.houseremote.network.exceptions.ThreadAlreadyPausedException;
+import com.example.houseremote.network.exceptions.ThreadIsDeadException;
+import com.example.houseremote.network.exceptions.ThreadNotPausedException;
+import com.example.houseremote.network.exceptions.ThreadNotStartedException;
+import com.example.houseremote.network.interfaces.ControlledThread;
 import com.example.houseremote.network.interfaces.Sendable;
 import com.example.houseremote.network.interfaces.SocketProvider;
 
-public class NetworkSenderThread extends Thread {
+public class NetworkSenderThread extends Thread implements ControlledThread{
 
 	private Socket mSocket;
 	private DataOutputStream mOutputStream;
@@ -142,7 +143,7 @@ public class NetworkSenderThread extends Thread {
 	 * Registers the change in the server the thread is sending to.
 	 */
 	public void registerChange() {
-		if (!isAlive())
+		if (!isThreadAlive())
 			return;
 		Log.d("MOO", "change registered on sender");
 		change = true;
@@ -155,7 +156,7 @@ public class NetworkSenderThread extends Thread {
 	 * Registers the kill signal to the Thread.
 	 */
 	public void registerKill() {
-		if (!isAlive())
+		if (!isThreadAlive())
 			return;
 		kill = true;
 		interrupt();
@@ -165,7 +166,7 @@ public class NetworkSenderThread extends Thread {
 	 * Registers the pause signal to the THread.
 	 */
 	public void registerPause() {
-		if (!isAlive())
+		if (!isThreadAlive())
 			return;
 		pause = true;
 		interrupt();
@@ -175,7 +176,7 @@ public class NetworkSenderThread extends Thread {
 	 * Unpauses the Thread if it is both paused and started.
 	 */
 	public void unpause() {
-		if (!isAlive())
+		if (!isThreadAlive())
 			return;
 		if (pause) {
 			pause = false;
@@ -189,67 +190,66 @@ public class NetworkSenderThread extends Thread {
 		if(!started){
 			killOnBatchDone=b;//TODO investigate potential use instead of kill
 		}
-//		else //TODO throw exceptions
 		
 	}
 
-	public boolean isSenderPaused() {
+	public boolean isThreadPaused() {
 		return paused;
 	}
 
-	public boolean isSenderAlive() {
+	public boolean isThreadAlive() {
 		return ((!dead) && started);
 	}
 	
-	public void resmeSender() {
+	public void resumeThread() {
 		try {
 			if (dead)
-				throw new SenderIsDeadException();
+				throw new ThreadIsDeadException();
 			if (!started)
-				throw new SenderNotStartedException();
+				throw new ThreadNotStartedException();
 			if (!paused)
-				throw new SenderNotPausedException();
-		} catch (SenderIsDeadException e) {
+				throw new ThreadNotPausedException();
+		} catch (ThreadIsDeadException e) {
 			e.printStackTrace();
-		} catch (SenderNotStartedException e) {
+		} catch (ThreadNotStartedException e) {
 			e.printStackTrace();
-		} catch (SenderNotPausedException e) {
+		} catch (ThreadNotPausedException e) {
 			e.printStackTrace();
 		}
 		unpause();
 		
 	}
 
-	public void pauseSender() {
+	public void pauseThread() {
 		try {
 			if (dead)
-				throw new SenderIsDeadException();
+				throw new ThreadIsDeadException();
 			if (!started)
-				throw new SenderNotStartedException();
+				throw new ThreadNotStartedException();
 			if (paused)
-				throw new SenderAlreadyPausedException();
-		} catch (SenderIsDeadException e) {
+				throw new ThreadAlreadyPausedException();
+		} catch (ThreadIsDeadException e) {
 			e.printStackTrace();
-		} catch (SenderNotStartedException e) {
+		} catch (ThreadNotStartedException e) {
 			e.printStackTrace();
-		} catch (SenderAlreadyPausedException e) {
+		} catch (ThreadAlreadyPausedException e) {
 			e.printStackTrace();
 		}
 		registerPause();
 		
 	}
 
-	public void killSender() {
+	public void killThread() {
 		try {
 			if (dead)
-				throw new SenderIsDeadException();
+				throw new ThreadIsDeadException();
 			if (!started)
-				throw new SenderNotStartedException();
+				throw new ThreadNotStartedException();
 			if (paused)
 				unpause();
-		} catch (SenderIsDeadException e) {
+		} catch (ThreadIsDeadException e) {
 			e.printStackTrace();
-		} catch (SenderNotStartedException e) {
+		} catch (ThreadNotStartedException e) {
 			e.printStackTrace();
 		}
 		registerKill();

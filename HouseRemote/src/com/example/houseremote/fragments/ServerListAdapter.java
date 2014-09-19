@@ -12,11 +12,10 @@ import android.widget.TextView;
 import com.example.houseremote.R;
 import com.example.houseremote.network.dataclasses.ServerInfo;
 
-public class ServerListAdapter extends BaseAdapter{
+public class ServerListAdapter extends BaseAdapter {
 	private ArrayList<ServerInfo> mArray;
 	private Context mContext;
-	
-	
+
 	public ServerListAdapter(Context mContext) {
 		super();
 		this.mContext = mContext;
@@ -40,22 +39,31 @@ public class ServerListAdapter extends BaseAdapter{
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		if(convertView==null){
-            LayoutInflater vi =  (LayoutInflater) mContext
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = vi.inflate(R.layout.server_lookup_icon, parent);
-        }
+	
+		
+		if (convertView == null) {
+			LayoutInflater vi = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			convertView = vi.inflate(R.layout.server_lookup_icon, parent,false);
+		}
 //		convertView.findViewById(R.id.serverNameView).setText(mArray.get(position).getName());//TODO add server names to server info
-		((TextView)convertView.findViewById(R.id.serverNameView)).setText((mArray.get(position).getIp()+":"+mArray.get(position).getPort()));
+		((TextView) convertView.findViewById(R.id.serverNameView)).setText((mArray.get(position).getIp()
+				+ ":" + mArray.get(position).getPort()));
 		return convertView;
 	}
 
 	public void newServerFound(ServerInfo serverInfo) {
-		if(!mArray.contains(serverInfo)){
-			mArray.add(serverInfo);
+		boolean cond = true;
+		for (ServerInfo si : mArray) {
+			if (si.getIp().equals(serverInfo.getIp())) {
+				cond = false;
+				break;
+			}
 		}
-		notifyDataSetChanged();
-		
+		if (cond) {
+			mArray.add(serverInfo);
+			notifyDataSetChanged();
+		}
+
 	}
 
 }

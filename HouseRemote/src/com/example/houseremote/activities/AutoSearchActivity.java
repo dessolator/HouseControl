@@ -1,10 +1,11 @@
-package com.example.houseremote;
+package com.example.houseremote.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.houseremote.R;
 import com.example.houseremote.fragments.RefreshFragment;
 
 public class AutoSearchActivity extends ActionBarActivity {
@@ -16,6 +17,7 @@ public class AutoSearchActivity extends ActionBarActivity {
 		if (savedInstanceState == null) {
 			getSupportFragmentManager().beginTransaction().add(R.id.container, new RefreshFragment())
 					.commit();
+			getSupportFragmentManager().executePendingTransactions();
 		}
 	}
 

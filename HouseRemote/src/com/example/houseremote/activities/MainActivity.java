@@ -142,7 +142,8 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
-			// TODO Open Settings?
+			Intent i = new Intent(this, AutoSearchActivity.class);
+			startActivity(i);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

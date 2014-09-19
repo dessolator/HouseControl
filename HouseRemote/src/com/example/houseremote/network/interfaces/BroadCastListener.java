@@ -9,5 +9,4 @@ public interface BroadCastListener {
 	void serverFound(ServerInfo serverInfo);
 
 	Context getContext();
-
 }

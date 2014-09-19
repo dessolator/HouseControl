@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 
 import android.content.Context;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.example.houseremote.network.dataclasses.ServerInfo;
 import com.example.houseremote.network.exceptions.ThreadAlreadyPausedException;
@@ -20,7 +22,7 @@ import com.example.houseremote.network.interfaces.ControlledThread;
 
 public class BroadcastAsyncTask extends AsyncTask<Void, ServerInfo, Void> implements ControlledThread {
 
-	private static final String SENDDATA = "SERVER_SEARCH";
+	private static final String SENDDATA = "SERVER_SEARCH_";
 //	private static final String RECEIVEDATA = "SERVER_SEARCH_REPLY_";
 	private static final int SENDPORT = 55001;
 	private static final int RECEIVEPORT = 55001;
@@ -41,17 +43,23 @@ public class BroadcastAsyncTask extends AsyncTask<Void, ServerInfo, Void> implem
 
 		WifiManager wifi = (WifiManager) mCallback.getContext().getSystemService(Context.WIFI_SERVICE);
 		DhcpInfo dhcp = wifi.getDhcpInfo();
-		// handle null somehow
+		//TODO handle null somehow
 
 		int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
 		byte[] quads = new byte[4];
 		for (int k = 0; k < 4; k++)
 			quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
-		return InetAddress.getByAddress(quads);
+		return InetAddress.getByName("192.168.1.255");
 	}
 
 	@Override
 	protected Void doInBackground(Void... params) {
+		try {
+			mSocket = new DatagramSocket(SENDPORT);
+		} catch (SocketException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		started = true;
 		int iters = 0;
 		while (!kill) {
@@ -63,15 +71,15 @@ public class BroadcastAsyncTask extends AsyncTask<Void, ServerInfo, Void> implem
 			while (!kill && !pause && iters > 0) {
 				try {
 					iters--;
-					mSocket = new DatagramSocket(SENDPORT);
 					mSocket.setBroadcast(true);
+					Log.d("MOOOO",getBroadcastAddress().toString());
 					DatagramPacket packet = new DatagramPacket(SENDDATA.getBytes(), SENDDATA.length(),
 							getBroadcastAddress(), RECEIVEPORT);
 					mSocket.send(packet);
 					listenForReplyWithTimeout(20);
 
 				} catch (IOException e) {
-					e.printStackTrace();
+//					e.printStackTrace();
 				}
 			}
 		}
@@ -103,6 +111,8 @@ public class BroadcastAsyncTask extends AsyncTask<Void, ServerInfo, Void> implem
 			packet = new DatagramPacket(buf, buf.length);
 			mSocket.receive(packet);
 			String data = new String(buf);
+			Log.d("MOOOOOO",data);
+			Log.d("MOOOOOO",data);
 			String[] splitData = data.split("_");
 			boolean cond = (splitData[0].equals("SERVER") && splitData[1].equals("SEARCH") && splitData[2]
 					.equals("REPLY"));

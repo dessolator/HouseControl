@@ -2,7 +2,10 @@ package com.example.houseremote.network.dataclasses;
 
 import java.util.ArrayList;
 
-public class PinStatusSet {
+import com.example.houseremote.fragments.HeadlessFragment;
+import com.example.houseremote.interfaces.UIReadable;
+
+public class PinStatusSet implements UIReadable {
 	private ArrayList<PinStatus> mPins;
 
 	
@@ -28,6 +31,13 @@ public class PinStatusSet {
 
 	public ArrayList<PinStatus> getArray() {
 		return mPins;
+	}
+
+
+	@Override
+	public void executeNeededCode(HeadlessFragment headlessFragment) {
+		headlessFragment.postLookupValues(this);
+		
 	}
 
 }

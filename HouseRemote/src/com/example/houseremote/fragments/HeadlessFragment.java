@@ -23,6 +23,7 @@ import com.example.houseremote.database.interfaces.ControllersAdapterProvider;
 import com.example.houseremote.database.interfaces.HousesAdapterProvider;
 import com.example.houseremote.database.interfaces.ReplyListener;
 import com.example.houseremote.database.interfaces.RoomsAdapterProvider;
+import com.example.houseremote.interfaces.UIReadable;
 import com.example.houseremote.network.NetworkSet;
 import com.example.houseremote.network.dataclasses.InitialStateQueryPacket;
 import com.example.houseremote.network.dataclasses.PinStatus;
@@ -282,7 +283,6 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	 * @param newData
 	 *            The PinStatus to be posted to the UI.
 	 */
-	@Override
 	public void postValueChange(PinStatus newData) {
 		controllerAdapter.addToStatusSet(newData);
 	}
@@ -293,7 +293,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	 * @param pinStatusSet
 	 *            The PinStatusSet to be posted to the UI.
 	 */
-	@Override
+
 	public void postLookupValues(PinStatusSet pinStatusSet) {
 		controllerAdapter.addStatusSet(pinStatusSet);
 		getActivity().findViewById(R.id.linlaHeaderProgress).setVisibility(View.GONE);
@@ -372,6 +372,12 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 			queryManager.startQuery(1, roomAdapter, DBProvider.ROOMS_URI, roomProjection, roomSelection,
 					roomSelectionArgs, null);
 		}
+		
+	}
+
+	@Override
+	public void execRequiredFunction(UIReadable uiReadable) {
+		uiReadable.executeNeededCode(this);
 		
 	}
 

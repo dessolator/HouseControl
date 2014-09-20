@@ -19,6 +19,11 @@ import com.example.houseremote.network.interfaces.BroadCastListener;
 import com.example.houseremote.network.threads.BroadcastAsyncTask;
 
 public class RefreshFragment extends Fragment implements BroadCastListener {
+
+	private BroadcastAsyncTask mRefreshAsyncTask;
+	private ListView mListView;
+	private ServerListAdapter mAdapter;
+	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		mRefreshAsyncTask = new BroadcastAsyncTask(this);
@@ -27,20 +32,18 @@ public class RefreshFragment extends Fragment implements BroadCastListener {
 		mListView = (ListView)getActivity().findViewById(R.id.autoSearchListview);
 		mListView.setAdapter(mAdapter);
 		mListView.setOnItemClickListener(new OnItemClickListener() {
-
+			
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				// TODO Auto-generated method stub
+//				mDataSetReaderAsyncTask.setData(mAdapter.getItem(position));
+				//TODO set loopyLoop thing
+				//TODO add a insert complete listener
 				
 			}
 		});
 		super.onActivityCreated(savedInstanceState);
 	}
-
-	private BroadcastAsyncTask mRefreshAsyncTask;
-	private ListView mListView;
-	private ServerListAdapter mAdapter;
-	
 	
 	public RefreshFragment() {		
 	}
@@ -62,14 +65,10 @@ public class RefreshFragment extends Fragment implements BroadCastListener {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_auto_search, container, false);
-		
 		return rootView;
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_refresh) {
 			mRefreshAsyncTask.resend();
@@ -81,7 +80,6 @@ public class RefreshFragment extends Fragment implements BroadCastListener {
 	@Override
 	public void serverFound(ServerInfo serverInfo) {
 		mAdapter.newServerFound(serverInfo);
-//		mListView.invalidate();
 		
 	}
 

@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.houseremote.interfaces.UIReadable;
 import com.example.houseremote.network.dataclasses.PinStatusSet;
 import com.example.houseremote.network.exceptions.ThreadAlreadyPausedException;
 import com.example.houseremote.network.exceptions.ThreadIsDeadException;
@@ -17,7 +18,7 @@ import com.example.houseremote.network.interfaces.ControlledThread;
 import com.example.houseremote.network.interfaces.SocketProvider;
 import com.example.houseremote.network.interfaces.SwitchStateListener;
 
-public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void> implements ControlledThread {
+public class NetworkListenerAsyncTask extends AsyncTask<Void, UIReadable, Void> implements ControlledThread {
 
 	private SwitchStateListener mSwitchStateListener;
 	private Socket mSocket;
@@ -109,13 +110,14 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 	 *            The PinStatusSet to parse.
 	 */
 	@Override
-	protected void onProgressUpdate(PinStatusSet... values) {
+	protected void onProgressUpdate(UIReadable... values) {
 		super.onProgressUpdate(values);
-		if (values[0].size() > 1) {
-			mSwitchStateListener.postLookupValues(values[0]);
-		} else {
-			mSwitchStateListener.postValueChange(values[0].get(0));
-		}
+//		if (values[0].size() > 1) {
+//			mSwitchStateListener.postLookupValues(values[0]);
+//		} else {
+//			mSwitchStateListener.postValueChange(values[0].get(0));
+//		}
+		mSwitchStateListener.execRequiredFunction(values[0]);
 	}
 
 
@@ -136,6 +138,16 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, PinStatusSet, Void
 
 			}
 			publishProgress(mStatusSet);
+		}
+		if (mSplitData[0].trim().equals("LAYOUTREPLY")) {
+			Log.d("MOO", "LAYOUT QUERY RECEIVED");
+			LayoutDescription mLayoutDescription = new LayoutDescription();
+//			for (int i = 1; i < mSplitData.length; i++) {
+//				String[] temp = mSplitData[i].split(",");
+//				mStatusSet.add(Integer.parseInt(temp[0]), Integer.parseInt(temp[1]));
+//
+//			}
+			publishProgress(mLayoutDescription);
 		}
 		if (mSplitData[0].trim().equals("FLIPPED")) {
 			Log.d("MOOOO", "Received flip log");

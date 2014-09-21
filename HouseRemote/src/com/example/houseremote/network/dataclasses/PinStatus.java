@@ -1,6 +1,6 @@
 package com.example.houseremote.network.dataclasses;
 
-import com.example.houseremote.fragments.PrimaryHeadlessFragment;
+import com.example.houseremote.interfaces.HeadlessFragmentUI;
 import com.example.houseremote.interfaces.UIReadable;
 
 public class PinStatus implements UIReadable {
@@ -22,7 +22,7 @@ public class PinStatus implements UIReadable {
 	}
 
 	@Override
-	public void executeNeededCode(PrimaryHeadlessFragment headlessFragment) {
+	public void executeNeededCode(HeadlessFragmentUI headlessFragment) {
 		headlessFragment.postValueChange(this);
 		
 	}

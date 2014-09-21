@@ -23,6 +23,7 @@ import com.example.houseremote.database.interfaces.ControllersAdapterProvider;
 import com.example.houseremote.database.interfaces.HousesAdapterProvider;
 import com.example.houseremote.database.interfaces.ReplyListener;
 import com.example.houseremote.database.interfaces.RoomsAdapterProvider;
+import com.example.houseremote.interfaces.HeadlessFragmentUI;
 import com.example.houseremote.interfaces.UIReadable;
 import com.example.houseremote.network.NetworkSet;
 import com.example.houseremote.network.dataclasses.InitialStateQueryPacket;
@@ -34,7 +35,7 @@ import com.example.houseremote.network.interfaces.Sendable;
 import com.example.houseremote.network.interfaces.SwitchStateListener;
 
 public class PrimaryHeadlessFragment extends Fragment implements ReplyListener, ControllersAdapterProvider,
-		RoomsAdapterProvider, HousesAdapterProvider, NetworkCommandListener, SwitchStateListener {
+		RoomsAdapterProvider, HousesAdapterProvider, NetworkCommandListener, SwitchStateListener, HeadlessFragmentUI {
 
 	/*
 	 * String constants for DB lookups

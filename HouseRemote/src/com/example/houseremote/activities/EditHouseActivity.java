@@ -12,7 +12,7 @@ import android.widget.EditText;
 import com.example.houseremote.R;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
-import com.example.houseremote.database.DataBaseQueryManager;
+import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.interfaces.ReplyListener;
 
 /**
@@ -26,7 +26,7 @@ public class EditHouseActivity extends ActionBarActivity implements ReplyListene
 	private static final String selection = DBHandler.HOUSE_ID + "=?";
 	private EditText houseNameField;
 	private EditText houseWifiNameField;
-	private DataBaseQueryManager mAsyncQueryManager;
+	private DataBaseAsyncQueryHandler mAsyncQueryManager;
 	private long houseID;
 
 	@Override
@@ -40,7 +40,7 @@ public class EditHouseActivity extends ActionBarActivity implements ReplyListene
 
 		houseID = getIntent().getLongExtra(DBHandler.HOUSE_ID, -1);
 		String[] selectionArgs = { "" + houseID };
-		mAsyncQueryManager = new DataBaseQueryManager(getContentResolver(), this);
+		mAsyncQueryManager = new DataBaseAsyncQueryHandler(getContentResolver(), this);
 
 		mAsyncQueryManager.startQuery(0, null, DBProvider.HOUSES_URI, null, selection, selectionArgs, null);
 

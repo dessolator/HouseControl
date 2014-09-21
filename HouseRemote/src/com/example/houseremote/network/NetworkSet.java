@@ -8,7 +8,7 @@ import java.net.UnknownHostException;
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 
-import com.example.houseremote.fragments.HeadlessFragment;
+import com.example.houseremote.fragments.PrimaryHeadlessFragment;
 import com.example.houseremote.network.interfaces.Sendable;
 import com.example.houseremote.network.interfaces.SocketProvider;
 import com.example.houseremote.network.threads.NetworkListenerAsyncTask;
@@ -19,11 +19,11 @@ public class NetworkSet implements SocketProvider {
 	private NetworkSenderThread mNetworkSender;
 	private String ip;
 	private Socket mSocket;
-	private HeadlessFragment hf;
+	private PrimaryHeadlessFragment hf;
 	private boolean kill;
 	private int port;
 
-	public NetworkSet(HeadlessFragment hf, String ip, int port) {
+	public NetworkSet(PrimaryHeadlessFragment hf, String ip, int port) {
 		super();
 		this.port = port;
 		this.ip = ip;

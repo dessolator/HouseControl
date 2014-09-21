@@ -22,7 +22,7 @@ import com.example.houseremote.R;
 import com.example.houseremote.activities.EditLightSwitchActivity;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
-import com.example.houseremote.database.DataBaseQueryManager;
+import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.GridAdapter;
 import com.example.houseremote.database.interfaces.ControllerDatabaseChangeListener;
 import com.example.houseremote.database.interfaces.ControllersAdapterProvider;
@@ -45,7 +45,7 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 	private GridView mGrid;
 	private GridAdapter mAdapter;
 	private ReplyListener mCallback;
-	private DataBaseQueryManager mAsyncQueryManager;
+	private DataBaseAsyncQueryHandler mAsyncQueryManager;
 	private ControllerObserver mObserver;
 
 	@Override

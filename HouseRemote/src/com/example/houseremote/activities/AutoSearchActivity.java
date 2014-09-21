@@ -1,15 +1,23 @@
 package com.example.houseremote.activities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListAdapter;
 
 import com.example.houseremote.R;
+import com.example.houseremote.fragments.AdapterProvider;
 import com.example.houseremote.fragments.RefreshFragment;
+import com.example.houseremote.fragments.SecondaryHeadlessFragment;
+import com.example.houseremote.network.dataclasses.ServerInfo;
+import com.example.houseremote.network.interfaces.BroadCastListener;
 
-public class AutoSearchActivity extends ActionBarActivity {
+public class AutoSearchActivity extends ActionBarActivity implements BroadCastListener, AdapterProvider {
 
+	private SecondaryHeadlessFragment mHeadlessFragment;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -38,6 +46,28 @@ public class AutoSearchActivity extends ActionBarActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public void serverFound(ServerInfo serverInfo) {
+		mHeadlessFragment.serverFound(serverInfo);
+		
+	}
+
+	@Override
+	public Context getContext() {
+		return this;
+	}
+
+	@Override
+	public ListAdapter getListAdapter() {
+		return mHeadlessFragment.getListAdapter();
+	}
+
+	@Override
+	public void serverSelected(ServerInfo item) {
+		mHeadlessFragment.serverSelected(item);
+		
 	}
 
 }

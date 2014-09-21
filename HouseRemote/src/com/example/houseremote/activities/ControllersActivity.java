@@ -10,13 +10,13 @@ import android.view.MenuItem;
 
 import com.example.houseremote.R;
 import com.example.houseremote.database.DBHandler;
-import com.example.houseremote.database.DataBaseQueryManager;
+import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.GridAdapter;
 import com.example.houseremote.database.interfaces.ControllersAdapterProvider;
 import com.example.houseremote.database.interfaces.QueryManagerProvider;
 import com.example.houseremote.database.interfaces.ReplyListener;
 import com.example.houseremote.fragments.ControllersFragment;
-import com.example.houseremote.fragments.HeadlessFragment;
+import com.example.houseremote.fragments.PrimaryHeadlessFragment;
 import com.example.houseremote.interfaces.SelectedHouseProvider;
 import com.example.houseremote.interfaces.SelectedRoomProvider;
 import com.example.houseremote.network.interfaces.NetworkCommandListener;
@@ -33,7 +33,7 @@ public class ControllersActivity extends ActionBarActivity implements ReplyListe
 	/*
 	 * Fragments
 	 */
-	private HeadlessFragment myHeadlessFragment;
+	private PrimaryHeadlessFragment myHeadlessFragment;
 
 	/**
 	 * Acquire Headless and Controllers fragment.
@@ -66,10 +66,10 @@ public class ControllersActivity extends ActionBarActivity implements ReplyListe
 	 * Acquires the headless fragment, if it can be recovered, it is recovered,
 	 * else a new one is created.
 	 */
-	private HeadlessFragment acquireHeadlessFragment() {
-		HeadlessFragment temp = (HeadlessFragment) getSupportFragmentManager().findFragmentByTag(HEADLESS);
+	private PrimaryHeadlessFragment acquireHeadlessFragment() {
+		PrimaryHeadlessFragment temp = (PrimaryHeadlessFragment) getSupportFragmentManager().findFragmentByTag(HEADLESS);
 		if (temp == null) {
-			temp = new HeadlessFragment();
+			temp = new PrimaryHeadlessFragment();
 			temp.setSelectedRoomID(getIntent().getLongExtra(DBHandler.ROOM_ID,-1));
 			getSupportFragmentManager().beginTransaction().add(temp, HEADLESS).commit();
 		}
@@ -124,7 +124,7 @@ public class ControllersActivity extends ActionBarActivity implements ReplyListe
 	}
 
 	@Override
-	public DataBaseQueryManager getQueryManager() {
+	public DataBaseAsyncQueryHandler getQueryManager() {
 		return myHeadlessFragment.getQueryManager();
 	}
 

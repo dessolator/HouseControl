@@ -1,8 +1,6 @@
 package com.example.houseremote.network.interfaces;
 
 import com.example.houseremote.interfaces.UIReadable;
-import com.example.houseremote.network.dataclasses.PinStatus;
-import com.example.houseremote.network.dataclasses.PinStatusSet;
 
 public interface SwitchStateListener{
 	public void execRequiredFunction(UIReadable uiReadable);

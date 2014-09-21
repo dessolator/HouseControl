@@ -5,6 +5,7 @@ public class ServerInfo {
 
 	int port;
 	String ip;
+	String name;
 	
 	
 	public int getPort() {
@@ -14,8 +15,9 @@ public class ServerInfo {
 		return ip;
 	}
 	
-	public ServerInfo( String ip,int port) {
+	public ServerInfo(String name, String ip,int port) {
 		super();
+		this.name = name;
 		this.port = port;
 		this.ip = ip;
 	}

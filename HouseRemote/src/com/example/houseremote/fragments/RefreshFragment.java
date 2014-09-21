@@ -1,12 +1,10 @@
 package com.example.houseremote.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -15,27 +13,22 @@ import android.widget.ListView;
 
 import com.example.houseremote.R;
 import com.example.houseremote.network.dataclasses.ServerInfo;
-import com.example.houseremote.network.interfaces.BroadCastListener;
-import com.example.houseremote.network.threads.BroadcastAsyncTask;
 
-public class RefreshFragment extends Fragment implements BroadCastListener {
+public class RefreshFragment extends Fragment  {
 
-	private BroadcastAsyncTask mRefreshAsyncTask;
 	private ListView mListView;
-	private ServerListAdapter mAdapter;
+	private AdapterProvider mCallback;
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-		mRefreshAsyncTask = new BroadcastAsyncTask(this);
-		mAdapter = new ServerListAdapter(getContext());
-		mRefreshAsyncTask.execute((Void[])null);
+		mCallback = (AdapterProvider)getActivity();
 		mListView = (ListView)getActivity().findViewById(R.id.autoSearchListview);
-		mListView.setAdapter(mAdapter);
+		mListView.setAdapter(mCallback.getListAdapter());
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 			
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				// TODO Auto-generated method stub
+				mCallback.serverSelected((ServerInfo)mListView.getAdapter().getItem(position));
 //				mDataSetReaderAsyncTask.setData(mAdapter.getItem(position));
 				//TODO set loopyLoop thing
 				//TODO add a insert complete listener
@@ -67,24 +60,5 @@ public class RefreshFragment extends Fragment implements BroadCastListener {
 		View rootView = inflater.inflate(R.layout.fragment_auto_search, container, false);
 		return rootView;
 	}
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		int id = item.getItemId();
-		if (id == R.id.action_refresh) {
-			mRefreshAsyncTask.resend();
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
-	public void serverFound(ServerInfo serverInfo) {
-		mAdapter.newServerFound(serverInfo);
-		
-	}
-
-	@Override
-	public Context getContext() {
-		return getActivity();
-	}
+	
 }

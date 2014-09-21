@@ -11,14 +11,20 @@ import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
 
-public class DataBaseQueryManager extends AsyncQueryHandler {
+public class DataBaseAsyncQueryHandler extends AsyncQueryHandler {
 
 	private WeakReference<ReplyListener> mListener;
 
-	public DataBaseQueryManager(ContentResolver cr, ReplyListener rl) {
+	/**
+	 * Constructor for the DataBaseAsyncQueryHandler class
+	 * @param cr	ContentResolver to which the DataBaseAsyncQueryHandler is connected.
+	 * @param rl	The entity listening to underlying database changes.
+	 */
+	public DataBaseAsyncQueryHandler(ContentResolver cr, ReplyListener rl) {
 		super(cr);
 		mListener = new WeakReference<ReplyListener>(rl);
 	}
+
 
 	@Override
 	protected void onQueryComplete(int token, Object cookie, Cursor cursor) {

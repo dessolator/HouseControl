@@ -11,19 +11,19 @@ import android.view.MenuItem;
 
 import com.example.houseremote.R;
 import com.example.houseremote.database.DBHandler;
-import com.example.houseremote.database.DataBaseQueryManager;
+import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.ListAdapter;
 import com.example.houseremote.database.interfaces.QueryManagerProvider;
 import com.example.houseremote.database.interfaces.ReplyListener;
 import com.example.houseremote.database.interfaces.RoomsAdapterProvider;
-import com.example.houseremote.fragments.HeadlessFragment;
+import com.example.houseremote.fragments.PrimaryHeadlessFragment;
 import com.example.houseremote.fragments.RoomsFragment;
 import com.example.houseremote.interfaces.RoomSelectionListener;
 import com.example.houseremote.interfaces.SelectedHouseProvider;
 
 public class RoomsActivity extends ActionBarActivity implements RoomSelectionListener, SelectedHouseProvider, RoomsAdapterProvider, QueryManagerProvider,ReplyListener{
 	
-	private HeadlessFragment myHeadlessFragment;
+	private PrimaryHeadlessFragment myHeadlessFragment;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +44,10 @@ public class RoomsActivity extends ActionBarActivity implements RoomSelectionLis
 		}
 		return temp;
 	}
-	private HeadlessFragment acquireHeadlessFragment(){
-		HeadlessFragment temp = (HeadlessFragment) getSupportFragmentManager().findFragmentByTag(HEADLESS);
+	private PrimaryHeadlessFragment acquireHeadlessFragment(){
+		PrimaryHeadlessFragment temp = (PrimaryHeadlessFragment) getSupportFragmentManager().findFragmentByTag(HEADLESS);
 		if (temp == null){
-			temp= new HeadlessFragment();
+			temp= new PrimaryHeadlessFragment();
 			temp.setSelectedHouseID(getIntent().getIntExtra(DBHandler.HOUSE_ID, -1));
 			getSupportFragmentManager().beginTransaction().add(temp, HEADLESS).commit();
 		}
@@ -90,7 +90,7 @@ public class RoomsActivity extends ActionBarActivity implements RoomSelectionLis
 	}
 
 	@Override
-	public DataBaseQueryManager getQueryManager() {
+	public DataBaseAsyncQueryHandler getQueryManager() {
 		return myHeadlessFragment.getQueryManager();
 	}
 

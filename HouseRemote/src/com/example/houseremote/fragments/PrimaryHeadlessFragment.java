@@ -16,7 +16,7 @@ import android.widget.Toast;
 import com.example.houseremote.R;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
-import com.example.houseremote.database.DataBaseQueryManager;
+import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.GridAdapter;
 import com.example.houseremote.database.adapters.ListAdapter;
 import com.example.houseremote.database.interfaces.ControllersAdapterProvider;
@@ -33,7 +33,7 @@ import com.example.houseremote.network.interfaces.NetworkCommandListener;
 import com.example.houseremote.network.interfaces.Sendable;
 import com.example.houseremote.network.interfaces.SwitchStateListener;
 
-public class HeadlessFragment extends Fragment implements ReplyListener, ControllersAdapterProvider,
+public class PrimaryHeadlessFragment extends Fragment implements ReplyListener, ControllersAdapterProvider,
 		RoomsAdapterProvider, HousesAdapterProvider, NetworkCommandListener, SwitchStateListener {
 
 	/*
@@ -59,7 +59,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	/*
 	 * Database Manager
 	 */
-	private DataBaseQueryManager queryManager;
+	private DataBaseAsyncQueryHandler queryManager;
 
 	/*
 	 * Storing Selected Data
@@ -80,7 +80,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		queryManager = new DataBaseQueryManager(getActivity().getContentResolver(), this);
+		queryManager = new DataBaseAsyncQueryHandler(getActivity().getContentResolver(), this);
 		houseAdapter = new ListAdapter(getActivity(), null, 0);
 		roomAdapter = new ListAdapter(getActivity(), null, 0);
 		controllerAdapter = new GridAdapter(getActivity(), null, 0);
@@ -137,7 +137,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 		c.moveToPosition(-1);
 		ArrayList<ServerInfo> ips = new ArrayList<ServerInfo>();
 		while (c.moveToNext()) {
-			ips.add(new ServerInfo(c.getString(c.getColumnIndex(DBHandler.CONTROLLER_IP)),c.getInt(c.getColumnIndex(DBHandler.CONTROLLER_PORT))));
+			ips.add(new ServerInfo(null,c.getString(c.getColumnIndex(DBHandler.CONTROLLER_IP)),c.getInt(c.getColumnIndex(DBHandler.CONTROLLER_PORT))));
 		}
 		addNetSetsForIps(ips);
 
@@ -241,7 +241,7 @@ public class HeadlessFragment extends Fragment implements ReplyListener, Control
 		return houseAdapter;
 	}
 
-	public DataBaseQueryManager getQueryManager() {
+	public DataBaseAsyncQueryHandler getQueryManager() {
 		return queryManager;
 	}
 

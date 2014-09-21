@@ -49,7 +49,7 @@ public class BroadcastAsyncTask extends AsyncTask<Void, ServerInfo, Void> implem
 		byte[] quads = new byte[4];
 		for (int k = 0; k < 4; k++)
 			quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
-		return InetAddress.getByName("192.168.1.255");
+		return InetAddress.getByName("192.168.1.255");//TODO TODO TODO
 	}
 
 	@Override
@@ -117,7 +117,7 @@ public class BroadcastAsyncTask extends AsyncTask<Void, ServerInfo, Void> implem
 			boolean cond = (splitData[0].equals("SERVER") && splitData[1].equals("SEARCH") && splitData[2]
 					.equals("REPLY"));
 			if (cond) {
-				publishProgress(new ServerInfo(packet.getAddress().toString(), Integer.parseInt(splitData[3])));
+				publishProgress(new ServerInfo(splitData[3], packet.getAddress().toString(), Integer.parseInt(splitData[4])));
 			}
 		}
 	}

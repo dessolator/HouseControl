@@ -12,14 +12,14 @@ import android.widget.EditText;
 import com.example.houseremote.R;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
-import com.example.houseremote.database.DataBaseQueryManager;
+import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.interfaces.ReplyListener;
 
 public class EditRoomActivity extends ActionBarActivity implements ReplyListener {
 
 	long roomID;
 	private EditText roomNameField;
-	private DataBaseQueryManager mAsyncQueryManager;
+	private DataBaseAsyncQueryHandler mAsyncQueryManager;
 	private static final String selection = DBHandler.ROOM_ID + "=?";
 
 	@Override
@@ -32,7 +32,7 @@ public class EditRoomActivity extends ActionBarActivity implements ReplyListener
 		
 		String[] selectionArgs = {roomID+"" };
 		roomNameField = (EditText) findViewById(R.id.roomNameField);
-		mAsyncQueryManager = new DataBaseQueryManager(getContentResolver(), this);
+		mAsyncQueryManager = new DataBaseAsyncQueryHandler(getContentResolver(), this);
 		mAsyncQueryManager.startQuery(0, null, DBProvider.ROOMS_URI, null, selection, selectionArgs, null);
 
 		((Button) findViewById(R.id.saveRoomButton)).setOnClickListener(new OnClickListener() {

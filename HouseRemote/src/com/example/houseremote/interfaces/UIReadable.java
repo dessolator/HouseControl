@@ -1,9 +1,9 @@
 package com.example.houseremote.interfaces;
 
-import com.example.houseremote.fragments.HeadlessFragment;
+import com.example.houseremote.fragments.PrimaryHeadlessFragment;
 
 public interface UIReadable {
 	
-	void executeNeededCode(HeadlessFragment headlessFragment);
+	void executeNeededCode(PrimaryHeadlessFragment headlessFragment);
 
 }

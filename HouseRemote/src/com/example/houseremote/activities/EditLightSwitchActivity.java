@@ -12,7 +12,7 @@ import android.widget.EditText;
 import com.example.houseremote.R;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
-import com.example.houseremote.database.DataBaseQueryManager;
+import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.interfaces.ReplyListener;
 
 /**
@@ -23,7 +23,7 @@ public class EditLightSwitchActivity extends ActionBarActivity implements ReplyL
 
 	private static final String selection = DBHandler.CONTROLLER_ID + "=?";
 	private long controllerID;
-	private DataBaseQueryManager mAsyncQueryManager;
+	private DataBaseAsyncQueryHandler mAsyncQueryManager;
 	private EditText lightSwitchNameField;
 	private EditText lightSwitchPinField;
 	private EditText lightSwitchIpField;
@@ -43,7 +43,7 @@ public class EditLightSwitchActivity extends ActionBarActivity implements ReplyL
 		lightSwitchPinField = ((EditText) findViewById(R.id.lightSwitchPinField));
 		lightSwitchIpField = ((EditText) findViewById(R.id.lightSwitchIpField));
 
-		mAsyncQueryManager = new DataBaseQueryManager(getContentResolver(), this);
+		mAsyncQueryManager = new DataBaseAsyncQueryHandler(getContentResolver(), this);
 		mAsyncQueryManager.startQuery(0, null, DBProvider.CONTROLLERS_URI, projection, selection,
 				selectionArgs, null);
 

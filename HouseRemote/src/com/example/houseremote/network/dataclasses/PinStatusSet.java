@@ -2,7 +2,7 @@ package com.example.houseremote.network.dataclasses;
 
 import java.util.ArrayList;
 
-import com.example.houseremote.fragments.HeadlessFragment;
+import com.example.houseremote.fragments.PrimaryHeadlessFragment;
 import com.example.houseremote.interfaces.UIReadable;
 
 public class PinStatusSet implements UIReadable {
@@ -35,7 +35,7 @@ public class PinStatusSet implements UIReadable {
 
 
 	@Override
-	public void executeNeededCode(HeadlessFragment headlessFragment) {
+	public void executeNeededCode(PrimaryHeadlessFragment headlessFragment) {
 		headlessFragment.postLookupValues(this);
 		
 	}

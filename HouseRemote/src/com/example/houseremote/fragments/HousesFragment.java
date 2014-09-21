@@ -22,7 +22,7 @@ import com.example.houseremote.R;
 import com.example.houseremote.activities.EditHouseActivity;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
-import com.example.houseremote.database.DataBaseQueryManager;
+import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.ListAdapter;
 import com.example.houseremote.database.interfaces.DBInsertResponder;
 import com.example.houseremote.database.interfaces.HouseDatabaseChangeListener;
@@ -62,7 +62,7 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 	private ListView mList;
 	private ListAdapter mAdapter;
 	private HouseSelectionListener mCallback;
-	private DataBaseQueryManager asyncQ;
+	private DataBaseAsyncQueryHandler asyncQ;
 	private HouseObserver mObserver;
 
 

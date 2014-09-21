@@ -58,6 +58,10 @@ public class GridAdapter extends CursorAdapter {
 		return li.inflate(R.layout.grid_view_icon, arg2, false);
 	}
 
+	/**
+	 * Used to change the status of the pin set and reload images in the adapter.
+	 * @param ps The set of pin statuses to be changed.
+	 */
 	public void addStatusSet(PinStatusSet ps) {
 		for(PinStatus p: ps.getArray()){
 			mStats.put(p.getPinNumber(), p.getPinState());
@@ -66,6 +70,10 @@ public class GridAdapter extends CursorAdapter {
 		
 	}
 
+	/**
+	 * Used to change the status of a single pin and reload the data in the adapter.
+	 * @param newData The pin status to be changed.
+	 */
 	public void addToStatusSet(PinStatus newData) {
 		mStats.put(newData.getPinNumber(), newData.getPinState());
 		notifyDataSetChanged();

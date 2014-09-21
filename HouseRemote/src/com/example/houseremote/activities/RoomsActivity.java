@@ -118,20 +118,20 @@ public class RoomsActivity extends ActionBarActivity implements RoomSelectionLis
 	}
 
 	@Override
-	public void reloadControllerData() {
-		myHeadlessFragment.reloadControllerData();
+	public void onControllerDataChanged() {
+		myHeadlessFragment.onControllerDataChanged();
 		
 	}
 
 	@Override
-	public void reloadHouseData() {
-		myHeadlessFragment.reloadHouseData();
+	public void onHouseDataChanged() {
+		myHeadlessFragment.onHouseDataChanged();
 		
 	}
 
 	@Override
-	public void reloadRoomData() {
-		myHeadlessFragment.reloadRoomData();
+	public void onRoomDataChanged() {
+		myHeadlessFragment.onRoomDataChanged();
 		
 	}
 }

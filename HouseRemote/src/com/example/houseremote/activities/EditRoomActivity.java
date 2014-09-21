@@ -70,17 +70,17 @@ public class EditRoomActivity extends ActionBarActivity implements ReplyListener
 	}
 
 	@Override
-	public void reloadControllerData() {
+	public void onControllerDataChanged() {
 		
 	}
 
 	@Override
-	public void reloadHouseData() {
+	public void onHouseDataChanged() {
 		
 	}
 
 	@Override
-	public void reloadRoomData() {
+	public void onRoomDataChanged() {
 		
 	}
 

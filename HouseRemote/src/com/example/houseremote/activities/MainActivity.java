@@ -173,7 +173,7 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 	private void changeSelectedRoom(long roomID) {
 		myHeadlessFragment.setSelectedRoomID(roomID);
 		myControllersFragment.replaceData(roomID);
-		myHeadlessFragment.reloadControllerData();
+		myHeadlessFragment.onControllerDataChanged();
 	}
 
 	@Override
@@ -237,7 +237,7 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 	private void changeSelectedHouse(long houseID) {
 		myHeadlessFragment.setSelectedHouseID(houseID);
 		myRoomsFragment.replaceData(houseID);
-		myHeadlessFragment.reloadRoomData();
+		myHeadlessFragment.onRoomDataChanged();
 	}
 
 	/*
@@ -335,22 +335,22 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 
 
 	@Override
-	public void reloadControllerData() {
-		myHeadlessFragment.reloadControllerData();
+	public void onControllerDataChanged() {
+		myHeadlessFragment.onControllerDataChanged();
 		
 	}
 
 
 	@Override
-	public void reloadHouseData() {
-		myHeadlessFragment.reloadHouseData();
+	public void onHouseDataChanged() {
+		myHeadlessFragment.onHouseDataChanged();
 		
 	}
 
 
 	@Override
-	public void reloadRoomData() {
-		myHeadlessFragment.reloadRoomData();
+	public void onRoomDataChanged() {
+		myHeadlessFragment.onRoomDataChanged();
 		
 	}
 

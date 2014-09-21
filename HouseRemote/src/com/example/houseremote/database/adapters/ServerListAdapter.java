@@ -1,4 +1,4 @@
-package com.example.houseremote.fragments;
+package com.example.houseremote.database.adapters;
 
 import java.util.ArrayList;
 

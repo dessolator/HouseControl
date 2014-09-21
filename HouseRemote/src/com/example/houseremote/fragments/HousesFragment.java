@@ -107,7 +107,7 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 	private void loadInitialControllerData(ListAdapter mAdapter2) {
 		if(((HousesAdapterProvider)mCallback).isInitialHouseDataLoaded()) return;
 		((HousesAdapterProvider)mCallback).setInitialHouseDataLoaded(true);
-		((ReplyListener) mCallback).reloadHouseData();
+		((ReplyListener) mCallback).onHouseDataChanged();
 		
 	}
 
@@ -163,8 +163,8 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    if (requestCode == 0) {
-	    	((ReplyListener) mCallback).reloadHouseData();
-	    	((ReplyListener) mCallback).reloadRoomData();
+	    	((ReplyListener) mCallback).onHouseDataChanged();
+	    	((ReplyListener) mCallback).onRoomDataChanged();
 	        
 	    }
 	}
@@ -197,21 +197,21 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 
 	@Override
 	public void houseDatabaseChanged() {
-		((ReplyListener) mCallback).reloadHouseData();
+		((ReplyListener) mCallback).onHouseDataChanged();
 		
 	}
 
 
 	@Override
 	public void roomDatabaseChanged() {
-		((ReplyListener) mCallback).reloadRoomData();
+		((ReplyListener) mCallback).onRoomDataChanged();
 		
 	}
 
 
 	@Override
 	public void controllerDatabaseChanged() {
-		((ReplyListener) mCallback).reloadControllerData();
+		((ReplyListener) mCallback).onControllerDataChanged();
 		
 	}
 

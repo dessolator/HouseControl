@@ -14,10 +14,30 @@ import com.example.houseremote.fragments.SecondaryHeadlessFragment;
 import com.example.houseremote.network.dataclasses.ServerInfo;
 import com.example.houseremote.network.interfaces.BroadCastListener;
 
+/**
+ * Activity used to broadcast a packet on the network looking for Hosts if hosts
+ * are found they're listed in the listview. When a server is selected a
+ * connection is established to it and the layout is received.
+ * 
+ * The activity uses two fragments:
+ * 
+ * The headless fragment used to retain data, sockets etc. on configuration
+ * changes.
+ * 
+ * The view fragment used to display the data.
+ * 
+ * 
+ * 
+ * @author Ivan Kesler
+ *
+ */
 public class AutoSearchActivity extends ActionBarActivity implements BroadCastListener, AdapterProvider {
 
+	/*
+	 * The fragment containing all the persistent data.
+	 */
 	private SecondaryHeadlessFragment mHeadlessFragment;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -51,7 +71,7 @@ public class AutoSearchActivity extends ActionBarActivity implements BroadCastLi
 	@Override
 	public void serverFound(ServerInfo serverInfo) {
 		mHeadlessFragment.serverFound(serverInfo);
-		
+
 	}
 
 	@Override
@@ -67,7 +87,7 @@ public class AutoSearchActivity extends ActionBarActivity implements BroadCastLi
 	@Override
 	public void serverSelected(ServerInfo item) {
 		mHeadlessFragment.serverSelected(item);
-		
+
 	}
 
 }

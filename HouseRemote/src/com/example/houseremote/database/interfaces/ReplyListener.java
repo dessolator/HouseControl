@@ -7,10 +7,10 @@ public interface ReplyListener {
 	
 	void replaceCursor(Cursor cursor, Object cookie);
 	
-	void reloadControllerData();
+	void onControllerDataChanged();
 
-	void reloadHouseData();
+	void onHouseDataChanged();
 
-	void reloadRoomData();
+	void onRoomDataChanged();
 
 }

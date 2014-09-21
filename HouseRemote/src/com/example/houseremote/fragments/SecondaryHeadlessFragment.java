@@ -9,6 +9,7 @@ import android.widget.ListAdapter;
 
 import com.example.houseremote.R;
 import com.example.houseremote.database.DataBaseAsyncQueryHandler;
+import com.example.houseremote.database.adapters.ServerListAdapter;
 import com.example.houseremote.database.interfaces.ReplyListener;
 import com.example.houseremote.interfaces.HeadlessFragmentUI;
 import com.example.houseremote.interfaces.UIReadable;
@@ -18,16 +19,16 @@ import com.example.houseremote.network.dataclasses.PinStatus;
 import com.example.houseremote.network.dataclasses.PinStatusSet;
 import com.example.houseremote.network.dataclasses.ServerInfo;
 import com.example.houseremote.network.interfaces.BroadCastListener;
-import com.example.houseremote.network.interfaces.SwitchStateListener;
+import com.example.houseremote.network.interfaces.NetworkDataListener;
 import com.example.houseremote.network.threads.BroadcastAsyncTask;
 
-public class SecondaryHeadlessFragment extends Fragment implements BroadCastListener,AdapterProvider,SwitchStateListener, ReplyListener, HeadlessFragmentUI{
+public class SecondaryHeadlessFragment extends Fragment implements BroadCastListener,AdapterProvider,NetworkDataListener, ReplyListener, HeadlessFragmentUI{
 
 	private BroadcastAsyncTask mRefresher;
 	private DataBaseAsyncQueryHandler mHandler;
 	private ServerListAdapter mAdapter;
 	private NetworkSet mNetSet;
-	
+	//TODO SETRETAINSTATE
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -71,7 +72,7 @@ public class SecondaryHeadlessFragment extends Fragment implements BroadCastList
 	public void serverSelected(ServerInfo item) {
 		mNetSet.registerChange(item.getIp(), item.getPort()); 
 		mNetSet.addToSenderQueue(new LayoutQueryPacket());
-		//TODO
+		mRefresher.pauseThread();
 		
 		
 	}
@@ -80,7 +81,6 @@ public class SecondaryHeadlessFragment extends Fragment implements BroadCastList
 	@Override
 	public void execRequiredFunction(UIReadable uiReadable) {
 		uiReadable.executeNeededCode(this);
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -91,30 +91,28 @@ public class SecondaryHeadlessFragment extends Fragment implements BroadCastList
 
 
 	@Override
-	public void reloadControllerData() {
+	public void onControllerDataChanged() {
 	}
 
 
 	@Override
-	public void reloadHouseData() {
+	public void onHouseDataChanged() {
 	}
 
 
 	@Override
-	public void reloadRoomData() {		
+	public void onRoomDataChanged() {		
 	}
 
 
 	@Override
 	public void postValueChange(PinStatus pinStatus) {
-		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
 	public void postLookupValues(PinStatusSet pinStatusSet) {
-		// TODO Auto-generated method stub
 		
 	}
 	

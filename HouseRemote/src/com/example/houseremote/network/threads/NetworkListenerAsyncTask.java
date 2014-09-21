@@ -16,11 +16,11 @@ import com.example.houseremote.network.exceptions.ThreadNotPausedException;
 import com.example.houseremote.network.exceptions.ThreadNotStartedException;
 import com.example.houseremote.network.interfaces.ControlledThread;
 import com.example.houseremote.network.interfaces.SocketProvider;
-import com.example.houseremote.network.interfaces.SwitchStateListener;
+import com.example.houseremote.network.interfaces.NetworkDataListener;
 
 public class NetworkListenerAsyncTask extends AsyncTask<Void, UIReadable, Void> implements ControlledThread {
 
-	private SwitchStateListener mSwitchStateListener;
+	private NetworkDataListener mSwitchStateListener;
 	private Socket mSocket;
 	private SocketProvider mSocketProvider;
 	private DataInputStream mInputStream;
@@ -47,7 +47,7 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, UIReadable, Void> 
 	 * @param mLockupListener
 	 *            The entity listening to pin status lookups.
 	 */
-	public NetworkListenerAsyncTask(SocketProvider mSocketProvider, SwitchStateListener mSwitchStateListener) {
+	public NetworkListenerAsyncTask(SocketProvider mSocketProvider, NetworkDataListener mSwitchStateListener) {
 		super();
 		this.mSocketProvider = mSocketProvider;
 		this.mSwitchStateListener = mSwitchStateListener;

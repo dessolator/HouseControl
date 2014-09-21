@@ -32,10 +32,10 @@ import com.example.houseremote.network.dataclasses.PinStatusSet;
 import com.example.houseremote.network.dataclasses.ServerInfo;
 import com.example.houseremote.network.interfaces.NetworkCommandListener;
 import com.example.houseremote.network.interfaces.Sendable;
-import com.example.houseremote.network.interfaces.SwitchStateListener;
+import com.example.houseremote.network.interfaces.NetworkDataListener;
 
 public class PrimaryHeadlessFragment extends Fragment implements ReplyListener, ControllersAdapterProvider,
-		RoomsAdapterProvider, HousesAdapterProvider, NetworkCommandListener, SwitchStateListener, HeadlessFragmentUI {
+		RoomsAdapterProvider, HousesAdapterProvider, NetworkCommandListener, NetworkDataListener, HeadlessFragmentUI {
 
 	/*
 	 * String constants for DB lookups
@@ -342,7 +342,7 @@ public class PrimaryHeadlessFragment extends Fragment implements ReplyListener, 
 	}
 
 	@Override
-	public void reloadControllerData() {
+	public void onControllerDataChanged() {
 		if (selectedHouseID > 0 && selectedRoomID > 0) {
 			/*
 			 * Start DBsearch
@@ -358,7 +358,7 @@ public class PrimaryHeadlessFragment extends Fragment implements ReplyListener, 
 	}
 
 	@Override
-	public void reloadHouseData() {
+	public void onHouseDataChanged() {
 		
 		queryManager
 				.startQuery(0, houseAdapter, DBProvider.HOUSES_URI, houseProjection, null, null, null);
@@ -366,7 +366,7 @@ public class PrimaryHeadlessFragment extends Fragment implements ReplyListener, 
 	}
 
 	@Override
-	public void reloadRoomData() {
+	public void onRoomDataChanged() {
 		if (selectedHouseID > 0) {
 			
 			String[] roomSelectionArgs = { selectedHouseID + "" };

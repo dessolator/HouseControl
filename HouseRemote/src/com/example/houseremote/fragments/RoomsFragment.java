@@ -90,7 +90,7 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 	private void loadInitialControllerData(ListAdapter mAdapter2) {
 		if(((RoomsAdapterProvider)mCallback).isInitialRoomDataLoaded()) return;
 		((RoomsAdapterProvider)mCallback).setInitialRoomDataLoaded(true);
-		((ReplyListener) mCallback).reloadRoomData();
+		((ReplyListener) mCallback).onRoomDataChanged();
 		
 	}
 	@Override
@@ -141,8 +141,8 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    if (requestCode == 1) {
-	    	((ReplyListener) mCallback).reloadRoomData();
-	    	((ReplyListener) mCallback).reloadControllerData();
+	    	((ReplyListener) mCallback).onRoomDataChanged();
+	    	((ReplyListener) mCallback).onControllerDataChanged();
 	        
 	    }
 	}
@@ -175,12 +175,12 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 
 	@Override
 	public void roomDatabaseChanged() {
-		((ReplyListener) mCallback).reloadRoomData();
+		((ReplyListener) mCallback).onRoomDataChanged();
 	}
 
 	@Override
 	public void controllerDatabaseChanged() {
-		((ReplyListener) mCallback).reloadControllerData();
+		((ReplyListener) mCallback).onControllerDataChanged();
 	}
 
 }

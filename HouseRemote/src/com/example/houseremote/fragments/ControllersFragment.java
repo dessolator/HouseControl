@@ -93,7 +93,7 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 		if (((ControllersAdapterProvider) mCallback).isInitialControllerDataLoaded())
 			return;
 		((ControllersAdapterProvider) mCallback).setInitialControllerDataLoaded(true);
-		((ReplyListener) mCallback).reloadControllerData();
+		((ReplyListener) mCallback).onControllerDataChanged();
 
 	}
 
@@ -120,7 +120,7 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == 2) {
-			((ReplyListener) mCallback).reloadControllerData();
+			((ReplyListener) mCallback).onControllerDataChanged();
 		}
 	}
 
@@ -204,7 +204,7 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 
 	@Override
 	public void controllerDatabaseChanged() {
-		((ReplyListener) mCallback).reloadControllerData();
+		((ReplyListener) mCallback).onControllerDataChanged();
 
 	}
 

@@ -8,7 +8,7 @@ import java.net.UnknownHostException;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.example.houseremote.interfaces.UIReadable;
+import com.example.houseremote.interfaces.RunnableOnUIThread;
 import com.example.houseremote.network.dataclasses.PinStatusSet;
 import com.example.houseremote.network.exceptions.ThreadAlreadyPausedException;
 import com.example.houseremote.network.exceptions.ThreadIsDeadException;
@@ -16,11 +16,11 @@ import com.example.houseremote.network.exceptions.ThreadNotPausedException;
 import com.example.houseremote.network.exceptions.ThreadNotStartedException;
 import com.example.houseremote.network.interfaces.ControlledThread;
 import com.example.houseremote.network.interfaces.SocketProvider;
-import com.example.houseremote.network.interfaces.NetworkDataListener;
+import com.example.houseremote.network.interfaces.NetworkReceiveForward;
 
-public class NetworkListenerAsyncTask extends AsyncTask<Void, UIReadable, Void> implements ControlledThread {
+public class NetworkListenerAsyncTask extends AsyncTask<Void, RunnableOnUIThread, Void> implements ControlledThread {
 
-	private NetworkDataListener mSwitchStateListener;
+	private NetworkReceiveForward mSwitchStateListener;
 	private Socket mSocket;
 	private SocketProvider mSocketProvider;
 	private DataInputStream mInputStream;
@@ -47,7 +47,7 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, UIReadable, Void> 
 	 * @param mLockupListener
 	 *            The entity listening to pin status lookups.
 	 */
-	public NetworkListenerAsyncTask(SocketProvider mSocketProvider, NetworkDataListener mSwitchStateListener) {
+	public NetworkListenerAsyncTask(SocketProvider mSocketProvider, NetworkReceiveForward mSwitchStateListener) {
 		super();
 		this.mSocketProvider = mSocketProvider;
 		this.mSwitchStateListener = mSwitchStateListener;
@@ -110,7 +110,7 @@ public class NetworkListenerAsyncTask extends AsyncTask<Void, UIReadable, Void> 
 	 *            The PinStatusSet to parse.
 	 */
 	@Override
-	protected void onProgressUpdate(UIReadable... values) {
+	protected void onProgressUpdate(RunnableOnUIThread... values) {
 		super.onProgressUpdate(values);
 //		if (values[0].size() > 1) {
 //			mSwitchStateListener.postLookupValues(values[0]);

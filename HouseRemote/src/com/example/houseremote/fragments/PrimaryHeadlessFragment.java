@@ -21,35 +21,32 @@ import com.example.houseremote.database.adapters.GridAdapter;
 import com.example.houseremote.database.adapters.ListAdapter;
 import com.example.houseremote.database.interfaces.ControllersAdapterProvider;
 import com.example.houseremote.database.interfaces.HousesAdapterProvider;
-import com.example.houseremote.database.interfaces.ReplyListener;
 import com.example.houseremote.database.interfaces.RoomsAdapterProvider;
-import com.example.houseremote.interfaces.HeadlessFragmentUI;
-import com.example.houseremote.interfaces.UIReadable;
+import com.example.houseremote.interfaces.HeadlessFragment;
+import com.example.houseremote.interfaces.RunnableOnUIThread;
 import com.example.houseremote.network.NetworkSet;
 import com.example.houseremote.network.dataclasses.InitialStateQueryPacket;
 import com.example.houseremote.network.dataclasses.PinStatus;
 import com.example.houseremote.network.dataclasses.PinStatusSet;
 import com.example.houseremote.network.dataclasses.ServerInfo;
-import com.example.houseremote.network.interfaces.NetworkCommandListener;
 import com.example.houseremote.network.interfaces.Sendable;
-import com.example.houseremote.network.interfaces.NetworkDataListener;
 
-public class PrimaryHeadlessFragment extends Fragment implements ReplyListener, ControllersAdapterProvider,
-		RoomsAdapterProvider, HousesAdapterProvider, NetworkCommandListener, NetworkDataListener, HeadlessFragmentUI {
+public class PrimaryHeadlessFragment extends Fragment implements HeadlessFragment, RoomsAdapterProvider,HousesAdapterProvider,ControllersAdapterProvider
+		{
 
 	/*
 	 * String constants for DB lookups
 	 */
-	private static final String[] houseProjection = { DBHandler.HOUSE_ID, DBHandler.HOUSE_NAME, DBHandler.HOUSE_IMAGE_NAME };
-	private static final String[] roomProjection = { DBHandler.ROOM_ID, DBHandler.ROOM_NAME, DBHandler.ROOM_IMAGE_NAME };
-	private static final String[] controllerProjection = { DBHandler.CONTROLLER_ID, DBHandler.CONTROLLER_NAME,
-		DBHandler.CONTROLLER_IMAGE_NAME, DBHandler.CONTROLLER_TYPE, DBHandler.CONTROLLER_IP, DBHandler.CONTROLLER_PORT,
-		DBHandler.CONTROL_PIN_NUMBER };
+	private static final String[] houseProjection = { DBHandler.HOUSE_ID, DBHandler.HOUSE_NAME,
+			DBHandler.HOUSE_IMAGE_NAME };
+	private static final String[] roomProjection = { DBHandler.ROOM_ID, DBHandler.ROOM_NAME,
+			DBHandler.ROOM_IMAGE_NAME };
+	private static final String[] controllerProjection = { DBHandler.CONTROLLER_ID,
+			DBHandler.CONTROLLER_NAME, DBHandler.CONTROLLER_IMAGE_NAME, DBHandler.CONTROLLER_TYPE,
+			DBHandler.CONTROLLER_IP, DBHandler.CONTROLLER_PORT, DBHandler.CONTROL_PIN_NUMBER };
 	private static final String roomSelection = DBHandler.HOUSE_ID_ALT + "=?";
 	private static final String controllerSelection = DBHandler.ROOM_ID_ALT + "=?";
-	
-	
-	
+
 	/*
 	 * UI adapters for other fragments
 	 */
@@ -73,7 +70,6 @@ public class PrimaryHeadlessFragment extends Fragment implements ReplyListener, 
 	private boolean initialHouseDataLoaded = false;
 	private HashMap<String, NetworkSet> mNetSets = new HashMap<String, NetworkSet>();
 
-
 	/**
 	 * Create the necessary Adapters, Threads and DataBaseAccess also set this
 	 * fragment to be retained
@@ -95,7 +91,7 @@ public class PrimaryHeadlessFragment extends Fragment implements ReplyListener, 
 	@Override
 	public void onStart() {
 		super.onStart();
-		if(selectedRoomID>0){
+		if (selectedRoomID > 0) {
 			Iterator<Map.Entry<String, NetworkSet>> iter = mNetSets.entrySet().iterator();
 			while (iter.hasNext()) {
 				iter.next().getValue().resume();
@@ -109,11 +105,11 @@ public class PrimaryHeadlessFragment extends Fragment implements ReplyListener, 
 	@Override
 	public void onStop() {
 		super.onStop();
-		if(selectedRoomID>0){
-		Iterator<Map.Entry<String, NetworkSet>> iter = mNetSets.entrySet().iterator();
-		while (iter.hasNext()) {
-			iter.next().getValue().pause();
-		}
+		if (selectedRoomID > 0) {
+			Iterator<Map.Entry<String, NetworkSet>> iter = mNetSets.entrySet().iterator();
+			while (iter.hasNext()) {
+				iter.next().getValue().pause();
+			}
 		}
 	}
 
@@ -123,22 +119,24 @@ public class PrimaryHeadlessFragment extends Fragment implements ReplyListener, 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		if(selectedRoomID>0){
-		Iterator<Map.Entry<String, NetworkSet>> iter = mNetSets.entrySet().iterator();
-		while (iter.hasNext()) {
-			iter.next().getValue().kill();
-			iter.remove();
-		}
+		if (selectedRoomID > 0) {
+			Iterator<Map.Entry<String, NetworkSet>> iter = mNetSets.entrySet().iterator();
+			while (iter.hasNext()) {
+				iter.next().getValue().kill();
+				iter.remove();
+			}
 		}
 	}
 
 	public void onControllersDataChanged() {
 		Cursor c = controllerAdapter.getCursor();
-		if(c==null) return;
+		if (c == null)
+			return;
 		c.moveToPosition(-1);
 		ArrayList<ServerInfo> ips = new ArrayList<ServerInfo>();
 		while (c.moveToNext()) {
-			ips.add(new ServerInfo(null,c.getString(c.getColumnIndex(DBHandler.CONTROLLER_IP)),c.getInt(c.getColumnIndex(DBHandler.CONTROLLER_PORT))));
+			ips.add(new ServerInfo(null, c.getString(c.getColumnIndex(DBHandler.CONTROLLER_IP)), c.getInt(c
+					.getColumnIndex(DBHandler.CONTROLLER_PORT))));
 		}
 		addNetSetsForIps(ips);
 
@@ -149,10 +147,10 @@ public class PrimaryHeadlessFragment extends Fragment implements ReplyListener, 
 		ArrayList<ServerInfo> temp = new ArrayList<ServerInfo>();
 		for (ServerInfo item : ips) {
 			if (mNetSets.containsKey(item.getIp())) {
-				if(mNetSets.get(item.getIp()).getPort()!=item.getPort()){
+				if (mNetSets.get(item.getIp()).getPort() != item.getPort()) {
 					mNetSets.get(item.getIp()).registerChange(item.getIp(), item.getPort());
 				}
-					temp.add(item);
+				temp.add(item);
 			}
 		}
 		// put all the modifiable ons on the stack
@@ -172,7 +170,7 @@ public class PrimaryHeadlessFragment extends Fragment implements ReplyListener, 
 
 				if (!modifiable.isEmpty()) {
 					NetworkSet mod = modifiable.pop();
-					mod.registerChange(item.getIp(),item.getPort());
+					mod.registerChange(item.getIp(), item.getPort());
 					mNetSets.put(item.getIp(), mod);
 				} else {
 					NetworkSet mod = new NetworkSet(this, item.getIp(), item.getPort());
@@ -189,7 +187,6 @@ public class PrimaryHeadlessFragment extends Fragment implements ReplyListener, 
 
 	}
 
-
 	/**
 	 * Replaces the database cursor on the given adapter.
 	 * 
@@ -200,7 +197,7 @@ public class PrimaryHeadlessFragment extends Fragment implements ReplyListener, 
 	 * 
 	 */
 	@Override
-	public void replaceCursor(Cursor cursor, Object adapter) {
+	public void onQueryFinished(Cursor cursor, Object adapter) {
 
 		Cursor temp = ((CursorAdapter) adapter).swapCursor(cursor);
 		if (temp != null)
@@ -255,7 +252,7 @@ public class PrimaryHeadlessFragment extends Fragment implements ReplyListener, 
 	}
 
 	public void setSelectedRoomID(long roomID) {
-		if(roomID<=0){
+		if (roomID <= 0) {
 			Iterator<Map.Entry<String, NetworkSet>> iter = mNetSets.entrySet().iterator();
 			while (iter.hasNext()) {
 				iter.next().getValue().kill();
@@ -330,14 +327,14 @@ public class PrimaryHeadlessFragment extends Fragment implements ReplyListener, 
 		this.initialControllerDataLoaded = initialControllerDataLoaded;
 	}
 
-	
-	public void connectFailedOnIp(String ip){
+	public void connectFailedOnIp(String ip) {
 		mNetSets.remove(ip).kill();
 		reportFailiureToConnectToServer(ip);
 	}
-	
+
 	public void reportFailiureToConnectToServer(String ip) {
-		if (getActivity() == null)	return;
+		if (getActivity() == null)
+			return;
 		Toast.makeText(getActivity(), "Failed To Connect To Host" + ip, Toast.LENGTH_SHORT).show();
 	}
 
@@ -347,39 +344,43 @@ public class PrimaryHeadlessFragment extends Fragment implements ReplyListener, 
 			/*
 			 * Start DBsearch
 			 */
-			
-			String[] controllerSelectionArgs = { selectedRoomID + "" };
-			queryManager.startQuery(2, controllerAdapter, DBProvider.CONTROLLERS_URI,
-					controllerProjection, controllerSelection, controllerSelectionArgs, null);
 
+			String[] controllerSelectionArgs = { selectedRoomID + "" };
+			queryManager.startQuery(2, controllerAdapter, DBProvider.CONTROLLERS_URI, controllerProjection,
+					controllerSelection, controllerSelectionArgs, null);
 
 		}
-		
+
 	}
 
 	@Override
 	public void onHouseDataChanged() {
-		
-		queryManager
-				.startQuery(0, houseAdapter, DBProvider.HOUSES_URI, houseProjection, null, null, null);
-		
+
+		queryManager.startQuery(0, houseAdapter, DBProvider.HOUSES_URI, houseProjection, null, null, null);
+
 	}
 
 	@Override
 	public void onRoomDataChanged() {
 		if (selectedHouseID > 0) {
-			
+
 			String[] roomSelectionArgs = { selectedHouseID + "" };
 			queryManager.startQuery(1, roomAdapter, DBProvider.ROOMS_URI, roomProjection, roomSelection,
 					roomSelectionArgs, null);
 		}
-		
+
 	}
 
 	@Override
-	public void execRequiredFunction(UIReadable uiReadable) {
-		uiReadable.executeNeededCode(this);
-		
+	public void execRequiredFunction(RunnableOnUIThread uiReadable) {
+		uiReadable.runOnUIThread(this);
+
+	}
+
+	@Override
+	public void onInsertFinished(long parseId) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

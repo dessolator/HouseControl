@@ -2,27 +2,26 @@ package com.example.houseremote.database;
 
 import java.lang.ref.WeakReference;
 
-import com.example.houseremote.database.interfaces.DBInsertResponder;
-import com.example.houseremote.database.interfaces.ReplyListener;
-
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
 
+import com.example.houseremote.database.interfaces.DatabaseOperationCompleteListener;
+
 public class DataBaseAsyncQueryHandler extends AsyncQueryHandler {
 
-	private WeakReference<ReplyListener> mListener;
+	private WeakReference<DatabaseOperationCompleteListener> mListener;
 
 	/**
 	 * Constructor for the DataBaseAsyncQueryHandler class
 	 * @param cr	ContentResolver to which the DataBaseAsyncQueryHandler is connected.
 	 * @param rl	The entity listening to underlying database changes.
 	 */
-	public DataBaseAsyncQueryHandler(ContentResolver cr, ReplyListener rl) {
+	public DataBaseAsyncQueryHandler(ContentResolver cr, DatabaseOperationCompleteListener rl) {
 		super(cr);
-		mListener = new WeakReference<ReplyListener>(rl);
+		mListener = new WeakReference<DatabaseOperationCompleteListener>(rl);
 	}
 
 
@@ -30,7 +29,7 @@ public class DataBaseAsyncQueryHandler extends AsyncQueryHandler {
 	protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
 		super.onQueryComplete(token, cookie, cursor);
 		if (mListener.get() != null)
-			mListener.get().replaceCursor(cursor,cookie);
+			mListener.get().onQueryFinished(cursor,cookie);
 		else
 			cursor.close();
 	}
@@ -38,9 +37,7 @@ public class DataBaseAsyncQueryHandler extends AsyncQueryHandler {
 	@Override
 	protected void onInsertComplete(int token, Object cookie, Uri uri) {
 		if (mListener.get() != null)
-			if(cookie !=null){
-				((DBInsertResponder)cookie).uponInsertFinished(ContentUris.parseId(uri));
-				}
+				mListener.get().onInsertFinished(ContentUris.parseId(uri));//TODO TODO TODO TODO
 		super.onInsertComplete(token, cookie, uri);
 	}
 

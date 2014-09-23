@@ -8,7 +8,7 @@ import android.view.MenuItem;
 import android.widget.ListAdapter;
 
 import com.example.houseremote.R;
-import com.example.houseremote.fragments.AdapterProvider;
+import com.example.houseremote.database.interfaces.ServerListAdapterProvider;
 import com.example.houseremote.fragments.RefreshFragment;
 import com.example.houseremote.fragments.SecondaryHeadlessFragment;
 import com.example.houseremote.network.dataclasses.ServerInfo;
@@ -31,7 +31,7 @@ import com.example.houseremote.network.interfaces.BroadCastListener;
  * @author Ivan Kesler
  *
  */
-public class AutoSearchActivity extends ActionBarActivity implements BroadCastListener, AdapterProvider {
+public class AutoSearchActivity extends ActionBarActivity implements BroadCastListener, ServerListAdapterProvider {
 
 	/*
 	 * The fragment containing all the persistent data.
@@ -87,6 +87,8 @@ public class AutoSearchActivity extends ActionBarActivity implements BroadCastLi
 	@Override
 	public void serverSelected(ServerInfo item) {
 		mHeadlessFragment.serverSelected(item);
+		//TODO set loopyLoop thing
+		//TODO add a insert complete listener
 
 	}
 

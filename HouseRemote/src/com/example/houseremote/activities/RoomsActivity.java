@@ -3,7 +3,6 @@ package com.example.houseremote.activities;
 import static com.example.houseremote.activities.MainActivity.HEADLESS;
 import static com.example.houseremote.activities.MainActivity.ROOMS;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -11,19 +10,15 @@ import android.view.MenuItem;
 
 import com.example.houseremote.R;
 import com.example.houseremote.database.DBHandler;
-import com.example.houseremote.database.DataBaseAsyncQueryHandler;
-import com.example.houseremote.database.adapters.ListAdapter;
-import com.example.houseremote.database.interfaces.QueryManagerProvider;
-import com.example.houseremote.database.interfaces.ReplyListener;
-import com.example.houseremote.database.interfaces.RoomsAdapterProvider;
 import com.example.houseremote.fragments.PrimaryHeadlessFragment;
 import com.example.houseremote.fragments.RoomsFragment;
+import com.example.houseremote.interfaces.HeadlessFragment;
+import com.example.houseremote.interfaces.HeadlessProvider;
 import com.example.houseremote.interfaces.RoomSelectionListener;
-import com.example.houseremote.interfaces.SelectedHouseProvider;
 
-public class RoomsActivity extends ActionBarActivity implements RoomSelectionListener, SelectedHouseProvider, RoomsAdapterProvider, QueryManagerProvider,ReplyListener{
+public class RoomsActivity extends ActionBarActivity implements HeadlessProvider, RoomSelectionListener{
 	
-	private PrimaryHeadlessFragment myHeadlessFragment;
+	private PrimaryHeadlessFragment mHeadlessFragment;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +26,7 @@ public class RoomsActivity extends ActionBarActivity implements RoomSelectionLis
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.activity_main);
 
-		myHeadlessFragment = acquireHeadlessFragment();
+		mHeadlessFragment = acquireHeadlessFragment();
 		acquireRoomsFragmentToList();
 
 	}
@@ -70,45 +65,13 @@ public class RoomsActivity extends ActionBarActivity implements RoomSelectionLis
 		return super.onOptionsItemSelected(item);
 	}
 	
-	
+	@Override
 	public void roomSelected(long roomID) {
 		
 		Intent i = new Intent(this, ControllersActivity.class);
 		i.putExtra(DBHandler.ROOM_ID, roomID);
 		startActivity(i);
 		return;
-	}
-
-	@Override
-	public long getSelectedHouseID() {
-		return myHeadlessFragment.getSelectedHouseID();
-	}
-
-	@Override
-	public ListAdapter getRoomsAdapter() {
-		return myHeadlessFragment.getRoomsAdapter();
-	}
-
-	@Override
-	public DataBaseAsyncQueryHandler getQueryManager() {
-		return myHeadlessFragment.getQueryManager();
-	}
-
-	@Override
-	public void replaceCursor(Cursor cursor, Object o) {
-		myHeadlessFragment.replaceCursor(cursor, o);
-		
-	}
-
-	@Override
-	public boolean isInitialRoomDataLoaded() {
-		return myHeadlessFragment.isInitialRoomDataLoaded();
-	}
-
-	@Override
-	public void setInitialRoomDataLoaded(boolean b) {
-		myHeadlessFragment.setInitialRoomDataLoaded(b);
-		
 	}
 	
 	@Override
@@ -117,21 +80,9 @@ public class RoomsActivity extends ActionBarActivity implements RoomSelectionLis
 		return true;
 	}
 
-	@Override
-	public void onControllerDataChanged() {
-		myHeadlessFragment.onControllerDataChanged();
-		
-	}
 
 	@Override
-	public void onHouseDataChanged() {
-		myHeadlessFragment.onHouseDataChanged();
-		
-	}
-
-	@Override
-	public void onRoomDataChanged() {
-		myHeadlessFragment.onRoomDataChanged();
-		
+	public HeadlessFragment getHeadlessFragment() {
+		return mHeadlessFragment;
 	}
 }

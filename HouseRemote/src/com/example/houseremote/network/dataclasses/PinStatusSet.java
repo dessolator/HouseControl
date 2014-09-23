@@ -2,10 +2,10 @@ package com.example.houseremote.network.dataclasses;
 
 import java.util.ArrayList;
 
-import com.example.houseremote.interfaces.HeadlessFragmentUI;
-import com.example.houseremote.interfaces.UIReadable;
+import com.example.houseremote.interfaces.HeadlessFragment;
+import com.example.houseremote.interfaces.RunnableOnUIThread;
 
-public class PinStatusSet implements UIReadable {
+public class PinStatusSet implements RunnableOnUIThread {
 	private ArrayList<PinStatus> mPins;
 
 	
@@ -35,7 +35,7 @@ public class PinStatusSet implements UIReadable {
 
 
 	@Override
-	public void executeNeededCode(HeadlessFragmentUI headlessFragment) {
+	public void runOnUIThread(HeadlessFragment headlessFragment) {
 		headlessFragment.postLookupValues(this);
 		
 	}

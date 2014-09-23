@@ -13,9 +13,9 @@ import com.example.houseremote.R;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseAsyncQueryHandler;
-import com.example.houseremote.database.interfaces.ReplyListener;
+import com.example.houseremote.database.interfaces.DatabaseOperationCompleteListener;
 
-public class EditRoomActivity extends ActionBarActivity implements ReplyListener {
+public class EditRoomActivity extends ActionBarActivity implements DatabaseOperationCompleteListener {
 
 	long roomID;
 	private EditText roomNameField;
@@ -59,7 +59,7 @@ public class EditRoomActivity extends ActionBarActivity implements ReplyListener
 	}
 
 	@Override
-	public void replaceCursor(Cursor cursor,Object o) {
+	public void onQueryFinished(Cursor cursor,Object o) {
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
 				roomNameField.setText(cursor.getString(cursor.getColumnIndex(DBHandler.ROOM_NAME)));
@@ -81,6 +81,13 @@ public class EditRoomActivity extends ActionBarActivity implements ReplyListener
 
 	@Override
 	public void onRoomDataChanged() {
+		
+	}
+
+
+	@Override
+	public void onInsertFinished(long parseId) {
+		// TODO Auto-generated method stub
 		
 	}
 

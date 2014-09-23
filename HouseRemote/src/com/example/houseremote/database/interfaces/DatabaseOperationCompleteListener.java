@@ -3,14 +3,16 @@ package com.example.houseremote.database.interfaces;
 import android.database.Cursor;
 
 
-public interface ReplyListener {
+public interface DatabaseOperationCompleteListener {
 	
-	void replaceCursor(Cursor cursor, Object cookie);
+	void onQueryFinished(Cursor cursor, Object cookie);
 	
 	void onControllerDataChanged();
 
 	void onHouseDataChanged();
 
 	void onRoomDataChanged();
+
+	void onInsertFinished(long parseId);
 
 }

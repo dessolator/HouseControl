@@ -27,12 +27,10 @@ import com.example.houseremote.database.adapters.GridAdapter;
 import com.example.houseremote.database.interfaces.ControllerDatabaseChangeListener;
 import com.example.houseremote.database.interfaces.ControllersAdapterProvider;
 import com.example.houseremote.database.interfaces.DBInsertResponder;
-import com.example.houseremote.database.interfaces.QueryManagerProvider;
-import com.example.houseremote.database.interfaces.ReplyListener;
 import com.example.houseremote.database.observers.ControllerObserver;
+import com.example.houseremote.interfaces.HeadlessProvider;
 import com.example.houseremote.interfaces.SelectedRoomProvider;
 import com.example.houseremote.network.dataclasses.PinFlipPacket;
-import com.example.houseremote.network.interfaces.NetworkCommandListener;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -44,7 +42,7 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 	private long roomID;
 	private GridView mGrid;
 	private GridAdapter mAdapter;
-	private ReplyListener mCallback;
+	private HeadlessProvider mCallback;
 	private DataBaseAsyncQueryHandler mAsyncQueryManager;
 	private ControllerObserver mObserver;
 
@@ -65,17 +63,17 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 
-		mCallback = (ReplyListener) getActivity();
-		roomID = ((SelectedRoomProvider) mCallback).getSelectedRoomID();
-		mAdapter = ((ControllersAdapterProvider) mCallback).getControllersAdapter();
-		mAsyncQueryManager = ((QueryManagerProvider) mCallback).getQueryManager();
+		mCallback = (HeadlessProvider) getActivity();
+		roomID = ((SelectedRoomProvider) mCallback.getHeadlessFragment()).getSelectedRoomID();
+		mAdapter = ((ControllersAdapterProvider) mCallback.getHeadlessFragment()).getControllersAdapter();
+		mAsyncQueryManager =  mCallback.getHeadlessFragment().getQueryManager();
 
 		mGrid = (GridView) getActivity().findViewById(R.id.controllerGrid);
 		mGrid.setAdapter(mAdapter);
 		mGrid.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-				((NetworkCommandListener) mCallback).addToNetworkSender(
+				mCallback.getHeadlessFragment().addToNetworkSender(
 						((Cursor) mAdapter.getItem(position)).getString(mAdapter.getCursor().getColumnIndex(
 								DBHandler.CONTROLLER_IP)),
 						new PinFlipPacket(((Cursor) mAdapter.getItem(position)).getInt(mAdapter.getCursor()
@@ -90,10 +88,10 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 	}
 
 	private void loadInitialControllerData(GridAdapter mAdapter2) {
-		if (((ControllersAdapterProvider) mCallback).isInitialControllerDataLoaded())
+		if (((ControllersAdapterProvider) mCallback.getHeadlessFragment()).isInitialControllerDataLoaded())
 			return;
-		((ControllersAdapterProvider) mCallback).setInitialControllerDataLoaded(true);
-		((ReplyListener) mCallback).onControllerDataChanged();
+		((ControllersAdapterProvider) mCallback.getHeadlessFragment()).setInitialControllerDataLoaded(true);
+		mCallback.getHeadlessFragment().onControllerDataChanged();
 
 	}
 
@@ -120,7 +118,7 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == 2) {
-			((ReplyListener) mCallback).onControllerDataChanged();
+			mCallback.getHeadlessFragment().onControllerDataChanged();
 		}
 	}
 
@@ -192,7 +190,7 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 		return super.onOptionsItemSelected(item);
 	}
 
-	public void uponInsertFinished(long controllerID) {
+	public void onInsertFinished(long controllerID) {
 		Intent i = new Intent(getActivity(), EditLightSwitchActivity.class);
 		i.putExtra(DBHandler.CONTROLLER_ID, controllerID);// give info about the
 		startActivityForResult(i, 2);// start the activity
@@ -204,7 +202,7 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 
 	@Override
 	public void controllerDatabaseChanged() {
-		((ReplyListener) mCallback).onControllerDataChanged();
+		mCallback.getHeadlessFragment().onControllerDataChanged();
 
 	}
 

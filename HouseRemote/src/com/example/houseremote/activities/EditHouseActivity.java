@@ -13,7 +13,7 @@ import com.example.houseremote.R;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseAsyncQueryHandler;
-import com.example.houseremote.database.interfaces.ReplyListener;
+import com.example.houseremote.database.interfaces.DatabaseOperationCompleteListener;
 
 /**
  * 
@@ -21,7 +21,7 @@ import com.example.houseremote.database.interfaces.ReplyListener;
  * @author Ivan Kesler
  *
  */
-public class EditHouseActivity extends ActionBarActivity implements ReplyListener {
+public class EditHouseActivity extends ActionBarActivity implements DatabaseOperationCompleteListener {
 
 	private static final String selection = DBHandler.HOUSE_ID + "=?";
 	private EditText houseNameField;
@@ -69,7 +69,7 @@ public class EditHouseActivity extends ActionBarActivity implements ReplyListene
 	}
 
 	@Override
-	public void replaceCursor(Cursor cursor, Object o) {
+	public void onQueryFinished(Cursor cursor, Object o) {
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
 				houseWifiNameField.setText(cursor.getString(cursor.getColumnIndex(DBHandler.HOUSE_WIFI_NAME)));
@@ -92,6 +92,12 @@ public class EditHouseActivity extends ActionBarActivity implements ReplyListene
 
 	@Override
 	public void onRoomDataChanged() {
+		
+	}
+
+	@Override
+	public void onInsertFinished(long parseId) {
+		// TODO Auto-generated method stub
 		
 	}
 

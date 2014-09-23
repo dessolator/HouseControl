@@ -2,6 +2,6 @@ package com.example.houseremote.network.interfaces;
 
 
 
-public interface NetworkCommandListener {
+public interface NetworkSendController {
 	void addToNetworkSender(String senderIp, Sendable switchPacket);
 }

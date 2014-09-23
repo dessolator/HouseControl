@@ -2,7 +2,6 @@ package com.example.houseremote.activities;
 
 import static com.example.houseremote.activities.MainActivity.CONTROLLERS;
 import static com.example.houseremote.activities.MainActivity.HEADLESS;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -10,30 +9,22 @@ import android.view.MenuItem;
 
 import com.example.houseremote.R;
 import com.example.houseremote.database.DBHandler;
-import com.example.houseremote.database.DataBaseAsyncQueryHandler;
-import com.example.houseremote.database.adapters.GridAdapter;
-import com.example.houseremote.database.interfaces.ControllersAdapterProvider;
-import com.example.houseremote.database.interfaces.QueryManagerProvider;
-import com.example.houseremote.database.interfaces.ReplyListener;
 import com.example.houseremote.fragments.ControllersFragment;
 import com.example.houseremote.fragments.PrimaryHeadlessFragment;
-import com.example.houseremote.interfaces.SelectedHouseProvider;
-import com.example.houseremote.interfaces.SelectedRoomProvider;
-import com.example.houseremote.network.interfaces.NetworkCommandListener;
-import com.example.houseremote.network.interfaces.Sendable;
+import com.example.houseremote.interfaces.HeadlessFragment;
+import com.example.houseremote.interfaces.HeadlessProvider;
 
 /**
  * Activity displaying the elements on a controller and controlling them.
+ * 
  * @author Ivan Kesler
  *
  */
-public class ControllersActivity extends ActionBarActivity implements ReplyListener, SelectedHouseProvider,
-		SelectedRoomProvider, ControllersAdapterProvider, QueryManagerProvider, NetworkCommandListener {
-
+public class ControllersActivity extends ActionBarActivity implements HeadlessProvider{
 	/*
 	 * Fragments
 	 */
-	private PrimaryHeadlessFragment myHeadlessFragment;
+	private PrimaryHeadlessFragment mHeadlessFragment;
 
 	/**
 	 * Acquire Headless and Controllers fragment.
@@ -43,7 +34,7 @@ public class ControllersActivity extends ActionBarActivity implements ReplyListe
 		super.onCreate(savedInstanceState);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.activity_main);
-		myHeadlessFragment = acquireHeadlessFragment();
+		mHeadlessFragment = acquireHeadlessFragment();
 		acquireControllersFragment();
 	}
 
@@ -56,8 +47,7 @@ public class ControllersActivity extends ActionBarActivity implements ReplyListe
 				CONTROLLERS);
 		if (temp == null) {
 			temp = new ControllersFragment();
-			getSupportFragmentManager().beginTransaction().add(R.id.list, temp, CONTROLLERS)
-					.commit();
+			getSupportFragmentManager().beginTransaction().add(R.id.list, temp, CONTROLLERS).commit();
 		}
 		return temp;
 	}
@@ -67,10 +57,11 @@ public class ControllersActivity extends ActionBarActivity implements ReplyListe
 	 * else a new one is created.
 	 */
 	private PrimaryHeadlessFragment acquireHeadlessFragment() {
-		PrimaryHeadlessFragment temp = (PrimaryHeadlessFragment) getSupportFragmentManager().findFragmentByTag(HEADLESS);
+		PrimaryHeadlessFragment temp = (PrimaryHeadlessFragment) getSupportFragmentManager()
+				.findFragmentByTag(HEADLESS);
 		if (temp == null) {
 			temp = new PrimaryHeadlessFragment();
-			temp.setSelectedRoomID(getIntent().getLongExtra(DBHandler.ROOM_ID,-1));
+			temp.setSelectedRoomID(getIntent().getLongExtra(DBHandler.ROOM_ID, -1));
 			getSupportFragmentManager().beginTransaction().add(temp, HEADLESS).commit();
 		}
 		return temp;
@@ -98,73 +89,11 @@ public class ControllersActivity extends ActionBarActivity implements ReplyListe
 		return super.onOptionsItemSelected(item);
 	}
 
-	/*
-	 * Passalong functions, getters and setters.
-	 */
-
 	@Override
-	public void replaceCursor(Cursor cursor, Object o) {
-		myHeadlessFragment.replaceCursor(cursor, o);
-
-	}
-
-	@Override
-	public long getSelectedHouseID() {
-		return myHeadlessFragment.getSelectedHouseID();
-	}
-
-	@Override
-	public long getSelectedRoomID() {
-		return myHeadlessFragment.getSelectedRoomID();
-	}
-
-	@Override
-	public GridAdapter getControllersAdapter() {
-		return myHeadlessFragment.getControllersAdapter();
-	}
-
-	@Override
-	public DataBaseAsyncQueryHandler getQueryManager() {
-		return myHeadlessFragment.getQueryManager();
-	}
-
-	@Override
-	public void addToNetworkSender(String senderIp, Sendable switchPacket) {
-		myHeadlessFragment.addToNetworkSender(senderIp, switchPacket);
-	}
-
-	@Override
-	public boolean isInitialControllerDataLoaded() {
-		return myHeadlessFragment.isInitialControllerDataLoaded();
-	}
-
-	@Override
-	public void setInitialControllerDataLoaded(boolean initialControllerDataLoaded) {
-		myHeadlessFragment.setInitialControllerDataLoaded(initialControllerDataLoaded);
-
+	public HeadlessFragment getHeadlessFragment() {
+		return mHeadlessFragment;
 	}
 	
-	@Override
-	public boolean onNavigateUp() {
-		super.onBackPressed();
-		return true;
-	}
-
-	@Override
-	public void onControllerDataChanged() {
-		myHeadlessFragment.onControllerDataChanged();
-		
-	}
-
-	@Override
-	public void onHouseDataChanged() {
-		myHeadlessFragment.onHouseDataChanged();
-		
-	}
-
-	@Override
-	public void onRoomDataChanged() {
-		myHeadlessFragment.onRoomDataChanged();
-		
-	}
+	
+	
 }

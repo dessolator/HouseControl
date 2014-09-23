@@ -1,13 +1,13 @@
 package com.example.houseremote.network.threads;
 
-import com.example.houseremote.interfaces.HeadlessFragmentUI;
-import com.example.houseremote.interfaces.UIReadable;
+import com.example.houseremote.interfaces.HeadlessFragment;
+import com.example.houseremote.interfaces.RunnableOnUIThread;
 
-public class LayoutDescription implements UIReadable{
+public class LayoutDescription implements RunnableOnUIThread{
 
 	@Override
-	public void executeNeededCode(HeadlessFragmentUI headlessFragment) {
-		// TODO Auto-generated method stub
+	public void runOnUIThread(HeadlessFragment headlessFragment) {
+//		headlessFragment.layoutParsed(this); //TODO TODO TODO
 		
 	}
 

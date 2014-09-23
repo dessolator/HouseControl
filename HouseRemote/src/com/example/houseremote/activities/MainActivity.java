@@ -1,7 +1,6 @@
 package com.example.houseremote.activities;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -9,28 +8,16 @@ import android.view.MenuItem;
 
 import com.example.houseremote.R;
 import com.example.houseremote.database.DBHandler;
-import com.example.houseremote.database.DataBaseAsyncQueryHandler;
-import com.example.houseremote.database.adapters.GridAdapter;
-import com.example.houseremote.database.adapters.ListAdapter;
-import com.example.houseremote.database.interfaces.ControllersAdapterProvider;
-import com.example.houseremote.database.interfaces.HousesAdapterProvider;
-import com.example.houseremote.database.interfaces.QueryManagerProvider;
-import com.example.houseremote.database.interfaces.ReplyListener;
-import com.example.houseremote.database.interfaces.RoomsAdapterProvider;
 import com.example.houseremote.fragments.ControllersFragment;
-import com.example.houseremote.fragments.PrimaryHeadlessFragment;
 import com.example.houseremote.fragments.HousesFragment;
+import com.example.houseremote.fragments.PrimaryHeadlessFragment;
 import com.example.houseremote.fragments.RoomsFragment;
+import com.example.houseremote.interfaces.HeadlessFragment;
+import com.example.houseremote.interfaces.HeadlessProvider;
 import com.example.houseremote.interfaces.HouseSelectionListener;
 import com.example.houseremote.interfaces.RoomSelectionListener;
-import com.example.houseremote.interfaces.SelectedHouseProvider;
-import com.example.houseremote.interfaces.SelectedRoomProvider;
-import com.example.houseremote.network.interfaces.NetworkCommandListener;
-import com.example.houseremote.network.interfaces.Sendable;
 
-public class MainActivity extends ActionBarActivity implements ReplyListener, RoomSelectionListener,
-		HouseSelectionListener, ControllersAdapterProvider, RoomsAdapterProvider, HousesAdapterProvider,
-		QueryManagerProvider, SelectedHouseProvider, SelectedRoomProvider, NetworkCommandListener{
+public class MainActivity extends ActionBarActivity implements HeadlessProvider, RoomSelectionListener,HouseSelectionListener{
 
 	
 
@@ -47,7 +34,7 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 	/*
 	 * Fragments
 	 */
-	private PrimaryHeadlessFragment myHeadlessFragment;
+	private PrimaryHeadlessFragment mHeadlessFragment;
 	private HousesFragment myHousesFragment;
 	private RoomsFragment myRoomsFragment;
 	private ControllersFragment myControllersFragment;
@@ -61,24 +48,24 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 		setContentView(R.layout.activity_main);
 	
 		if (savedInstanceState == null) {//if starting for first time
-			myHeadlessFragment = acquireHeadlessFragment();
+			mHeadlessFragment = acquireHeadlessFragment();
 			myHousesFragment = acquireHousesFragmentToList();
 		
 		} else {
 			
-			myHeadlessFragment = acquireHeadlessFragment();
+			mHeadlessFragment = acquireHeadlessFragment();
 			
 			if (findViewById(R.id.expanded) == null) {//if on phone and not for first time
 				myHousesFragment = acquireHousesFragmentToList();
 			} else {
 				
-				if (myHeadlessFragment.getSelectedRoomID() >0) {//if on tablet and should display rooms and houses fragment
+				if (mHeadlessFragment.getSelectedRoomID() >0) {//if on tablet and should display rooms and houses fragment
 					myHousesFragment = (HousesFragment) getSupportFragmentManager().findFragmentByTag(HOUSES);
 					myRoomsFragment = acquireRoomsFragmentToList();					
 					myControllersFragment = acquireControllersFragmentToExpanded();
 					
 				} else {
-					if (myHeadlessFragment.getSelectedHouseID() >0) {//if on tablet and should display houses and rooms fragment
+					if (mHeadlessFragment.getSelectedHouseID() >0) {//if on tablet and should display houses and rooms fragment
 						myHousesFragment = acquireHousesFragmentToList();
 						myRoomsFragment = acquireRoomsFragmentToExpanded();						
 					} else {//if on tablet and should display only houses fragment
@@ -152,9 +139,9 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 	@Override
 	public void roomSelected(long roomID) {
 		
-		if (myHeadlessFragment.getSelectedRoomID()<=0) {//if no room was selected
+		if (mHeadlessFragment.getSelectedRoomID()<=0) {//if no room was selected
 			
-			myHeadlessFragment.setSelectedRoomID(roomID);
+			mHeadlessFragment.setSelectedRoomID(roomID);
 			
 			getSupportFragmentManager().beginTransaction().remove(myRoomsFragment).commit();
 			myControllersFragment = acquireControllersFragmentToExpanded();
@@ -162,7 +149,7 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 			getSupportFragmentManager().beginTransaction().replace(R.id.list, myRoomsFragment,ROOMS).commit();
 			return;
 		}
-		if (myHeadlessFragment.getSelectedRoomID() != roomID) {//if a different room was selected
+		if (mHeadlessFragment.getSelectedRoomID() != roomID) {//if a different room was selected
 			
 			changeSelectedRoom(roomID);
 			return;
@@ -171,9 +158,9 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 
 
 	private void changeSelectedRoom(long roomID) {
-		myHeadlessFragment.setSelectedRoomID(roomID);
+		mHeadlessFragment.setSelectedRoomID(roomID);
 		myControllersFragment.replaceData(roomID);
-		myHeadlessFragment.onControllerDataChanged();
+		mHeadlessFragment.onControllerDataChanged();
 	}
 
 	@Override
@@ -186,15 +173,15 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 			startActivity(i);
 			return;
 		}
-		if (myHeadlessFragment.getSelectedHouseID() <=0) {//if no house was selected previously
+		if (mHeadlessFragment.getSelectedHouseID() <=0) {//if no house was selected previously
 
-			myHeadlessFragment.setSelectedHouseID(houseID);
+			mHeadlessFragment.setSelectedHouseID(houseID);
 			myRoomsFragment = new RoomsFragment();
 			getSupportFragmentManager().beginTransaction().add(R.id.expanded, myRoomsFragment,ROOMS).commit();
 			return;
 		}
 		
-		if (myHeadlessFragment.getSelectedHouseID() != houseID) {//if a different house was selected previously
+		if (mHeadlessFragment.getSelectedHouseID() != houseID) {//if a different house was selected previously
 
 			changeSelectedHouse(houseID);
 			return;
@@ -208,9 +195,9 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 			super.onBackPressed();
 			return;
 		}
-		if(myHeadlessFragment.getSelectedRoomID()>0){
-			myHeadlessFragment.setSelectedRoomID(0);
-			myHeadlessFragment.setInitialControllerDataLoaded(false);
+		if(mHeadlessFragment.getSelectedRoomID()>0){
+			mHeadlessFragment.setSelectedRoomID(0);
+			mHeadlessFragment.setInitialControllerDataLoaded(false);
 			getSupportFragmentManager().beginTransaction().remove(myControllersFragment).commit();
 			getSupportFragmentManager().beginTransaction().remove(myRoomsFragment).commit();
 			if(myHousesFragment==null){myHousesFragment = new HousesFragment();}
@@ -219,9 +206,9 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 			getSupportFragmentManager().beginTransaction().replace(R.id.expanded, myRoomsFragment,ROOMS).commit();
 			return;
 		}
-		if(myHeadlessFragment.getSelectedHouseID()>0){
-			myHeadlessFragment.setSelectedHouseID(0);
-			myHeadlessFragment.setInitialRoomDataLoaded(false);
+		if(mHeadlessFragment.getSelectedHouseID()>0){
+			mHeadlessFragment.setSelectedHouseID(0);
+			mHeadlessFragment.setInitialRoomDataLoaded(false);
 			getSupportFragmentManager().beginTransaction().remove(myRoomsFragment).commit();
 			return;
 		}
@@ -235,124 +222,17 @@ public class MainActivity extends ActionBarActivity implements ReplyListener, Ro
 	
 	
 	private void changeSelectedHouse(long houseID) {
-		myHeadlessFragment.setSelectedHouseID(houseID);
+		mHeadlessFragment.setSelectedHouseID(houseID);
 		myRoomsFragment.replaceData(houseID);
-		myHeadlessFragment.onRoomDataChanged();
-	}
-
-	/*
-	 * Data retrieval methods  
-	 */
-	
-	@Override
-	public GridAdapter getControllersAdapter() {
-		return myHeadlessFragment.getControllersAdapter();
-	}
-
-	@Override
-	public ListAdapter getHousesAdapter() {
-		return myHeadlessFragment.getHousesAdapter();
-	}
-
-	@Override
-	public ListAdapter getRoomsAdapter() {
-		return myHeadlessFragment.getRoomsAdapter();
-	}
-
-	@Override
-	public long getSelectedRoomID() {
-		return myHeadlessFragment.getSelectedRoomID();
-	}
-
-	@Override
-	public long getSelectedHouseID() {
-		return myHeadlessFragment.getSelectedHouseID();
-	}
-
-	/*
-	 * Database Interface methods
-	 */
-	
-	@Override
-	public DataBaseAsyncQueryHandler getQueryManager() {
-		return myHeadlessFragment.getQueryManager();
-	}
-
-	@Override
-	public void replaceCursor(Cursor cursor, Object cookie) {
-		myHeadlessFragment.replaceCursor(cursor, cookie);
-
-	}
-	
-	/*
-	 * Network Interface methods
-	 */
-	
-	@Override
-	public void addToNetworkSender(String senderIp, Sendable switchPacket) {
-		myHeadlessFragment.addToNetworkSender(senderIp, switchPacket);
-		
+		mHeadlessFragment.onRoomDataChanged();
 	}
 
 
 	@Override
-	public boolean isInitialControllerDataLoaded() {
-		return myHeadlessFragment.isInitialControllerDataLoaded();
+	public HeadlessFragment getHeadlessFragment() {
+		return mHeadlessFragment;
 	}
 
-
-	@Override
-	public void setInitialControllerDataLoaded(boolean initialControllerDataLoaded) {
-		myHeadlessFragment.setInitialControllerDataLoaded(initialControllerDataLoaded);
-		
-	}
-
-
-	@Override
-	public boolean isInitialHouseDataLoaded() {
-		return myHeadlessFragment.isInitialHouseDataLoaded();
-	}
-
-
-	@Override
-	public void setInitialHouseDataLoaded(boolean b) {
-		myHeadlessFragment.setInitialHouseDataLoaded(b);
-	}
-
-
-	@Override
-	public boolean isInitialRoomDataLoaded() {
-		return myHeadlessFragment.isInitialRoomDataLoaded();
-	}
-
-
-	@Override
-	public void setInitialRoomDataLoaded(boolean b) {
-		myHeadlessFragment.setInitialRoomDataLoaded(b);
-		
-	}
-	
-
-
-	@Override
-	public void onControllerDataChanged() {
-		myHeadlessFragment.onControllerDataChanged();
-		
-	}
-
-
-	@Override
-	public void onHouseDataChanged() {
-		myHeadlessFragment.onHouseDataChanged();
-		
-	}
-
-
-	@Override
-	public void onRoomDataChanged() {
-		myHeadlessFragment.onRoomDataChanged();
-		
-	}
 
 
 

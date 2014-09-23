@@ -12,35 +12,28 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.example.houseremote.R;
+import com.example.houseremote.database.interfaces.ServerListAdapterProvider;
 import com.example.houseremote.network.dataclasses.ServerInfo;
 
 public class RefreshFragment extends Fragment  {
 
 	private ListView mListView;
-	private AdapterProvider mCallback;
+	private ServerListAdapterProvider mCallback;
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-		mCallback = (AdapterProvider)getActivity();
+		mCallback = (ServerListAdapterProvider)getActivity();
 		mListView = (ListView)getActivity().findViewById(R.id.autoSearchListview);
 		mListView.setAdapter(mCallback.getListAdapter());
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 			
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				mCallback.serverSelected((ServerInfo)mListView.getAdapter().getItem(position));
-//				mDataSetReaderAsyncTask.setData(mAdapter.getItem(position));
-				//TODO set loopyLoop thing
-				//TODO add a insert complete listener
-				
+				mCallback.serverSelected((ServerInfo)mListView.getAdapter().getItem(position));				
 			}
 		});
 		super.onActivityCreated(savedInstanceState);
 	}
-	
-	public RefreshFragment() {		
-	}
-	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

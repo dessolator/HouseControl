@@ -25,11 +25,10 @@ import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.ListAdapter;
 import com.example.houseremote.database.interfaces.DBInsertResponder;
-import com.example.houseremote.database.interfaces.QueryManagerProvider;
-import com.example.houseremote.database.interfaces.ReplyListener;
 import com.example.houseremote.database.interfaces.RoomDatabaseChangeListener;
 import com.example.houseremote.database.interfaces.RoomsAdapterProvider;
 import com.example.houseremote.database.observers.RoomObserver;
+import com.example.houseremote.interfaces.HeadlessProvider;
 import com.example.houseremote.interfaces.RoomSelectionListener;
 import com.example.houseremote.interfaces.SelectedHouseProvider;
 
@@ -43,12 +42,10 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 	private long mHouseID;
 	private ListView mList;
 	private ListAdapter mAdapter;
-	private RoomSelectionListener mCallback;
+	private HeadlessProvider mCallback;
 	private DataBaseAsyncQueryHandler mAsyncQueryManager;
 	private RoomObserver mObserver;
 
-	public RoomsFragment() {
-	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -64,17 +61,17 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-		mCallback=(RoomSelectionListener) getActivity();
-		mHouseID=((SelectedHouseProvider) mCallback).getSelectedHouseID();
-		mAdapter=((RoomsAdapterProvider) mCallback).getRoomsAdapter();
-		mAsyncQueryManager=((QueryManagerProvider) mCallback).getQueryManager();
+		mCallback=(HeadlessProvider) getActivity();
+		mHouseID=((SelectedHouseProvider) mCallback.getHeadlessFragment()).getSelectedHouseID();
+		mAdapter=((RoomsAdapterProvider) mCallback.getHeadlessFragment()).getRoomsAdapter();
+		mAsyncQueryManager=mCallback.getHeadlessFragment().getQueryManager();
 		
 		mList = (ListView) getActivity().findViewById(R.id.roomList);
 		mList.setAdapter(mAdapter);
 		mList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-				mCallback.roomSelected(((Cursor) mAdapter.getItem(position)).getLong(mAdapter.getCursor().getColumnIndex(DBHandler.ROOM_ID)));
+				((RoomSelectionListener) mCallback.getHeadlessFragment()).roomSelected(((Cursor) mAdapter.getItem(position)).getLong(mAdapter.getCursor().getColumnIndex(DBHandler.ROOM_ID)));
 			}
 		});
 		registerForContextMenu(mList);
@@ -88,9 +85,9 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 	 */
 
 	private void loadInitialControllerData(ListAdapter mAdapter2) {
-		if(((RoomsAdapterProvider)mCallback).isInitialRoomDataLoaded()) return;
-		((RoomsAdapterProvider)mCallback).setInitialRoomDataLoaded(true);
-		((ReplyListener) mCallback).onRoomDataChanged();
+		if(((RoomsAdapterProvider) mCallback.getHeadlessFragment()).isInitialRoomDataLoaded()) return;
+		((RoomsAdapterProvider) mCallback.getHeadlessFragment()).setInitialRoomDataLoaded(true);
+		mCallback.getHeadlessFragment().onRoomDataChanged();
 		
 	}
 	@Override
@@ -141,8 +138,8 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    if (requestCode == 1) {
-	    	((ReplyListener) mCallback).onRoomDataChanged();
-	    	((ReplyListener) mCallback).onControllerDataChanged();
+	    	mCallback.getHeadlessFragment().onRoomDataChanged();
+	    	mCallback.getHeadlessFragment().onControllerDataChanged();
 	        
 	    }
 	}
@@ -163,7 +160,7 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 		return super.onOptionsItemSelected(item);
 	}
 
-	public void uponInsertFinished(long roomID) {
+	public void onInsertFinished(long roomID) {
 		Intent i = new Intent(getActivity(), EditRoomActivity.class);
 		i.putExtra(DBHandler.ROOM_ID, roomID);
 		startActivityForResult(i,1);
@@ -175,12 +172,12 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 
 	@Override
 	public void roomDatabaseChanged() {
-		((ReplyListener) mCallback).onRoomDataChanged();
+		mCallback.getHeadlessFragment().onRoomDataChanged();
 	}
 
 	@Override
 	public void controllerDatabaseChanged() {
-		((ReplyListener) mCallback).onControllerDataChanged();
+		mCallback.getHeadlessFragment().onControllerDataChanged();
 	}
 
 }

@@ -13,13 +13,13 @@ import com.example.houseremote.R;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseAsyncQueryHandler;
-import com.example.houseremote.database.interfaces.ReplyListener;
+import com.example.houseremote.database.interfaces.DatabaseOperationCompleteListener;
 
 /**
  * @author Ivan Kesler
  * 
  */
-public class EditLightSwitchActivity extends ActionBarActivity implements ReplyListener {
+public class EditLightSwitchActivity extends ActionBarActivity implements DatabaseOperationCompleteListener {
 
 	private static final String selection = DBHandler.CONTROLLER_ID + "=?";
 	private long controllerID;
@@ -73,7 +73,7 @@ public class EditLightSwitchActivity extends ActionBarActivity implements ReplyL
 	}
 
 	@Override
-	public void replaceCursor(Cursor cursor, Object o) {
+	public void onQueryFinished(Cursor cursor, Object o) {
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
 				lightSwitchPinField.setText(Integer.toString(cursor.getInt(cursor.getColumnIndex(DBHandler.CONTROL_PIN_NUMBER))));
@@ -97,6 +97,13 @@ public class EditLightSwitchActivity extends ActionBarActivity implements ReplyL
 
 	@Override
 	public void onRoomDataChanged() {
+		
+	}
+
+
+	@Override
+	public void onInsertFinished(long parseId) {
+		// TODO Auto-generated method stub
 		
 	}
 

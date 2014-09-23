@@ -27,9 +27,8 @@ import com.example.houseremote.database.adapters.ListAdapter;
 import com.example.houseremote.database.interfaces.DBInsertResponder;
 import com.example.houseremote.database.interfaces.HouseDatabaseChangeListener;
 import com.example.houseremote.database.interfaces.HousesAdapterProvider;
-import com.example.houseremote.database.interfaces.QueryManagerProvider;
-import com.example.houseremote.database.interfaces.ReplyListener;
 import com.example.houseremote.database.observers.HouseObserver;
+import com.example.houseremote.interfaces.HeadlessProvider;
 import com.example.houseremote.interfaces.HouseSelectionListener;
 
 /**
@@ -61,7 +60,7 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 	
 	private ListView mList;
 	private ListAdapter mAdapter;
-	private HouseSelectionListener mCallback;
+	private HeadlessProvider mCallback;
 	private DataBaseAsyncQueryHandler asyncQ;
 	private HouseObserver mObserver;
 
@@ -85,16 +84,16 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		
-		mCallback=(HouseSelectionListener) getActivity();
-		mAdapter=((HousesAdapterProvider) mCallback).getHousesAdapter();
-		asyncQ=((QueryManagerProvider) mCallback).getQueryManager();
+		mCallback=(HeadlessProvider) getActivity();
+		mAdapter=((HousesAdapterProvider) mCallback.getHeadlessFragment()).getHousesAdapter();
+		asyncQ=mCallback.getHeadlessFragment().getQueryManager();
 		mList = (ListView) getActivity().findViewById(R.id.houseList);
 		
 		mList.setAdapter(mAdapter);
 		mList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-				mCallback.houseSelected(((Cursor) mAdapter.getItem(position)).getInt(mAdapter.getCursor()
+				((HouseSelectionListener) mCallback.getHeadlessFragment()).houseSelected(((Cursor) mAdapter.getItem(position)).getInt(mAdapter.getCursor()
 						.getColumnIndex(DBHandler.HOUSE_ID)));
 			}
 		});
@@ -105,9 +104,9 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 	}
 
 	private void loadInitialControllerData(ListAdapter mAdapter2) {
-		if(((HousesAdapterProvider)mCallback).isInitialHouseDataLoaded()) return;
-		((HousesAdapterProvider)mCallback).setInitialHouseDataLoaded(true);
-		((ReplyListener) mCallback).onHouseDataChanged();
+		if(((HousesAdapterProvider) mCallback.getHeadlessFragment()).isInitialHouseDataLoaded()) return;
+		((HousesAdapterProvider) mCallback.getHeadlessFragment()).setInitialHouseDataLoaded(true);
+		mCallback.getHeadlessFragment().onHouseDataChanged();
 		
 	}
 
@@ -163,8 +162,8 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    if (requestCode == 0) {
-	    	((ReplyListener) mCallback).onHouseDataChanged();
-	    	((ReplyListener) mCallback).onRoomDataChanged();
+	    	mCallback.getHeadlessFragment().onHouseDataChanged();
+	    	mCallback.getHeadlessFragment().onRoomDataChanged();
 	        
 	    }
 	}
@@ -188,7 +187,7 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 	}
 	
 	
-	public void uponInsertFinished(long houseID) {
+	public void onInsertFinished(long houseID) {
 		Intent i = new Intent(getActivity(), EditHouseActivity.class);
 		i.putExtra(DBHandler.HOUSE_ID, houseID);
 		startActivityForResult(i,0);
@@ -197,21 +196,21 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 
 	@Override
 	public void houseDatabaseChanged() {
-		((ReplyListener) mCallback).onHouseDataChanged();
+		mCallback.getHeadlessFragment().onHouseDataChanged();
 		
 	}
 
 
 	@Override
 	public void roomDatabaseChanged() {
-		((ReplyListener) mCallback).onRoomDataChanged();
+		mCallback.getHeadlessFragment().onRoomDataChanged();
 		
 	}
 
 
 	@Override
 	public void controllerDatabaseChanged() {
-		((ReplyListener) mCallback).onControllerDataChanged();
+		mCallback.getHeadlessFragment().onControllerDataChanged();
 		
 	}
 

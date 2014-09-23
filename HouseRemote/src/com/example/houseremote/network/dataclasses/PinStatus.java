@@ -1,9 +1,9 @@
 package com.example.houseremote.network.dataclasses;
 
-import com.example.houseremote.interfaces.HeadlessFragmentUI;
-import com.example.houseremote.interfaces.UIReadable;
+import com.example.houseremote.interfaces.HeadlessFragment;
+import com.example.houseremote.interfaces.RunnableOnUIThread;
 
-public class PinStatus implements UIReadable {
+public class PinStatus implements RunnableOnUIThread {
 	private int pinNumber;
 	private int pinState;
 
@@ -22,7 +22,7 @@ public class PinStatus implements UIReadable {
 	}
 
 	@Override
-	public void executeNeededCode(HeadlessFragmentUI headlessFragment) {
+	public void runOnUIThread(HeadlessFragment headlessFragment) {
 		headlessFragment.postValueChange(this);
 		
 	}

@@ -10,31 +10,33 @@ import android.widget.ListAdapter;
 import com.example.houseremote.R;
 import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.ServerListAdapter;
-import com.example.houseremote.database.interfaces.ReplyListener;
-import com.example.houseremote.interfaces.HeadlessFragmentUI;
-import com.example.houseremote.interfaces.UIReadable;
+import com.example.houseremote.database.interfaces.ServerListAdapterProvider;
+import com.example.houseremote.interfaces.HeadlessFragment;
+import com.example.houseremote.interfaces.RunnableOnUIThread;
 import com.example.houseremote.network.NetworkSet;
 import com.example.houseremote.network.dataclasses.LayoutQueryPacket;
 import com.example.houseremote.network.dataclasses.PinStatus;
 import com.example.houseremote.network.dataclasses.PinStatusSet;
 import com.example.houseremote.network.dataclasses.ServerInfo;
 import com.example.houseremote.network.interfaces.BroadCastListener;
-import com.example.houseremote.network.interfaces.NetworkDataListener;
+import com.example.houseremote.network.interfaces.Sendable;
 import com.example.houseremote.network.threads.BroadcastAsyncTask;
 
-public class SecondaryHeadlessFragment extends Fragment implements BroadCastListener,AdapterProvider,NetworkDataListener, ReplyListener, HeadlessFragmentUI{
+public class SecondaryHeadlessFragment extends Fragment implements HeadlessFragment, BroadCastListener, ServerListAdapterProvider{
 
 	private BroadcastAsyncTask mRefresher;
 	private DataBaseAsyncQueryHandler mHandler;
 	private ServerListAdapter mAdapter;
 	private NetworkSet mNetSet;
-	//TODO SETRETAINSTATE
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
+		setRetainInstance(true);
 		mHandler = new DataBaseAsyncQueryHandler(getActivity().getContentResolver(), this);
 		mNetSet = new NetworkSet(this, null, 0);
+		mNetSet.init();
 		mRefresher = new BroadcastAsyncTask(this);
+		mRefresher.execute((Void[])null);//TODO version check
 		mAdapter = new ServerListAdapter(getActivity());
 		mRefresher.execute((Void[])null);
 	}
@@ -44,7 +46,7 @@ public class SecondaryHeadlessFragment extends Fragment implements BroadCastList
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if (id == R.id.action_refresh) {
-			mRefresher.resend();
+			mRefresher.resend();//TODO cleanup
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -79,40 +81,71 @@ public class SecondaryHeadlessFragment extends Fragment implements BroadCastList
 
 
 	@Override
-	public void execRequiredFunction(UIReadable uiReadable) {
-		uiReadable.executeNeededCode(this);
+	public void execRequiredFunction(RunnableOnUIThread uiReadable) {
+		uiReadable.runOnUIThread(this);
 		
 	}
 
 
 	@Override
-	public void replaceCursor(Cursor cursor, Object cookie) {
+	public void onInsertFinished(long parseId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public DataBaseAsyncQueryHandler getQueryManager() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public void addToNetworkSender(String senderIp, Sendable switchPacket) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void onQueryFinished(Cursor cursor, Object cookie) {
+		// TODO Auto-generated method stub
+		
 	}
 
 
 	@Override
 	public void onControllerDataChanged() {
+		// TODO Auto-generated method stub
+		
 	}
 
 
 	@Override
 	public void onHouseDataChanged() {
+		// TODO Auto-generated method stub
+		
 	}
 
 
 	@Override
-	public void onRoomDataChanged() {		
+	public void onRoomDataChanged() {
+		// TODO Auto-generated method stub
+		
 	}
 
 
 	@Override
 	public void postValueChange(PinStatus pinStatus) {
+		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
 	public void postLookupValues(PinStatusSet pinStatusSet) {
+		// TODO Auto-generated method stub
 		
 	}
 	

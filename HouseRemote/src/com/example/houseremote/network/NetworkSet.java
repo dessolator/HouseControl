@@ -10,7 +10,7 @@ import android.os.AsyncTask;
 
 import com.example.houseremote.network.interfaces.Sendable;
 import com.example.houseremote.network.interfaces.SocketProvider;
-import com.example.houseremote.network.interfaces.NetworkDataListener;
+import com.example.houseremote.network.interfaces.NetworkReceiveForward;
 import com.example.houseremote.network.threads.NetworkListenerAsyncTask;
 import com.example.houseremote.network.threads.NetworkSenderThread;
 
@@ -19,11 +19,11 @@ public class NetworkSet implements SocketProvider {
 	private NetworkSenderThread mNetworkSender;
 	private String ip;
 	private Socket mSocket;
-	private NetworkDataListener hf;
+	private NetworkReceiveForward hf;
 	private boolean kill;
 	private int port;
 
-	public NetworkSet(NetworkDataListener hf, String ip, int port) {
+	public NetworkSet(NetworkReceiveForward hf, String ip, int port) {
 		super();
 		this.port = port;
 		this.ip = ip;

@@ -26,11 +26,8 @@ import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.ListAdapter;
 import com.example.houseremote.database.interfaces.DBInsertResponder;
 import com.example.houseremote.database.interfaces.RoomDatabaseChangeListener;
-import com.example.houseremote.database.interfaces.RoomsAdapterProvider;
 import com.example.houseremote.database.observers.RoomObserver;
-import com.example.houseremote.interfaces.HeadlessProvider;
-import com.example.houseremote.interfaces.RoomSelectionListener;
-import com.example.houseremote.interfaces.SelectedHouseProvider;
+import com.example.houseremote.interfaces.RoomsActivityHeadlessProvider;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -42,7 +39,7 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 	private long mHouseID;
 	private ListView mList;
 	private ListAdapter mAdapter;
-	private HeadlessProvider mCallback;
+	private RoomsActivityHeadlessProvider mCallback;
 	private DataBaseAsyncQueryHandler mAsyncQueryManager;
 	private RoomObserver mObserver;
 
@@ -61,17 +58,17 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-		mCallback=(HeadlessProvider) getActivity();
-		mHouseID=((SelectedHouseProvider) mCallback.getHeadlessFragment()).getSelectedHouseID();
-		mAdapter=((RoomsAdapterProvider) mCallback.getHeadlessFragment()).getRoomsAdapter();
-		mAsyncQueryManager=mCallback.getHeadlessFragment().getQueryManager();
+		mCallback=(RoomsActivityHeadlessProvider) getActivity();
+		mHouseID=( mCallback.getRoomsHeadlessFragment()).getSelectedHouseID();
+		mAdapter=( mCallback.getRoomsHeadlessFragment()).getRoomsAdapter();
+		mAsyncQueryManager=mCallback.getRoomsHeadlessFragment().getQueryManager();
 		
 		mList = (ListView) getActivity().findViewById(R.id.roomList);
 		mList.setAdapter(mAdapter);
 		mList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-				((RoomSelectionListener) mCallback.getHeadlessFragment()).roomSelected(((Cursor) mAdapter.getItem(position)).getLong(mAdapter.getCursor().getColumnIndex(DBHandler.ROOM_ID)));
+				( mCallback).roomSelected(((Cursor) mAdapter.getItem(position)).getLong(mAdapter.getCursor().getColumnIndex(DBHandler.ROOM_ID)));
 			}
 		});
 		registerForContextMenu(mList);
@@ -85,9 +82,9 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 	 */
 
 	private void loadInitialControllerData(ListAdapter mAdapter2) {
-		if(((RoomsAdapterProvider) mCallback.getHeadlessFragment()).isInitialRoomDataLoaded()) return;
-		((RoomsAdapterProvider) mCallback.getHeadlessFragment()).setInitialRoomDataLoaded(true);
-		mCallback.getHeadlessFragment().onRoomDataChanged();
+		if((mCallback.getRoomsHeadlessFragment()).isInitialRoomDataLoaded()) return;
+		(mCallback.getRoomsHeadlessFragment()).setInitialRoomDataLoaded(true);
+		mCallback.getRoomsHeadlessFragment().onRoomDataChanged();
 		
 	}
 	@Override
@@ -138,8 +135,8 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    if (requestCode == 1) {
-	    	mCallback.getHeadlessFragment().onRoomDataChanged();
-	    	mCallback.getHeadlessFragment().onControllerDataChanged();
+	    	mCallback.getRoomsHeadlessFragment().onRoomDataChanged();
+	    	mCallback.getRoomsHeadlessFragment().onControllerDataChanged();
 	        
 	    }
 	}
@@ -172,12 +169,12 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 
 	@Override
 	public void roomDatabaseChanged() {
-		mCallback.getHeadlessFragment().onRoomDataChanged();
+		mCallback.getRoomsHeadlessFragment().onRoomDataChanged();
 	}
 
 	@Override
 	public void controllerDatabaseChanged() {
-		mCallback.getHeadlessFragment().onControllerDataChanged();
+		mCallback.getRoomsHeadlessFragment().onControllerDataChanged();
 	}
 
 }

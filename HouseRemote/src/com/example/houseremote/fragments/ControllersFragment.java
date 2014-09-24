@@ -25,13 +25,10 @@ import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.GridAdapter;
 import com.example.houseremote.database.interfaces.ControllerDatabaseChangeListener;
-import com.example.houseremote.database.interfaces.ControllersAdapterProvider;
 import com.example.houseremote.database.interfaces.DBInsertResponder;
 import com.example.houseremote.database.observers.ControllerObserver;
-import com.example.houseremote.interfaces.HeadlessProvider;
-import com.example.houseremote.interfaces.SelectedRoomProvider;
+import com.example.houseremote.interfaces.ControllersActivityHeadlessProvider;
 import com.example.houseremote.network.dataclasses.PinFlipPacket;
-import com.example.houseremote.network.interfaces.NetworkSendController;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -43,7 +40,7 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 	private long roomID;
 	private GridView mGrid;
 	private GridAdapter mAdapter;
-	private HeadlessProvider mCallback;
+	private ControllersActivityHeadlessProvider mCallback;
 	private DataBaseAsyncQueryHandler mAsyncQueryManager;
 	private ControllerObserver mObserver;
 
@@ -64,17 +61,17 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 
-		mCallback = (HeadlessProvider) getActivity();
-		roomID = ((SelectedRoomProvider) mCallback.getHeadlessFragment()).getSelectedRoomID();
-		mAdapter = ((ControllersAdapterProvider) mCallback.getHeadlessFragment()).getControllersAdapter();
-		mAsyncQueryManager =  mCallback.getHeadlessFragment().getQueryManager();
+		mCallback = (ControllersActivityHeadlessProvider) getActivity();
+		roomID = ( mCallback.getControllersHeadlessFragment()).getSelectedRoomID();
+		mAdapter = ( mCallback.getControllersHeadlessFragment()).getControllersAdapter();
+		mAsyncQueryManager =  mCallback.getControllersHeadlessFragment().getQueryManager();
 
 		mGrid = (GridView) getActivity().findViewById(R.id.controllerGrid);
 		mGrid.setAdapter(mAdapter);
 		mGrid.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-				((NetworkSendController) mCallback.getHeadlessFragment()).addToNetworkSender(
+				( mCallback.getControllersHeadlessFragment()).addToNetworkSender(
 						((Cursor) mAdapter.getItem(position)).getString(mAdapter.getCursor().getColumnIndex(
 								DBHandler.CONTROLLER_IP)),
 						new PinFlipPacket(((Cursor) mAdapter.getItem(position)).getInt(mAdapter.getCursor()
@@ -89,10 +86,10 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 	}
 
 	private void loadInitialControllerData(GridAdapter mAdapter2) {
-		if (((ControllersAdapterProvider) mCallback.getHeadlessFragment()).isInitialControllerDataLoaded())
+		if (( mCallback.getControllersHeadlessFragment()).isInitialControllerDataLoaded())
 			return;
-		((ControllersAdapterProvider) mCallback.getHeadlessFragment()).setInitialControllerDataLoaded(true);
-		mCallback.getHeadlessFragment().onControllerDataChanged();
+		( mCallback.getControllersHeadlessFragment()).setInitialControllerDataLoaded(true);
+		mCallback.getControllersHeadlessFragment().onControllerDataChanged();
 
 	}
 
@@ -119,7 +116,7 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == 2) {
-			mCallback.getHeadlessFragment().onControllerDataChanged();
+			mCallback.getControllersHeadlessFragment().onControllerDataChanged();
 		}
 	}
 
@@ -203,7 +200,7 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 
 	@Override
 	public void controllerDatabaseChanged() {
-		mCallback.getHeadlessFragment().onControllerDataChanged();
+		mCallback.getControllersHeadlessFragment().onControllerDataChanged();
 
 	}
 

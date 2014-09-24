@@ -91,4 +91,11 @@ public class EditRoomActivity extends ActionBarActivity implements DatabaseOpera
 		
 	}
 
+
+	@Override
+	public DataBaseAsyncQueryHandler getQueryManager() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

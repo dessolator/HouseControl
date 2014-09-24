@@ -10,13 +10,13 @@ import android.view.MenuItem;
 
 import com.example.houseremote.R;
 import com.example.houseremote.database.DBHandler;
-import com.example.houseremote.fragments.AbstractHeadlessFragment;
 import com.example.houseremote.fragments.RoomsActivityHeadlessFragment;
 import com.example.houseremote.fragments.RoomsFragment;
-import com.example.houseremote.interfaces.HeadlessProvider;
 import com.example.houseremote.interfaces.RoomSelectionListener;
+import com.example.houseremote.interfaces.RoomsActivityHeadlessFragmentInterface;
+import com.example.houseremote.interfaces.RoomsActivityHeadlessProvider;
 
-public class RoomsActivity extends ActionBarActivity implements HeadlessProvider, RoomSelectionListener{
+public class RoomsActivity extends ActionBarActivity implements RoomsActivityHeadlessProvider, RoomSelectionListener{
 	
 	private RoomsActivityHeadlessFragment mHeadlessFragment;
 	
@@ -82,7 +82,7 @@ public class RoomsActivity extends ActionBarActivity implements HeadlessProvider
 
 
 	@Override
-	public AbstractHeadlessFragment getHeadlessFragment() {
+	public RoomsActivityHeadlessFragmentInterface getRoomsHeadlessFragment() {
 		return mHeadlessFragment;
 	}
 }

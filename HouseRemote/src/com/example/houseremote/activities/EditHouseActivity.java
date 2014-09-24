@@ -101,5 +101,11 @@ public class EditHouseActivity extends ActionBarActivity implements DatabaseOper
 		
 	}
 
+	@Override
+	public DataBaseAsyncQueryHandler getQueryManager() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 }

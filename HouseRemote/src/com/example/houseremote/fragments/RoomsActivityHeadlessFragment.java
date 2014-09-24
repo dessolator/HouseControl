@@ -2,14 +2,16 @@ package com.example.houseremote.fragments;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
 
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
+import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.ListAdapter;
-import com.example.houseremote.database.interfaces.RoomsAdapterProvider;
+import com.example.houseremote.interfaces.RoomsActivityHeadlessFragmentInterface;
 
-public class RoomsActivityHeadlessFragment extends AbstractHeadlessFragment implements RoomsAdapterProvider{
+public class RoomsActivityHeadlessFragment extends Fragment implements RoomsActivityHeadlessFragmentInterface{
 
 	private static final String roomSelection = DBHandler.HOUSE_ID_ALT + "=?";
 	private static final String[] roomProjection = { DBHandler.ROOM_ID, DBHandler.ROOM_NAME,
@@ -17,12 +19,14 @@ public class RoomsActivityHeadlessFragment extends AbstractHeadlessFragment impl
 	private ListAdapter roomAdapter;
 	private long selectedHouseID;
 	private boolean initialRoomDataLoaded = false;
-	
+	private DataBaseAsyncQueryHandler queryManager;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		roomAdapter = new ListAdapter(getActivity(), null, 0);
+		queryManager = new DataBaseAsyncQueryHandler(getActivity().getContentResolver(), this);
+		setRetainInstance(true);
 
 	}
 	
@@ -76,5 +80,17 @@ public class RoomsActivityHeadlessFragment extends AbstractHeadlessFragment impl
 	public ListAdapter getRoomsAdapter() {
 		return roomAdapter;
 	}
+
+	@Override
+	public long getSelectedHouseID() {
+		return selectedHouseID;
+	}
+
+	@Override
+	public DataBaseAsyncQueryHandler getQueryManager() {
+		return queryManager;
+	}
+
+
 
 }

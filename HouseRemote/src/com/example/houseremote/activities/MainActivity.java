@@ -8,16 +8,20 @@ import android.view.MenuItem;
 
 import com.example.houseremote.R;
 import com.example.houseremote.database.DBHandler;
-import com.example.houseremote.fragments.AbstractHeadlessFragment;
 import com.example.houseremote.fragments.ControllersFragment;
 import com.example.houseremote.fragments.HousesFragment;
 import com.example.houseremote.fragments.MainActivityHeadlessFragment;
 import com.example.houseremote.fragments.RoomsFragment;
-import com.example.houseremote.interfaces.HeadlessProvider;
+import com.example.houseremote.interfaces.ControllersActivityHeadlessFragmentInterface;
+import com.example.houseremote.interfaces.ControllersActivityHeadlessProvider;
 import com.example.houseremote.interfaces.HouseSelectionListener;
+import com.example.houseremote.interfaces.MainActivityHeadlessFragmentInterface;
+import com.example.houseremote.interfaces.MainActivityHeadlessProvider;
 import com.example.houseremote.interfaces.RoomSelectionListener;
+import com.example.houseremote.interfaces.RoomsActivityHeadlessFragmentInterface;
+import com.example.houseremote.interfaces.RoomsActivityHeadlessProvider;
 
-public class MainActivity extends ActionBarActivity implements HeadlessProvider, RoomSelectionListener,HouseSelectionListener{
+public class MainActivity extends ActionBarActivity implements ControllersActivityHeadlessProvider,RoomsActivityHeadlessProvider,MainActivityHeadlessProvider, RoomSelectionListener,HouseSelectionListener{
 
 	
 
@@ -229,9 +233,21 @@ public class MainActivity extends ActionBarActivity implements HeadlessProvider,
 
 
 	@Override
-	public AbstractHeadlessFragment getHeadlessFragment() {
+	public MainActivityHeadlessFragmentInterface getMainHeadlessFragment() {
 		return mHeadlessFragment;
 	}
+
+	@Override
+	public RoomsActivityHeadlessFragmentInterface getRoomsHeadlessFragment() {
+		return mHeadlessFragment;
+	}
+	@Override
+	public ControllersActivityHeadlessFragmentInterface getControllersHeadlessFragment() {
+		return mHeadlessFragment;
+	}
+	
+
+
 
 
 

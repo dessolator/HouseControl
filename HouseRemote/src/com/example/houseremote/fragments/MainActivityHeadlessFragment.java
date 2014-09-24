@@ -8,6 +8,7 @@ import java.util.Stack;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
 import android.view.View;
 import android.widget.Toast;
@@ -18,25 +19,20 @@ import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.GridAdapter;
 import com.example.houseremote.database.adapters.ListAdapter;
-import com.example.houseremote.database.interfaces.ControllersAdapterProvider;
-import com.example.houseremote.database.interfaces.HousesAdapterProvider;
-import com.example.houseremote.database.interfaces.RoomsAdapterProvider;
-import com.example.houseremote.interfaces.HeadlessFragment;
+import com.example.houseremote.interfaces.ControllersActivityHeadlessFragmentInterface;
+import com.example.houseremote.interfaces.MainActivityHeadlessFragmentInterface;
+import com.example.houseremote.interfaces.RoomsActivityHeadlessFragmentInterface;
 import com.example.houseremote.interfaces.RunnableOnUIThread;
-import com.example.houseremote.interfaces.SelectedHouseProvider;
-import com.example.houseremote.interfaces.SelectedRoomProvider;
 import com.example.houseremote.network.NetworkSet;
 import com.example.houseremote.network.dataclasses.InitialStateQueryPacket;
 import com.example.houseremote.network.dataclasses.PinStatus;
 import com.example.houseremote.network.dataclasses.PinStatusSet;
 import com.example.houseremote.network.dataclasses.ServerInfo;
-import com.example.houseremote.network.interfaces.NetworkReceiveForward;
-import com.example.houseremote.network.interfaces.NetworkSendController;
 import com.example.houseremote.network.interfaces.Sendable;
 
-public class MainActivityHeadlessFragment extends AbstractHeadlessFragment implements NetworkReceiveForward,
-		NetworkSendController, SelectedHouseProvider, SelectedRoomProvider, RoomsAdapterProvider,
-		HousesAdapterProvider, ControllersAdapterProvider, HeadlessFragment {
+public class MainActivityHeadlessFragment extends Fragment implements
+		MainActivityHeadlessFragmentInterface, RoomsActivityHeadlessFragmentInterface,
+		ControllersActivityHeadlessFragmentInterface {
 
 	/*
 	 * String constants for DB lookups
@@ -63,7 +59,7 @@ public class MainActivityHeadlessFragment extends AbstractHeadlessFragment imple
 	 */
 	private long selectedHouseID;
 	private long selectedRoomID;
-
+	private DataBaseAsyncQueryHandler queryManager;
 	private boolean initialControllerDataLoaded = false;
 	private boolean initialRoomDataLoaded = false;
 	private boolean initialHouseDataLoaded = false;
@@ -79,6 +75,8 @@ public class MainActivityHeadlessFragment extends AbstractHeadlessFragment imple
 		houseAdapter = new ListAdapter(getActivity(), null, 0);
 		roomAdapter = new ListAdapter(getActivity(), null, 0);
 		controllerAdapter = new GridAdapter(getActivity(), null, 0);
+		queryManager = new DataBaseAsyncQueryHandler(getActivity().getContentResolver(), this);
+		setRetainInstance(true);
 
 	}
 
@@ -379,5 +377,7 @@ public class MainActivityHeadlessFragment extends AbstractHeadlessFragment imple
 		// TODO Auto-generated method stub
 
 	}
+
+
 
 }

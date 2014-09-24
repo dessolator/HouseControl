@@ -9,10 +9,10 @@ import android.view.MenuItem;
 
 import com.example.houseremote.R;
 import com.example.houseremote.database.DBHandler;
-import com.example.houseremote.fragments.AbstractHeadlessFragment;
 import com.example.houseremote.fragments.ControllersActivityHeadlessFragment;
 import com.example.houseremote.fragments.ControllersFragment;
-import com.example.houseremote.interfaces.HeadlessProvider;
+import com.example.houseremote.interfaces.ControllersActivityHeadlessFragmentInterface;
+import com.example.houseremote.interfaces.ControllersActivityHeadlessProvider;
 
 /**
  * Activity displaying the elements on a controller and controlling them.
@@ -20,7 +20,7 @@ import com.example.houseremote.interfaces.HeadlessProvider;
  * @author Ivan Kesler
  *
  */
-public class ControllersActivity extends ActionBarActivity implements HeadlessProvider{
+public class ControllersActivity extends ActionBarActivity implements ControllersActivityHeadlessProvider{
 	/*
 	 * Fragments
 	 */
@@ -90,7 +90,7 @@ public class ControllersActivity extends ActionBarActivity implements HeadlessPr
 	}
 
 	@Override
-	public AbstractHeadlessFragment getHeadlessFragment() {
+	public ControllersActivityHeadlessFragmentInterface getControllersHeadlessFragment() {
 		return mHeadlessFragment;
 	}
 	

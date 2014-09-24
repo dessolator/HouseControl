@@ -8,6 +8,7 @@ import java.util.Stack;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
 import android.view.View;
 import android.widget.Toast;
@@ -17,20 +18,16 @@ import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.GridAdapter;
-import com.example.houseremote.database.interfaces.ControllersAdapterProvider;
-import com.example.houseremote.interfaces.HeadlessFragment;
+import com.example.houseremote.interfaces.ControllersActivityHeadlessFragmentInterface;
 import com.example.houseremote.interfaces.RunnableOnUIThread;
 import com.example.houseremote.network.NetworkSet;
 import com.example.houseremote.network.dataclasses.InitialStateQueryPacket;
 import com.example.houseremote.network.dataclasses.PinStatus;
 import com.example.houseremote.network.dataclasses.PinStatusSet;
 import com.example.houseremote.network.dataclasses.ServerInfo;
-import com.example.houseremote.network.interfaces.NetworkReceiveForward;
-import com.example.houseremote.network.interfaces.NetworkSendController;
 import com.example.houseremote.network.interfaces.Sendable;
 
-public class ControllersActivityHeadlessFragment extends AbstractHeadlessFragment implements
-		NetworkReceiveForward, NetworkSendController, ControllersAdapterProvider, HeadlessFragment {
+public class ControllersActivityHeadlessFragment extends Fragment implements ControllersActivityHeadlessFragmentInterface {
 
 	/*
 	 * String constants for DB lookups
@@ -49,7 +46,7 @@ public class ControllersActivityHeadlessFragment extends AbstractHeadlessFragmen
 	 * Storing Selected Data
 	 */
 	private long selectedRoomID;
-
+	private DataBaseAsyncQueryHandler queryManager;
 	private boolean initialControllerDataLoaded = false;
 	private HashMap<String, NetworkSet> mNetSets = new HashMap<String, NetworkSet>();
 
@@ -61,6 +58,8 @@ public class ControllersActivityHeadlessFragment extends AbstractHeadlessFragmen
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		controllerAdapter = new GridAdapter(getActivity(), null, 0);
+		queryManager = new DataBaseAsyncQueryHandler(getActivity().getContentResolver(), this);
+		setRetainInstance(true);
 
 	}
 
@@ -320,6 +319,12 @@ public class ControllersActivityHeadlessFragment extends AbstractHeadlessFragmen
 
 	@Override
 	public void onRoomDataChanged() {
+	}
+
+	@Override
+	public long getSelectedRoomID() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

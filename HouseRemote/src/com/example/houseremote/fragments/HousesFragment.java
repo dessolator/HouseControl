@@ -26,10 +26,8 @@ import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.ListAdapter;
 import com.example.houseremote.database.interfaces.DBInsertResponder;
 import com.example.houseremote.database.interfaces.HouseDatabaseChangeListener;
-import com.example.houseremote.database.interfaces.HousesAdapterProvider;
 import com.example.houseremote.database.observers.HouseObserver;
-import com.example.houseremote.interfaces.HeadlessProvider;
-import com.example.houseremote.interfaces.HouseSelectionListener;
+import com.example.houseremote.interfaces.MainActivityHeadlessProvider;
 
 /**
  * MAJOR TODOS 
@@ -60,7 +58,7 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 	
 	private ListView mList;
 	private ListAdapter mAdapter;
-	private HeadlessProvider mCallback;
+	private MainActivityHeadlessProvider mCallback;
 	private DataBaseAsyncQueryHandler asyncQ;
 	private HouseObserver mObserver;
 
@@ -84,16 +82,16 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		
-		mCallback=(HeadlessProvider) getActivity();
-		mAdapter=((HousesAdapterProvider) mCallback.getHeadlessFragment()).getHousesAdapter();
-		asyncQ=mCallback.getHeadlessFragment().getQueryManager();
+		mCallback=(MainActivityHeadlessProvider) getActivity();
+		mAdapter=(mCallback.getMainHeadlessFragment()).getHousesAdapter();
+		asyncQ=mCallback.getMainHeadlessFragment().getQueryManager();
 		mList = (ListView) getActivity().findViewById(R.id.houseList);
 		
 		mList.setAdapter(mAdapter);
 		mList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-				((HouseSelectionListener) mCallback.getHeadlessFragment()).houseSelected(((Cursor) mAdapter.getItem(position)).getInt(mAdapter.getCursor()
+				( mCallback).houseSelected(((Cursor) mAdapter.getItem(position)).getInt(mAdapter.getCursor()
 						.getColumnIndex(DBHandler.HOUSE_ID)));
 			}
 		});
@@ -104,9 +102,9 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 	}
 
 	private void loadInitialControllerData(ListAdapter mAdapter2) {
-		if(((HousesAdapterProvider) mCallback.getHeadlessFragment()).isInitialHouseDataLoaded()) return;
-		((HousesAdapterProvider) mCallback.getHeadlessFragment()).setInitialHouseDataLoaded(true);
-		mCallback.getHeadlessFragment().onHouseDataChanged();
+		if((mCallback.getMainHeadlessFragment()).isInitialHouseDataLoaded()) return;
+		( mCallback.getMainHeadlessFragment()).setInitialHouseDataLoaded(true);
+		mCallback.getMainHeadlessFragment().onHouseDataChanged();
 		
 	}
 
@@ -162,8 +160,8 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    if (requestCode == 0) {
-	    	mCallback.getHeadlessFragment().onHouseDataChanged();
-	    	mCallback.getHeadlessFragment().onRoomDataChanged();
+	    	mCallback.getMainHeadlessFragment().onHouseDataChanged();
+	    	mCallback.getMainHeadlessFragment().onRoomDataChanged();
 	        
 	    }
 	}
@@ -196,21 +194,21 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 
 	@Override
 	public void houseDatabaseChanged() {
-		mCallback.getHeadlessFragment().onHouseDataChanged();
+		mCallback.getMainHeadlessFragment().onHouseDataChanged();
 		
 	}
 
 
 	@Override
 	public void roomDatabaseChanged() {
-		mCallback.getHeadlessFragment().onRoomDataChanged();
+		mCallback.getMainHeadlessFragment().onRoomDataChanged();
 		
 	}
 
 
 	@Override
 	public void controllerDatabaseChanged() {
-		mCallback.getHeadlessFragment().onControllerDataChanged();
+		mCallback.getMainHeadlessFragment().onControllerDataChanged();
 		
 	}
 

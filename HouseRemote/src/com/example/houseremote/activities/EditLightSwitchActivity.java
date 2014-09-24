@@ -107,4 +107,11 @@ public class EditLightSwitchActivity extends ActionBarActivity implements Databa
 		
 	}
 
+
+	@Override
+	public DataBaseAsyncQueryHandler getQueryManager() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

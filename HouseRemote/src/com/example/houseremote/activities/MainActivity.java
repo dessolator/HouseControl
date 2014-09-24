@@ -8,11 +8,11 @@ import android.view.MenuItem;
 
 import com.example.houseremote.R;
 import com.example.houseremote.database.DBHandler;
+import com.example.houseremote.fragments.AbstractHeadlessFragment;
 import com.example.houseremote.fragments.ControllersFragment;
 import com.example.houseremote.fragments.HousesFragment;
-import com.example.houseremote.fragments.PrimaryHeadlessFragment;
+import com.example.houseremote.fragments.MainActivityHeadlessFragment;
 import com.example.houseremote.fragments.RoomsFragment;
-import com.example.houseremote.interfaces.HeadlessFragment;
 import com.example.houseremote.interfaces.HeadlessProvider;
 import com.example.houseremote.interfaces.HouseSelectionListener;
 import com.example.houseremote.interfaces.RoomSelectionListener;
@@ -34,7 +34,7 @@ public class MainActivity extends ActionBarActivity implements HeadlessProvider,
 	/*
 	 * Fragments
 	 */
-	private PrimaryHeadlessFragment mHeadlessFragment;
+	private MainActivityHeadlessFragment mHeadlessFragment;
 	private HousesFragment myHousesFragment;
 	private RoomsFragment myRoomsFragment;
 	private ControllersFragment myControllersFragment;
@@ -110,10 +110,10 @@ public class MainActivity extends ActionBarActivity implements HeadlessProvider,
 		}
 		return temp;
 	}
-	private PrimaryHeadlessFragment acquireHeadlessFragment(){
-		PrimaryHeadlessFragment temp = (PrimaryHeadlessFragment) getSupportFragmentManager().findFragmentByTag(HEADLESS);
+	private MainActivityHeadlessFragment acquireHeadlessFragment(){
+		MainActivityHeadlessFragment temp = (MainActivityHeadlessFragment) getSupportFragmentManager().findFragmentByTag(HEADLESS);
 		if (temp == null){
-			temp= new PrimaryHeadlessFragment();
+			temp= new MainActivityHeadlessFragment();
 			getSupportFragmentManager().beginTransaction().add(temp, HEADLESS).commit();
 		}
 		return temp;
@@ -229,7 +229,7 @@ public class MainActivity extends ActionBarActivity implements HeadlessProvider,
 
 
 	@Override
-	public HeadlessFragment getHeadlessFragment() {
+	public AbstractHeadlessFragment getHeadlessFragment() {
 		return mHeadlessFragment;
 	}
 

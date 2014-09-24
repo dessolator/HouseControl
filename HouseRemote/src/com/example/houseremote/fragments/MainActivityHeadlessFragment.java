@@ -8,7 +8,6 @@ import java.util.Stack;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
 import android.view.View;
 import android.widget.Toast;
@@ -24,15 +23,20 @@ import com.example.houseremote.database.interfaces.HousesAdapterProvider;
 import com.example.houseremote.database.interfaces.RoomsAdapterProvider;
 import com.example.houseremote.interfaces.HeadlessFragment;
 import com.example.houseremote.interfaces.RunnableOnUIThread;
+import com.example.houseremote.interfaces.SelectedHouseProvider;
+import com.example.houseremote.interfaces.SelectedRoomProvider;
 import com.example.houseremote.network.NetworkSet;
 import com.example.houseremote.network.dataclasses.InitialStateQueryPacket;
 import com.example.houseremote.network.dataclasses.PinStatus;
 import com.example.houseremote.network.dataclasses.PinStatusSet;
 import com.example.houseremote.network.dataclasses.ServerInfo;
+import com.example.houseremote.network.interfaces.NetworkReceiveForward;
+import com.example.houseremote.network.interfaces.NetworkSendController;
 import com.example.houseremote.network.interfaces.Sendable;
 
-public class PrimaryHeadlessFragment extends Fragment implements HeadlessFragment, RoomsAdapterProvider,HousesAdapterProvider,ControllersAdapterProvider
-		{
+public class MainActivityHeadlessFragment extends AbstractHeadlessFragment implements NetworkReceiveForward,
+		NetworkSendController, SelectedHouseProvider, SelectedRoomProvider, RoomsAdapterProvider,
+		HousesAdapterProvider, ControllersAdapterProvider, HeadlessFragment {
 
 	/*
 	 * String constants for DB lookups
@@ -55,11 +59,6 @@ public class PrimaryHeadlessFragment extends Fragment implements HeadlessFragmen
 	private ListAdapter roomAdapter;
 
 	/*
-	 * Database Manager
-	 */
-	private DataBaseAsyncQueryHandler queryManager;
-
-	/*
 	 * Storing Selected Data
 	 */
 	private long selectedHouseID;
@@ -77,11 +76,9 @@ public class PrimaryHeadlessFragment extends Fragment implements HeadlessFragmen
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		queryManager = new DataBaseAsyncQueryHandler(getActivity().getContentResolver(), this);
 		houseAdapter = new ListAdapter(getActivity(), null, 0);
 		roomAdapter = new ListAdapter(getActivity(), null, 0);
 		controllerAdapter = new GridAdapter(getActivity(), null, 0);
-		setRetainInstance(true);
 
 	}
 

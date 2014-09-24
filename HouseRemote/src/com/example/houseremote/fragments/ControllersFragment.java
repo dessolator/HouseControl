@@ -31,6 +31,7 @@ import com.example.houseremote.database.observers.ControllerObserver;
 import com.example.houseremote.interfaces.HeadlessProvider;
 import com.example.houseremote.interfaces.SelectedRoomProvider;
 import com.example.houseremote.network.dataclasses.PinFlipPacket;
+import com.example.houseremote.network.interfaces.NetworkSendController;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -73,7 +74,7 @@ public class ControllersFragment extends Fragment implements ControllerDatabaseC
 		mGrid.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-				mCallback.getHeadlessFragment().addToNetworkSender(
+				((NetworkSendController) mCallback.getHeadlessFragment()).addToNetworkSender(
 						((Cursor) mAdapter.getItem(position)).getString(mAdapter.getCursor().getColumnIndex(
 								DBHandler.CONTROLLER_IP)),
 						new PinFlipPacket(((Cursor) mAdapter.getItem(position)).getInt(mAdapter.getCursor()

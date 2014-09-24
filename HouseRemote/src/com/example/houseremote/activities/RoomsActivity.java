@@ -10,15 +10,15 @@ import android.view.MenuItem;
 
 import com.example.houseremote.R;
 import com.example.houseremote.database.DBHandler;
-import com.example.houseremote.fragments.PrimaryHeadlessFragment;
+import com.example.houseremote.fragments.AbstractHeadlessFragment;
+import com.example.houseremote.fragments.RoomsActivityHeadlessFragment;
 import com.example.houseremote.fragments.RoomsFragment;
-import com.example.houseremote.interfaces.HeadlessFragment;
 import com.example.houseremote.interfaces.HeadlessProvider;
 import com.example.houseremote.interfaces.RoomSelectionListener;
 
 public class RoomsActivity extends ActionBarActivity implements HeadlessProvider, RoomSelectionListener{
 	
-	private PrimaryHeadlessFragment mHeadlessFragment;
+	private RoomsActivityHeadlessFragment mHeadlessFragment;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +39,10 @@ public class RoomsActivity extends ActionBarActivity implements HeadlessProvider
 		}
 		return temp;
 	}
-	private PrimaryHeadlessFragment acquireHeadlessFragment(){
-		PrimaryHeadlessFragment temp = (PrimaryHeadlessFragment) getSupportFragmentManager().findFragmentByTag(HEADLESS);
+	private RoomsActivityHeadlessFragment acquireHeadlessFragment(){
+		RoomsActivityHeadlessFragment temp = (RoomsActivityHeadlessFragment) getSupportFragmentManager().findFragmentByTag(HEADLESS);
 		if (temp == null){
-			temp= new PrimaryHeadlessFragment();
+			temp= new RoomsActivityHeadlessFragment();
 			temp.setSelectedHouseID(getIntent().getIntExtra(DBHandler.HOUSE_ID, -1));
 			getSupportFragmentManager().beginTransaction().add(temp, HEADLESS).commit();
 		}
@@ -82,7 +82,7 @@ public class RoomsActivity extends ActionBarActivity implements HeadlessProvider
 
 
 	@Override
-	public HeadlessFragment getHeadlessFragment() {
+	public AbstractHeadlessFragment getHeadlessFragment() {
 		return mHeadlessFragment;
 	}
 }

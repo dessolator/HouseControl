@@ -9,9 +9,9 @@ import android.view.MenuItem;
 
 import com.example.houseremote.R;
 import com.example.houseremote.database.DBHandler;
+import com.example.houseremote.fragments.AbstractHeadlessFragment;
+import com.example.houseremote.fragments.ControllersActivityHeadlessFragment;
 import com.example.houseremote.fragments.ControllersFragment;
-import com.example.houseremote.fragments.PrimaryHeadlessFragment;
-import com.example.houseremote.interfaces.HeadlessFragment;
 import com.example.houseremote.interfaces.HeadlessProvider;
 
 /**
@@ -24,7 +24,7 @@ public class ControllersActivity extends ActionBarActivity implements HeadlessPr
 	/*
 	 * Fragments
 	 */
-	private PrimaryHeadlessFragment mHeadlessFragment;
+	private ControllersActivityHeadlessFragment mHeadlessFragment;
 
 	/**
 	 * Acquire Headless and Controllers fragment.
@@ -56,11 +56,11 @@ public class ControllersActivity extends ActionBarActivity implements HeadlessPr
 	 * Acquires the headless fragment, if it can be recovered, it is recovered,
 	 * else a new one is created.
 	 */
-	private PrimaryHeadlessFragment acquireHeadlessFragment() {
-		PrimaryHeadlessFragment temp = (PrimaryHeadlessFragment) getSupportFragmentManager()
+	private ControllersActivityHeadlessFragment acquireHeadlessFragment() {
+		ControllersActivityHeadlessFragment temp = (ControllersActivityHeadlessFragment) getSupportFragmentManager()
 				.findFragmentByTag(HEADLESS);
 		if (temp == null) {
-			temp = new PrimaryHeadlessFragment();
+			temp = new ControllersActivityHeadlessFragment();
 			temp.setSelectedRoomID(getIntent().getLongExtra(DBHandler.ROOM_ID, -1));
 			getSupportFragmentManager().beginTransaction().add(temp, HEADLESS).commit();
 		}
@@ -90,7 +90,7 @@ public class ControllersActivity extends ActionBarActivity implements HeadlessPr
 	}
 
 	@Override
-	public HeadlessFragment getHeadlessFragment() {
+	public AbstractHeadlessFragment getHeadlessFragment() {
 		return mHeadlessFragment;
 	}
 	

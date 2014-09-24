@@ -1,6 +1,8 @@
 package com.example.houseremote.interfaces;
 
+import com.example.houseremote.fragments.AbstractHeadlessFragment;
+
 public interface HeadlessProvider {
 
-	HeadlessFragment getHeadlessFragment();
+	AbstractHeadlessFragment getHeadlessFragment();
 }

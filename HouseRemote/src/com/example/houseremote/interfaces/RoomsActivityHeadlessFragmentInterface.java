@@ -1,8 +1,9 @@
 package com.example.houseremote.interfaces;
 
+import com.example.houseremote.database.interfaces.DatabaseHandlerProvider;
 import com.example.houseremote.database.interfaces.DatabaseOperationCompleteListener;
 import com.example.houseremote.database.interfaces.RoomsAdapterProvider;
 
-public interface RoomsActivityHeadlessFragmentInterface extends RoomsAdapterProvider,SelectedHouseProvider,DatabaseOperationCompleteListener{
+public interface RoomsActivityHeadlessFragmentInterface extends RoomsAdapterProvider,SelectedHouseProvider,DatabaseOperationCompleteListener, DatabaseHandlerProvider{
 
 }

@@ -16,6 +16,8 @@ import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.interfaces.DatabaseOperationCompleteListener;
 
 /**
+ * Activity used to edit simple light switch controllers.
+ * 
  * @author Ivan Kesler
  * 
  */
@@ -85,33 +87,12 @@ public class EditLightSwitchActivity extends ActionBarActivity implements Databa
 
 	}
 
-	@Override
-	public void onControllerDataChanged() {
-		
-	}
-
-	@Override
-	public void onHouseDataChanged() {
-		
-	}
-
-	@Override
-	public void onRoomDataChanged() {
-		
-	}
-
-
+	
 	@Override
 	public void onInsertFinished(long parseId) {
 		// TODO Auto-generated method stub
 		
 	}
 
-
-	@Override
-	public DataBaseAsyncQueryHandler getQueryManager() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }

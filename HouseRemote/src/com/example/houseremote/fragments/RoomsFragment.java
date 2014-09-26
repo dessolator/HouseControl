@@ -24,7 +24,6 @@ import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.ListAdapter;
-import com.example.houseremote.database.interfaces.DBInsertResponder;
 import com.example.houseremote.database.interfaces.RoomDatabaseChangeListener;
 import com.example.houseremote.database.observers.RoomObserver;
 import com.example.houseremote.interfaces.RoomsActivityHeadlessProvider;
@@ -33,7 +32,7 @@ import com.example.houseremote.interfaces.RoomsActivityHeadlessProvider;
  * A placeholder fragment containing a simple view.
  */
 
-public class RoomsFragment extends Fragment implements RoomDatabaseChangeListener, DBInsertResponder {
+public class RoomsFragment extends Fragment implements RoomDatabaseChangeListener {
 
 	
 	private long mHouseID;

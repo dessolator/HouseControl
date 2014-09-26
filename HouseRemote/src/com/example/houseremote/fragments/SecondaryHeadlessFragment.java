@@ -115,26 +115,6 @@ public class SecondaryHeadlessFragment extends Fragment implements HeadlessFragm
 	}
 
 
-	@Override
-	public void onControllerDataChanged() {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public void onHouseDataChanged() {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public void onRoomDataChanged() {
-		// TODO Auto-generated method stub
-		
-	}
-
 
 	@Override
 	public void postValueChange(PinStatus pinStatus) {

@@ -24,7 +24,6 @@ import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.ListAdapter;
-import com.example.houseremote.database.interfaces.DBInsertResponder;
 import com.example.houseremote.database.interfaces.HouseDatabaseChangeListener;
 import com.example.houseremote.database.observers.HouseObserver;
 import com.example.houseremote.interfaces.MainActivityHeadlessProvider;
@@ -54,7 +53,7 @@ import com.example.houseremote.interfaces.MainActivityHeadlessProvider;
  * TODO WHAT IF ATTEMPTING TO SAVE INVALID STATE???
  */
 
-public class HousesFragment extends Fragment implements HouseDatabaseChangeListener, DBInsertResponder {
+public class HousesFragment extends Fragment implements HouseDatabaseChangeListener {
 	
 	private ListView mList;
 	private ListAdapter mAdapter;

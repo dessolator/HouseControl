@@ -25,7 +25,6 @@ import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.GridAdapter;
 import com.example.houseremote.database.interfaces.ControllerDatabaseChangeListener;
-import com.example.houseremote.database.interfaces.DBInsertResponder;
 import com.example.houseremote.database.observers.ControllerObserver;
 import com.example.houseremote.interfaces.ControllersActivityHeadlessProvider;
 import com.example.houseremote.network.dataclasses.PinFlipPacket;
@@ -34,8 +33,7 @@ import com.example.houseremote.network.dataclasses.PinFlipPacket;
  * A placeholder fragment containing a simple view.
  */
 
-public class ControllersFragment extends Fragment implements ControllerDatabaseChangeListener,
-		DBInsertResponder {
+public class ControllersFragment extends Fragment implements ControllerDatabaseChangeListener {
 
 	private long roomID;
 	private GridView mGrid;

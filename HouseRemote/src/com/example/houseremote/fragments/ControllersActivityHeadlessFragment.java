@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import com.example.houseremote.R;
 import com.example.houseremote.database.DBHandler;
-import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.GridAdapter;
 import com.example.houseremote.interfaces.ControllersActivityHeadlessFragmentInterface;
@@ -282,20 +281,20 @@ public class ControllersActivityHeadlessFragment extends Fragment implements Con
 		Toast.makeText(getActivity(), "Failed To Connect To Host" + ip, Toast.LENGTH_SHORT).show();
 	}
 
-	@Override
-	public void onControllerDataChanged() {
-		if (selectedRoomID > 0) {
-			/*
-			 * Start DBsearch
-			 */
-
-			String[] controllerSelectionArgs = { selectedRoomID + "" };
-			queryManager.startQuery(2, controllerAdapter, DBProvider.CONTROLLERS_URI, controllerProjection,
-					controllerSelection, controllerSelectionArgs, null);
-
-		}
-
-	}
+//	@Override
+//	public void onControllerDataChanged() {
+//		if (selectedRoomID > 0) {
+//			/*
+//			 * Start DBsearch
+//			 */
+//
+//			String[] controllerSelectionArgs = { selectedRoomID + "" };
+//			queryManager.startQuery(2, controllerAdapter, DBProvider.CONTROLLERS_URI, controllerProjection,
+//					controllerSelection, controllerSelectionArgs, null);
+//
+//		}
+//
+//	}
 
 
 
@@ -311,14 +310,6 @@ public class ControllersActivityHeadlessFragment extends Fragment implements Con
 	public void onInsertFinished(long parseId) {
 		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	public void onHouseDataChanged() {
-	}
-
-	@Override
-	public void onRoomDataChanged() {
 	}
 
 	@Override

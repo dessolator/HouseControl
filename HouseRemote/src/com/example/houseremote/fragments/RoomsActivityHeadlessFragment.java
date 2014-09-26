@@ -42,14 +42,6 @@ public class RoomsActivityHeadlessFragment extends Fragment implements RoomsActi
 	}
 
 	@Override
-	public void onControllerDataChanged() {		
-	}
-
-	@Override
-	public void onHouseDataChanged() {
-	}
-
-	@Override
 	public void onRoomDataChanged() {
 		if (selectedHouseID > 0) {
 

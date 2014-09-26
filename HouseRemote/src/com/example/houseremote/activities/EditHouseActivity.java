@@ -16,7 +16,7 @@ import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.interfaces.DatabaseOperationCompleteListener;
 
 /**
- * 
+ * Activity used to edit the houses available.
  * 
  * @author Ivan Kesler
  *
@@ -80,32 +80,11 @@ public class EditHouseActivity extends ActionBarActivity implements DatabaseOper
 
 	}
 
-	@Override
-	public void onControllerDataChanged() {
-		
-	}
-
-	@Override
-	public void onHouseDataChanged() {
-		
-	}
-
-	@Override
-	public void onRoomDataChanged() {
-		
-	}
 
 	@Override
 	public void onInsertFinished(long parseId) {
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	public DataBaseAsyncQueryHandler getQueryManager() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 
 }

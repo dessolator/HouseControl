@@ -29,7 +29,7 @@ import com.example.houseremote.database.observers.ControllerObserver;
 import com.example.houseremote.interfaces.ControllersActivityHeadlessProvider;
 import com.example.houseremote.network.dataclasses.PinFlipPacket;
 
-/**
+/** 
  * A placeholder fragment containing a simple view.
  */
 

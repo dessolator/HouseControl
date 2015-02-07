@@ -26,7 +26,7 @@ import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.GridAdapter;
 import com.example.houseremote.database.interfaces.ControllerDatabaseChangeListener;
 import com.example.houseremote.database.observers.ControllerObserver;
-import com.example.houseremote.interfaces.ControllersActivityHeadlessProvider;
+import com.example.houseremote.fragments.interfaces.ControllersActivityHeadlessProvider;
 import com.example.houseremote.network.dataclasses.PinFlipPacket;
 
 /** 

@@ -26,7 +26,7 @@ import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.ListAdapter;
 import com.example.houseremote.database.interfaces.RoomDatabaseChangeListener;
 import com.example.houseremote.database.observers.RoomObserver;
-import com.example.houseremote.interfaces.RoomsActivityHeadlessProvider;
+import com.example.houseremote.fragments.interfaces.RoomsActivityHeadlessProvider;
 
 /**
  * A placeholder fragment containing a simple view.

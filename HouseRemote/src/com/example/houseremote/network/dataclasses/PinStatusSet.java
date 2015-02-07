@@ -2,7 +2,7 @@ package com.example.houseremote.network.dataclasses;
 
 import java.util.ArrayList;
 
-import com.example.houseremote.interfaces.HeadlessFragment;
+import com.example.houseremote.fragments.interfaces.HeadlessFragment;
 import com.example.houseremote.interfaces.RunnableOnUIThread;
 
 public class PinStatusSet implements RunnableOnUIThread {

@@ -11,7 +11,7 @@ import com.example.houseremote.R;
 import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.ServerListAdapter;
 import com.example.houseremote.database.interfaces.ServerListAdapterProvider;
-import com.example.houseremote.interfaces.HeadlessFragment;
+import com.example.houseremote.fragments.interfaces.HeadlessFragment;
 import com.example.houseremote.interfaces.RunnableOnUIThread;
 import com.example.houseremote.network.NetworkSet;
 import com.example.houseremote.network.dataclasses.LayoutQueryPacket;

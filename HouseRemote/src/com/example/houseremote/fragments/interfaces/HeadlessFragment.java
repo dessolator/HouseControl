@@ -1,4 +1,4 @@
-package com.example.houseremote.interfaces;
+package com.example.houseremote.fragments.interfaces;
 
 import com.example.houseremote.database.interfaces.DatabaseOperationCompleteListener;
 import com.example.houseremote.database.interfaces.QueryManagerProvider;

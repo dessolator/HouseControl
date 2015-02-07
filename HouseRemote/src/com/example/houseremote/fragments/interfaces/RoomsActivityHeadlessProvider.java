@@ -1,4 +1,4 @@
-package com.example.houseremote.interfaces;
+package com.example.houseremote.fragments.interfaces;
 
 
 public interface RoomsActivityHeadlessProvider {

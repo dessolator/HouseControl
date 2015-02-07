@@ -11,8 +11,8 @@ import com.example.houseremote.R;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.fragments.ControllersActivityHeadlessFragment;
 import com.example.houseremote.fragments.ControllersFragment;
-import com.example.houseremote.interfaces.ControllersActivityHeadlessFragmentInterface;
-import com.example.houseremote.interfaces.ControllersActivityHeadlessProvider;
+import com.example.houseremote.fragments.interfaces.ControllersActivityHeadlessFragmentInterface;
+import com.example.houseremote.fragments.interfaces.ControllersActivityHeadlessProvider;
 
 /**
  * Activity displaying the elements on a controller and controlling them.

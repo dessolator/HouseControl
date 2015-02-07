@@ -12,9 +12,9 @@ import com.example.houseremote.R;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.fragments.RoomsActivityHeadlessFragment;
 import com.example.houseremote.fragments.RoomsFragment;
+import com.example.houseremote.fragments.interfaces.RoomsActivityHeadlessFragmentInterface;
+import com.example.houseremote.fragments.interfaces.RoomsActivityHeadlessProvider;
 import com.example.houseremote.interfaces.RoomSelectionListener;
-import com.example.houseremote.interfaces.RoomsActivityHeadlessFragmentInterface;
-import com.example.houseremote.interfaces.RoomsActivityHeadlessProvider;
 
 public class RoomsActivity extends ActionBarActivity implements RoomsActivityHeadlessProvider, RoomSelectionListener{
 	

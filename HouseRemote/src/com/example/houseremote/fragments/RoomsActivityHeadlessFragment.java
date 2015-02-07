@@ -9,7 +9,7 @@ import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.ListAdapter;
-import com.example.houseremote.interfaces.RoomsActivityHeadlessFragmentInterface;
+import com.example.houseremote.fragments.interfaces.RoomsActivityHeadlessFragmentInterface;
 
 public class RoomsActivityHeadlessFragment extends Fragment implements RoomsActivityHeadlessFragmentInterface{
 

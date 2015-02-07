@@ -17,7 +17,7 @@ import com.example.houseremote.R;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.GridAdapter;
-import com.example.houseremote.interfaces.ControllersActivityHeadlessFragmentInterface;
+import com.example.houseremote.fragments.interfaces.ControllersActivityHeadlessFragmentInterface;
 import com.example.houseremote.interfaces.RunnableOnUIThread;
 import com.example.houseremote.network.NetworkSet;
 import com.example.houseremote.network.dataclasses.InitialStateQueryPacket;

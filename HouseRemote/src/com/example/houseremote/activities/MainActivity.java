@@ -15,10 +15,10 @@ import com.example.houseremote.fragments.RoomsFragment;
 import com.example.houseremote.fragments.interfaces.ControllersActivityHeadlessFragmentInterface;
 import com.example.houseremote.fragments.interfaces.ControllersActivityHeadlessProvider;
 import com.example.houseremote.fragments.interfaces.MainActivityHeadlessFragmentInterface;
+import com.example.houseremote.fragments.interfaces.MainActivityHeadlessProvider;
 import com.example.houseremote.fragments.interfaces.RoomsActivityHeadlessFragmentInterface;
 import com.example.houseremote.fragments.interfaces.RoomsActivityHeadlessProvider;
 import com.example.houseremote.interfaces.HouseSelectionListener;
-import com.example.houseremote.interfaces.MainActivityHeadlessProvider;
 import com.example.houseremote.interfaces.RoomSelectionListener;
 
 public class MainActivity extends ActionBarActivity implements ControllersActivityHeadlessProvider,RoomsActivityHeadlessProvider,MainActivityHeadlessProvider, RoomSelectionListener,HouseSelectionListener{

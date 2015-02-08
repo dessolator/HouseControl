@@ -1,6 +1,5 @@
-package com.example.houseremote.interfaces;
+package com.example.houseremote.fragments.interfaces;
 
-import com.example.houseremote.fragments.interfaces.MainActivityHeadlessFragmentInterface;
 
 
 public interface MainActivityHeadlessProvider {

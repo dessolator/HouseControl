@@ -19,6 +19,8 @@ import com.example.houseremote.interfaces.RoomSelectionListener;
 public class RoomsActivity extends ActionBarActivity implements RoomsActivityHeadlessProvider, RoomSelectionListener{
 	
 	private RoomsActivityHeadlessFragment mHeadlessFragment;
+	@SuppressWarnings("unused")
+	private RoomsFragment mRoomsFragment;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +29,7 @@ public class RoomsActivity extends ActionBarActivity implements RoomsActivityHea
 		setContentView(R.layout.activity_main);
 
 		mHeadlessFragment = acquireHeadlessFragment();
-		acquireRoomsFragmentToList();
+		mRoomsFragment = acquireRoomsFragmentToList();
 
 	}
 

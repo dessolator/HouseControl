@@ -26,7 +26,7 @@ import com.example.houseremote.database.DataBaseAsyncQueryHandler;
 import com.example.houseremote.database.adapters.ListAdapter;
 import com.example.houseremote.database.interfaces.HouseDatabaseChangeListener;
 import com.example.houseremote.database.observers.HouseObserver;
-import com.example.houseremote.interfaces.MainActivityHeadlessProvider;
+import com.example.houseremote.fragments.interfaces.MainActivityHeadlessProvider;
 
 /**
  * MAJOR TODOS 

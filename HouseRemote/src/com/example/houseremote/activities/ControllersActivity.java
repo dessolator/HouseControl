@@ -25,6 +25,8 @@ public class ControllersActivity extends ActionBarActivity implements Controller
 	 * Fragments
 	 */
 	private ControllersActivityHeadlessFragment mHeadlessFragment;
+	@SuppressWarnings("unused")
+	private ControllersFragment mControllersFragment;
 
 	/**
 	 * Acquire Headless and Controllers fragment.
@@ -35,7 +37,7 @@ public class ControllersActivity extends ActionBarActivity implements Controller
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.activity_main);
 		mHeadlessFragment = acquireHeadlessFragment();
-		acquireControllersFragment();
+		mControllersFragment = acquireControllersFragment();
 	}
 
 	

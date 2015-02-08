@@ -55,23 +55,29 @@ public class MainActivityHeadlessFragment extends Fragment implements
 	private ListAdapter roomAdapter;
 
 	/*
+	 * NetworkSet for each connected controller
+	 */
+	private HashMap<String, NetworkSet> mNetSets;
+	
+	/*
+	 * DatabaseAccessObject 
+	 */
+	private DataBaseAsyncQueryHandler queryManager;
+
+	/*
 	 * Storing Selected Data
 	 */
-	private long selectedHouseID;
-	private long selectedRoomID;
-	private DataBaseAsyncQueryHandler queryManager;
+	private long selectedHouseID=0l;
+	private long selectedRoomID=0l;
 	private boolean initialControllerDataLoaded = false;
 	private boolean initialRoomDataLoaded = false;
 	private boolean initialHouseDataLoaded = false;
-	private HashMap<String, NetworkSet> mNetSets = new HashMap<String, NetworkSet>();
 
-	/**
-	 * Create the necessary Adapters, Threads and DataBaseAccess also set this
-	 * fragment to be retained
-	 */
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		mNetSets = new HashMap<String, NetworkSet>();
 		houseAdapter = new ListAdapter(getActivity(), null, 0);
 		roomAdapter = new ListAdapter(getActivity(), null, 0);
 		controllerAdapter = new GridAdapter(getActivity(), null, 0);
@@ -80,9 +86,6 @@ public class MainActivityHeadlessFragment extends Fragment implements
 
 	}
 
-	/**
-	 * Restart network threads if they were at all started
-	 */
 	@Override
 	public void onStart() {
 		super.onStart();
@@ -94,9 +97,6 @@ public class MainActivityHeadlessFragment extends Fragment implements
 		}
 	}
 
-	/**
-	 * Suspend network threads
-	 */
 	@Override
 	public void onStop() {
 		super.onStop();
@@ -108,9 +108,6 @@ public class MainActivityHeadlessFragment extends Fragment implements
 		}
 	}
 
-	/**
-	 * Stop network threads
-	 */
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
@@ -182,15 +179,6 @@ public class MainActivityHeadlessFragment extends Fragment implements
 
 	}
 
-	/**
-	 * Replaces the database cursor on the given adapter.
-	 * 
-	 * @param cursor
-	 *            The new cursor to be used.
-	 * @param adapter
-	 *            The adapter to which the cursor is to be posted.
-	 * 
-	 */
 	@Override
 	public void onQueryFinished(Cursor cursor, Object adapter) {
 

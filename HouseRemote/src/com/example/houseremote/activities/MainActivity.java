@@ -45,42 +45,57 @@ public class MainActivity extends ActionBarActivity implements ControllersActivi
 
 	
 	
+	
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 	
-		if (savedInstanceState == null) {//if starting for first time
-			mHeadlessFragment = acquireHeadlessFragment();
-			myHousesFragment = acquireHousesFragmentToList();
+		if (savedInstanceState == null) {
+			grabInitialFragments();
+			return;
 		
-		} else {
+		}
+		if (findViewById(R.id.expanded) == null) {
+			grabFragmentsForPhone();
+			return;
+		} 
+		grabFragmetnsForTablet();
+	
+	}
+
+	private void grabInitialFragments() {
+		mHeadlessFragment = acquireHeadlessFragment();
+		myHousesFragment = acquireHousesFragmentToList();
+	}
+
+	private void grabFragmentsForPhone() {
+		mHeadlessFragment = acquireHeadlessFragment();
+		myHousesFragment = acquireHousesFragmentToList();
+	}
+
+	private void grabFragmetnsForTablet() {
+		mHeadlessFragment = acquireHeadlessFragment();
+		//if a room was previously selected
+		if (mHeadlessFragment.getSelectedRoomID() >0) {//if on tablet and should display rooms and houses fragment
+			myHousesFragment = (HousesFragment) getSupportFragmentManager().findFragmentByTag(HOUSES);
+			myRoomsFragment = acquireRoomsFragmentToList();					
+			myControllersFragment = acquireControllersFragmentToExpanded();
 			
-			mHeadlessFragment = acquireHeadlessFragment();
-			
-			if (findViewById(R.id.expanded) == null) {//if on phone and not for first time
+		}
+		//if only a house was selected
+		else {
+			if (mHeadlessFragment.getSelectedHouseID() >0) {//if on tablet and should display houses and rooms fragment
 				myHousesFragment = acquireHousesFragmentToList();
-			} else {
-				
-				if (mHeadlessFragment.getSelectedRoomID() >0) {//if on tablet and should display rooms and houses fragment
-					myHousesFragment = (HousesFragment) getSupportFragmentManager().findFragmentByTag(HOUSES);
-					myRoomsFragment = acquireRoomsFragmentToList();					
-					myControllersFragment = acquireControllersFragmentToExpanded();
-					
-				} else {
-					if (mHeadlessFragment.getSelectedHouseID() >0) {//if on tablet and should display houses and rooms fragment
-						myHousesFragment = acquireHousesFragmentToList();
-						myRoomsFragment = acquireRoomsFragmentToExpanded();						
-					} else {//if on tablet and should display only houses fragment
-						myHousesFragment = acquireHousesFragmentToList();
-					}
-				}
+				myRoomsFragment = acquireRoomsFragmentToExpanded();						
+			} else {//if on tablet and should display only houses fragment
+				myHousesFragment = acquireHousesFragmentToList();
 			}
 		}
 	}
 
-	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
@@ -91,10 +106,8 @@ public class MainActivity extends ActionBarActivity implements ControllersActivi
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
-			Intent i = new Intent(this, AutoSearchActivity.class);
-			startActivity(i);
 			return true;
-		}
+		}		
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -126,7 +139,6 @@ public class MainActivity extends ActionBarActivity implements ControllersActivi
 
 	}
 	
-	
 	@Override
 	public void roomSelected(long roomID) {
 		
@@ -149,8 +161,6 @@ public class MainActivity extends ActionBarActivity implements ControllersActivi
 		}
 	}
 
-
-	
 	@Override
 	public void houseSelected(long houseID) {
 
@@ -179,31 +189,20 @@ public class MainActivity extends ActionBarActivity implements ControllersActivi
 
 	}
 
-	/**
-	 * Used to return the headless fragment to the house fragment.
-	 */
 	@Override
 	public MainActivityHeadlessFragmentInterface getMainHeadlessFragment() {
 		return mHeadlessFragment;
 	}
 
-	/**
-	 * Used to return the headless fragment to the room fragment.
-	 */
 	@Override
 	public RoomsActivityHeadlessFragmentInterface getRoomsHeadlessFragment() {
 		return mHeadlessFragment;
 	}
 	
-	/**
-	 * Used to return the headless fragment to the controller fragment.
-	 */
 	@Override
 	public ControllersActivityHeadlessFragmentInterface getControllersHeadlessFragment() {
 		return mHeadlessFragment;
 	}
-	
-	
 	
 	/**
 	 * Used to add the controllers fragment to the expanded view.
@@ -218,6 +217,7 @@ public class MainActivity extends ActionBarActivity implements ControllersActivi
 		}		
 		return temp;
 	}
+	
 	/**
 	 * Used to add the rooms fragment to the expanded view.
 	 * @return The RoomsFragment object that was just added.
@@ -230,6 +230,7 @@ public class MainActivity extends ActionBarActivity implements ControllersActivi
 		}
 		return temp;
 	}
+	
 	/**
 	 * Used to add the rooms fragment to the list view.
 	 * @return The RoomsFragment object that was just added.
@@ -242,6 +243,7 @@ public class MainActivity extends ActionBarActivity implements ControllersActivi
 		}
 		return temp;
 	}
+	
 	/**
 	 * Used to add the houses fragment to the list view.
 	 * @return The HousesFragment object that was just added.
@@ -254,6 +256,7 @@ public class MainActivity extends ActionBarActivity implements ControllersActivi
 		}
 		return temp;
 	}
+	
 	/**
 	 * Used to add the headless fragment.
 	 * @return The MainActivityHeadlessFragment object that was just added.

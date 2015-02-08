@@ -135,7 +135,7 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    if (requestCode == 1) {
 	    	mCallback.getRoomsHeadlessFragment().onRoomDataChanged();
-	    	mCallback.getRoomsHeadlessFragment().onControllerDataChanged();
+//	    	mCallback.getRoomsHeadlessFragment().onControllerDataChanged();
 	        
 	    }
 	}
@@ -173,7 +173,7 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 
 	@Override
 	public void controllerDatabaseChanged() {
-		mCallback.getRoomsHeadlessFragment().onControllerDataChanged();
+//		mCallback.getRoomsHeadlessFragment().onControllerDataChanged();
 	}
 
 }

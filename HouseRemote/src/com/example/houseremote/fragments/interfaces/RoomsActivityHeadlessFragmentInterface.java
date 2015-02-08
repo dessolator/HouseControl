@@ -7,4 +7,6 @@ import com.example.houseremote.interfaces.SelectedHouseProvider;
 
 public interface RoomsActivityHeadlessFragmentInterface extends RoomsAdapterProvider,SelectedHouseProvider,DatabaseOperationCompleteListener, DatabaseHandlerProvider{
 
+//	public void onControllerDataChanged();
+	public void onRoomDataChanged();
 }

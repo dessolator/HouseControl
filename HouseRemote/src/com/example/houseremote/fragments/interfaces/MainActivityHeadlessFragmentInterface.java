@@ -13,5 +13,9 @@ import com.example.houseremote.network.interfaces.NetworkSendController;
 public interface MainActivityHeadlessFragmentInterface extends NetworkReceiveForward,
 NetworkSendController, SelectedHouseProvider, SelectedRoomProvider, RoomsAdapterProvider,
 HousesAdapterProvider, ControllersAdapterProvider, HeadlessFragment,DatabaseOperationCompleteListener,DatabaseHandlerProvider{
+	
+	public void onControllerDataChanged();
+	public void onHouseDataChanged();
+	public void onRoomDataChanged();
 
 }

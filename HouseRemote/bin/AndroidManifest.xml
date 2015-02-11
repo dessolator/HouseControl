@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="20" />
+        android:targetSdkVersion="21" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
@@ -34,11 +34,11 @@
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name=".activities.ControllersActivity"
+            android:name="com.example.houseremote.activities.phone.ControllersActivity"
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name=".activities.RoomsActivity"
+            android:name="com.example.houseremote.activities.phone.RoomsActivity"
             android:label="@string/app_name" >
         </activity>
         <activity

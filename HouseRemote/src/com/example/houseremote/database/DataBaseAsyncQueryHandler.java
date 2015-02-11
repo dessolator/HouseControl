@@ -7,6 +7,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.v4.widget.CursorAdapter;
 
 import com.example.houseremote.database.interfaces.DatabaseOperationCompleteListener;
 
@@ -29,7 +30,7 @@ public class DataBaseAsyncQueryHandler extends AsyncQueryHandler {
 	protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
 		super.onQueryComplete(token, cookie, cursor);
 		if (mListener.get() != null)
-			mListener.get().onQueryFinished(cursor,cookie);
+			mListener.get().onQueryFinished(cursor,(CursorAdapter)cookie);
 		else
 			cursor.close();
 	}
@@ -37,7 +38,7 @@ public class DataBaseAsyncQueryHandler extends AsyncQueryHandler {
 	@Override
 	protected void onInsertComplete(int token, Object cookie, Uri uri) {
 		if (mListener.get() != null)
-				mListener.get().onInsertFinished(ContentUris.parseId(uri));//TODO TODO TODO TODO
+				mListener.get().onInsertFinished(ContentUris.parseId(uri), token);//TODO
 		super.onInsertComplete(token, cookie, uri);
 	}
 

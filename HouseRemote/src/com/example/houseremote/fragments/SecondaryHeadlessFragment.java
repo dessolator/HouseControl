@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.CursorAdapter;
 import android.view.MenuItem;
 import android.widget.ListAdapter;
 
@@ -28,6 +29,13 @@ public class SecondaryHeadlessFragment extends Fragment implements HeadlessFragm
 	private DataBaseAsyncQueryHandler mHandler;
 	private ServerListAdapter mAdapter;
 	private NetworkSet mNetSet;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setRetainInstance(true);
+	}
+
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -88,7 +96,7 @@ public class SecondaryHeadlessFragment extends Fragment implements HeadlessFragm
 
 
 	@Override
-	public void onInsertFinished(long parseId) {
+	public void onInsertFinished(long parseId, int token) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -96,8 +104,7 @@ public class SecondaryHeadlessFragment extends Fragment implements HeadlessFragm
 
 	@Override
 	public DataBaseAsyncQueryHandler getQueryManager() {
-		// TODO Auto-generated method stub
-		return null;
+		return mHandler;
 	}
 
 
@@ -109,7 +116,7 @@ public class SecondaryHeadlessFragment extends Fragment implements HeadlessFragm
 
 
 	@Override
-	public void onQueryFinished(Cursor cursor, Object cookie) {
+	public void onQueryFinished(Cursor cursor, CursorAdapter cookie) {
 		// TODO Auto-generated method stub
 		
 	}

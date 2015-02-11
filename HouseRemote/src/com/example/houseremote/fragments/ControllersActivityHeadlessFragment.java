@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.houseremote.R;
+import com.example.houseremote.activities.EditLightSwitchActivity;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseAsyncQueryHandler;
@@ -175,9 +177,9 @@ public class ControllersActivityHeadlessFragment extends Fragment implements Con
 	 * 
 	 */
 	@Override
-	public void onQueryFinished(Cursor cursor, Object adapter) {
+	public void onQueryFinished(Cursor cursor, CursorAdapter adapter) {
 
-		Cursor temp = ((CursorAdapter) adapter).swapCursor(cursor);
+		Cursor temp = adapter.swapCursor(cursor);
 		if (temp != null)
 			temp.close();
 		if (adapter == controllerAdapter) {
@@ -308,15 +310,18 @@ public class ControllersActivityHeadlessFragment extends Fragment implements Con
 	}
 
 	@Override
-	public void onInsertFinished(long parseId) {
-		// TODO Auto-generated method stub
+	public void onInsertFinished(long parseId, int token) {
+		if (token == 2){
+			Intent i = new Intent(getActivity(), EditLightSwitchActivity.class);
+			i.putExtra(DBHandler.CONTROLLER_ID, parseId);// give info about the
+			startActivityForResult(i, 2);// start the activity
+		}
 
 	}
 
 	@Override
 	public long getSelectedRoomID() {
-		// TODO Auto-generated method stub
-		return 0;
+		return selectedRoomID;
 	}
 
 }

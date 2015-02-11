@@ -21,4 +21,7 @@ public class ServerInfo {
 		this.port = port;
 		this.ip = ip;
 	}
+	public String getName() {
+		return name;
+	}
 }

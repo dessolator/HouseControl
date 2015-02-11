@@ -3,6 +3,7 @@ package com.example.houseremote.activities;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,6 +30,7 @@ public class EditLightSwitchActivity extends ActionBarActivity implements Databa
 	private EditText lightSwitchNameField;
 	private EditText lightSwitchPinField;
 	private EditText lightSwitchIpField;
+	private EditText lightSwitchPortField; 
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,11 +42,12 @@ public class EditLightSwitchActivity extends ActionBarActivity implements Databa
 				DBHandler.CONTROLLER_IP, DBHandler.CONTROLLER_PORT };
 		controllerID = getIntent().getExtras().getLong(DBHandler.CONTROLLER_ID);
 		String[] selectionArgs = { "" + controllerID };
-
+		
 		lightSwitchNameField = ((EditText) findViewById(R.id.lightSwitchNameField));
 		lightSwitchPinField = ((EditText) findViewById(R.id.lightSwitchPinField));
 		lightSwitchIpField = ((EditText) findViewById(R.id.lightSwitchIpField));
-
+		lightSwitchPortField = ((EditText) findViewById(R.id.lightSwitchPortField));
+		
 		mAsyncQueryManager = new DataBaseAsyncQueryHandler(getContentResolver(), this);
 		mAsyncQueryManager.startQuery(0, null, DBProvider.CONTROLLERS_URI, projection, selection,
 				selectionArgs, null);
@@ -57,10 +60,11 @@ public class EditLightSwitchActivity extends ActionBarActivity implements Databa
 				cv.put(DBHandler.CONTROLLER_NAME, lightSwitchNameField.getText().toString());
 				cv.put(DBHandler.CONTROL_PIN_NUMBER, lightSwitchPinField.getText().toString());
 				cv.put(DBHandler.CONTROLLER_IP, lightSwitchIpField.getText().toString());
+				cv.put(DBHandler.CONTROLLER_PORT,lightSwitchPortField.getText().toString());
 				String[] selectionArgs = { "" + controllerID };
 				mAsyncQueryManager.startUpdate(0, null, DBProvider.CONTROLLERS_URI, cv, selection,
 						selectionArgs);
-				onBackPressed();
+				onBackPressed();//TODO move to onUpdateFinished
 
 			}
 
@@ -75,12 +79,13 @@ public class EditLightSwitchActivity extends ActionBarActivity implements Databa
 	}
 
 	@Override
-	public void onQueryFinished(Cursor cursor, Object o) {
+	public void onQueryFinished(Cursor cursor, CursorAdapter o) {
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
-				lightSwitchPinField.setText(Integer.toString(cursor.getInt(cursor.getColumnIndex(DBHandler.CONTROL_PIN_NUMBER))));
+				lightSwitchPinField.setText(cursor.getString(cursor.getColumnIndex(DBHandler.CONTROL_PIN_NUMBER)));
 				lightSwitchNameField.setText(cursor.getString(cursor.getColumnIndex(DBHandler.CONTROLLER_NAME)));
 				lightSwitchIpField.setText(cursor.getString(cursor.getColumnIndex(DBHandler.CONTROLLER_IP)));
+				lightSwitchPortField.setText(cursor.getString(cursor.getColumnIndex(DBHandler.CONTROLLER_PORT)));
 			}
 			cursor.close();
 		}
@@ -89,8 +94,7 @@ public class EditLightSwitchActivity extends ActionBarActivity implements Databa
 
 	
 	@Override
-	public void onInsertFinished(long parseId) {
-		// TODO Auto-generated method stub
+	public void onInsertFinished(long parseId, int token) {
 		
 	}
 

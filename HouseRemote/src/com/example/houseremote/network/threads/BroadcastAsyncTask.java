@@ -49,7 +49,7 @@ public class BroadcastAsyncTask extends AsyncTask<Void, ServerInfo, Void> implem
 		byte[] quads = new byte[4];
 		for (int k = 0; k < 4; k++)
 			quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
-		return InetAddress.getByName("192.168.1.255");//TODO TODO TODO
+		return InetAddress.getByName("192.168.1.255");//TODO
 	}
 
 	@Override
@@ -57,7 +57,6 @@ public class BroadcastAsyncTask extends AsyncTask<Void, ServerInfo, Void> implem
 		try {
 			mSocket = new DatagramSocket(SENDPORT);
 		} catch (SocketException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		started = true;

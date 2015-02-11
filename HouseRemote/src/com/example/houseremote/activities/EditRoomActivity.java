@@ -3,6 +3,7 @@ package com.example.houseremote.activities;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -50,7 +51,7 @@ public class EditRoomActivity extends ActionBarActivity implements DatabaseOpera
 				ContentValues cv = new ContentValues();
 				cv.put(DBHandler.ROOM_NAME, roomNameField.getText().toString());
 				mAsyncQueryManager.startUpdate(0, null, DBProvider.ROOMS_URI, cv, selection, selectionArgs);
-				onBackPressed();
+				onBackPressed();//TODO move to OnUpdateComplete
 
 			}
 
@@ -65,7 +66,7 @@ public class EditRoomActivity extends ActionBarActivity implements DatabaseOpera
 	}
 
 	@Override
-	public void onQueryFinished(Cursor cursor,Object o) {
+	public void onQueryFinished(Cursor cursor,CursorAdapter o) {
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
 				roomNameField.setText(cursor.getString(cursor.getColumnIndex(DBHandler.ROOM_NAME)));
@@ -77,9 +78,7 @@ public class EditRoomActivity extends ActionBarActivity implements DatabaseOpera
 
 
 	@Override
-	public void onInsertFinished(long parseId) {
-		// TODO Auto-generated method stub
-		
+	public void onInsertFinished(long parseId, int token) {		
 	}
 
 }

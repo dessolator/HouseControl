@@ -3,6 +3,7 @@ package com.example.houseremote.activities;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -55,7 +56,7 @@ public class EditHouseActivity extends ActionBarActivity implements DatabaseOper
 				cv.put(DBHandler.HOUSE_NAME, houseNameField.getText().toString());
 				cv.put(DBHandler.HOUSE_WIFI_NAME, houseWifiNameField.getText().toString());
 				mAsyncQueryManager.startUpdate(0, null, DBProvider.HOUSES_URI, cv, selection, selectionArgs);
-				onBackPressed();
+				onBackPressed();//TODO move to onUpdateComplete
 
 			}
 
@@ -69,7 +70,7 @@ public class EditHouseActivity extends ActionBarActivity implements DatabaseOper
 	}
 
 	@Override
-	public void onQueryFinished(Cursor cursor, Object o) {
+	public void onQueryFinished(Cursor cursor, CursorAdapter o) {
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
 				houseWifiNameField.setText(cursor.getString(cursor.getColumnIndex(DBHandler.HOUSE_WIFI_NAME)));
@@ -82,9 +83,7 @@ public class EditHouseActivity extends ActionBarActivity implements DatabaseOper
 
 
 	@Override
-	public void onInsertFinished(long parseId) {
-		// TODO Auto-generated method stub
-		
+	public void onInsertFinished(long parseId, int token) {		
 	}
 
 }

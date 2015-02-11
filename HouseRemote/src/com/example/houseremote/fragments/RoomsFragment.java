@@ -149,17 +149,11 @@ public class RoomsFragment extends Fragment implements RoomDatabaseChangeListene
 			cv.put(DBHandler.ROOM_NAME, getString(R.string.newRoomName));
 			cv.put(DBHandler.HOUSE_ID_ALT, mHouseID);
 			cv.put(DBHandler.ROOM_IMAGE_NAME, "bed");
-			mAsyncQueryManager.startInsert(0, this, DBProvider.ROOMS_URI, cv);
+			mAsyncQueryManager.startInsert(1, this, DBProvider.ROOMS_URI, cv);
 
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	public void onInsertFinished(long roomID) {
-		Intent i = new Intent(getActivity(), EditRoomActivity.class);
-		i.putExtra(DBHandler.ROOM_ID, roomID);
-		startActivityForResult(i,1);
 	}
 
 	public void replaceData(long houseID){

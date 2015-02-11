@@ -30,8 +30,6 @@ import com.example.houseremote.fragments.interfaces.MainActivityHeadlessProvider
 
 /**
  * MAJOR TODOS 
- * TODO REFRESH FRAGMENT NEEDS RETAINED DATA
- * TODO COMMUNICATE FAILIURE REACHING HOSTS (IMPROVE FROM CURRENT TOAST(MAYBE DIALOG))
  * TODO SETUP SERVICE TO LISTEN TO WIDGET CLICKS
  * TODO SETUP ACTIVITY FOR CONTROLLERS (SHOW AVAILABLE WIFIs -> AVAILABLE CONTROLLERS -> AVAILABLE SWITCHES) (Avoid manual adition of nodes)
  * TODO ADD WIDGET SETUP ACTIVITY
@@ -47,7 +45,6 @@ import com.example.houseremote.fragments.interfaces.MainActivityHeadlessProvider
  * TODO USE UI DESIGN TO HIGHLIGHT SELECTED ELEMENTS
  * TODO CHECK RESOURCE USAGE, NAMELY CLOSE THE DAMN CURSORS IN ONSTOP ONPAUSE ETC. (MAT analysis)
  * TODO ANIMATE THE FRAGMENT TRANSITIONS
- * TODO HAVE NEW HOUSE NAME AUTOINCREMENT
  * TODO ADD AND RESCALE IMAGES
  * TODO ADD ABILITY TO SELECT IMAGES FOR ROOMS/HOUSES/CONTROLLERS
  * TODO WHAT IF ATTEMPTING TO SAVE INVALID STATE???
@@ -182,14 +179,6 @@ public class HousesFragment extends Fragment implements HouseDatabaseChangeListe
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
-	
-	public void onInsertFinished(long houseID) {
-		Intent i = new Intent(getActivity(), EditHouseActivity.class);
-		i.putExtra(DBHandler.HOUSE_ID, houseID);
-		startActivityForResult(i,0);
-	}
-	
 
 	@Override
 	public void houseDatabaseChanged() {

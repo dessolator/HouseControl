@@ -7,8 +7,6 @@ public class LayoutDescription implements RunnableOnUIThread{
 
 	@Override
 	public void runOnUIThread(HeadlessFragment headlessFragment) {
-//		headlessFragment.layoutParsed(this); //TODO TODO TODO
-		
 	}
 
 

@@ -1,4 +1,4 @@
-package com.example.houseremote.activities;
+package com.example.houseremote.activities.phone;
 
 import static com.example.houseremote.activities.MainActivity.CONTROLLERS;
 import static com.example.houseremote.activities.MainActivity.HEADLESS;

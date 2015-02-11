@@ -1,10 +1,12 @@
 package com.example.houseremote.fragments;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
 
+import com.example.houseremote.activities.EditRoomActivity;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseAsyncQueryHandler;
@@ -35,8 +37,8 @@ public class RoomsActivityHeadlessFragment extends Fragment implements RoomsActi
 
 	}
 	@Override
-	public void onQueryFinished(Cursor cursor, Object cookie) {
-		Cursor temp = ((CursorAdapter) cookie).swapCursor(cursor);
+	public void onQueryFinished(Cursor cursor, CursorAdapter cookie) {
+		Cursor temp = cookie.swapCursor(cursor);
 		if (temp != null)
 			temp.close();		
 	}
@@ -52,8 +54,10 @@ public class RoomsActivityHeadlessFragment extends Fragment implements RoomsActi
 	}
 
 	@Override
-	public void onInsertFinished(long parseId) {
-		// TODO Auto-generated method stub
+	public void onInsertFinished(long parseId, int token) {
+		Intent i = new Intent(getActivity(), EditRoomActivity.class);
+		i.putExtra(DBHandler.ROOM_ID, parseId);
+		startActivityForResult(i,1);
 		
 	}
 	

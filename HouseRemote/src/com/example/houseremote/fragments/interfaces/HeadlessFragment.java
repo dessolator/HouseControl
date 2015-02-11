@@ -12,6 +12,5 @@ public interface HeadlessFragment extends QueryManagerProvider,DatabaseOperation
 	void postValueChange(PinStatus pinStatus);
 	
 	void postLookupValues(PinStatusSet pinStatusSet);
-	
-//	void layoutParsed(Layout layout);//TODO TODO TODO
+
 }

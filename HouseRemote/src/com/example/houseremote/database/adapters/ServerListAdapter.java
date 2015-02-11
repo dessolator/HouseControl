@@ -45,7 +45,7 @@ public class ServerListAdapter extends BaseAdapter {
 			LayoutInflater vi = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = vi.inflate(R.layout.server_lookup_icon, parent,false);
 		}
-//		convertView.findViewById(R.id.serverNameView).setText(mArray.get(position).getName());//TODO add server names to server info
+		((TextView) convertView.findViewById(R.id.serverNameView)).setText(mArray.get(position).getName());
 		((TextView) convertView.findViewById(R.id.serverNameView)).setText((mArray.get(position).getIp()
 				+ ":" + mArray.get(position).getPort()));
 		return convertView;

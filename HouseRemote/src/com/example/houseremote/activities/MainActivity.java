@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.houseremote.R;
+import com.example.houseremote.activities.phone.RoomsActivity;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.fragments.ControllersFragment;
 import com.example.houseremote.fragments.HousesFragment;
@@ -63,6 +64,7 @@ public class MainActivity extends ActionBarActivity implements ControllersActivi
 			return;
 		} 
 		grabFragmetnsForTablet();
+		return;
 	
 	}
 
@@ -83,17 +85,19 @@ public class MainActivity extends ActionBarActivity implements ControllersActivi
 			myHousesFragment = (HousesFragment) getSupportFragmentManager().findFragmentByTag(HOUSES);
 			myRoomsFragment = acquireRoomsFragmentToList();					
 			myControllersFragment = acquireControllersFragmentToExpanded();
-			
-		}
+			return;
+		}	
+		
 		//if only a house was selected
-		else {
-			if (mHeadlessFragment.getSelectedHouseID() >0) {//if on tablet and should display houses and rooms fragment
-				myHousesFragment = acquireHousesFragmentToList();
-				myRoomsFragment = acquireRoomsFragmentToExpanded();						
-			} else {//if on tablet and should display only houses fragment
-				myHousesFragment = acquireHousesFragmentToList();
-			}
+		if (mHeadlessFragment.getSelectedHouseID() >0) {//if on tablet and should display houses and rooms fragment
+			myHousesFragment = acquireHousesFragmentToList();
+			myRoomsFragment = acquireRoomsFragmentToExpanded();
+			return;
 		}
+		//if on tablet and should display only houses fragment
+		myHousesFragment = acquireHousesFragmentToList();
+		return;
+		
 	}
 
 	@Override
@@ -117,6 +121,7 @@ public class MainActivity extends ActionBarActivity implements ControllersActivi
 			super.onBackPressed();
 			return;
 		}
+		//TODO move to fragments respectively?
 		if(mHeadlessFragment.getSelectedRoomID()>0){
 			mHeadlessFragment.setSelectedRoomID(0);
 			mHeadlessFragment.setInitialControllerDataLoaded(false);

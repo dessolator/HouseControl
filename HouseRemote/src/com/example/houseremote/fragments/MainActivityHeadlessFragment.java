@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.houseremote.R;
+import com.example.houseremote.activities.EditHouseActivity;
+import com.example.houseremote.activities.EditLightSwitchActivity;
+import com.example.houseremote.activities.EditRoomActivity;
 import com.example.houseremote.database.DBHandler;
 import com.example.houseremote.database.DBProvider;
 import com.example.houseremote.database.DataBaseAsyncQueryHandler;
@@ -180,9 +184,9 @@ public class MainActivityHeadlessFragment extends Fragment implements
 	}
 
 	@Override
-	public void onQueryFinished(Cursor cursor, Object adapter) {
+	public void onQueryFinished(Cursor cursor, CursorAdapter adapter) {
 
-		Cursor temp = ((CursorAdapter) adapter).swapCursor(cursor);
+		Cursor temp = adapter.swapCursor(cursor);
 		if (temp != null)
 			temp.close();
 		if (adapter == controllerAdapter) {
@@ -192,7 +196,6 @@ public class MainActivityHeadlessFragment extends Fragment implements
 				getActivity().findViewById(R.id.linlaHeaderProgress).setVisibility(View.VISIBLE);
 			while (iter.hasNext()) {
 				iter.next().getValue().addToSenderQueue(new InitialStateQueryPacket());
-				;
 			}
 		}
 
@@ -274,7 +277,6 @@ public class MainActivityHeadlessFragment extends Fragment implements
 	 * @param pinStatusSet
 	 *            The PinStatusSet to be posted to the UI.
 	 */
-
 	public void postLookupValues(PinStatusSet pinStatusSet) {
 		controllerAdapter.addStatusSet(pinStatusSet);
 		getActivity().findViewById(R.id.linlaHeaderProgress).setVisibility(View.GONE);
@@ -318,7 +320,10 @@ public class MainActivityHeadlessFragment extends Fragment implements
 	public void reportFailiureToConnectToServer(String ip) {
 		if (getActivity() == null)
 			return;
-		Toast.makeText(getActivity(), "Failed To Connect To Host" + ip, Toast.LENGTH_SHORT).show();
+		if(mNetSets.isEmpty()){//if connection failed to all hosts
+			Toast.makeText(getActivity(), "Failed To Connect To Host" + ip, Toast.LENGTH_SHORT).show();
+			getActivity().findViewById(R.id.linlaHeaderProgress).setVisibility(View.GONE);
+		}
 	}
 
 	@Override
@@ -361,9 +366,25 @@ public class MainActivityHeadlessFragment extends Fragment implements
 	}
 
 	@Override
-	public void onInsertFinished(long parseId) {
-		// TODO Auto-generated method stub
-
+	public void onInsertFinished(long parseId, int token) {// TODO Should pass to appropriate object
+		Intent i;
+		switch(token){
+		case 0:
+			i = new Intent(getActivity(), EditHouseActivity.class);
+			i.putExtra(DBHandler.HOUSE_ID, parseId);
+			startActivityForResult(i,0);
+			break;
+		case 1:
+			i = new Intent(getActivity(), EditRoomActivity.class);
+			i.putExtra(DBHandler.ROOM_ID, parseId);
+			startActivityForResult(i,1);
+			break;
+		case 2:
+			i = new Intent(getActivity(), EditLightSwitchActivity.class);
+			i.putExtra(DBHandler.CONTROLLER_ID, parseId);// give info about the
+			startActivityForResult(i, 2);// start the activity
+			break;
+		}
 	}
 
 

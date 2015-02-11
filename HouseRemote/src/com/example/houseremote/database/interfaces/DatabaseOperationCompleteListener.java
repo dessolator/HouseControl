@@ -1,6 +1,7 @@
 package com.example.houseremote.database.interfaces;
 
 import android.database.Cursor;
+import android.support.v4.widget.CursorAdapter;
 
 
 /**
@@ -11,7 +12,7 @@ import android.database.Cursor;
  */
 public interface DatabaseOperationCompleteListener {
 	
-	void onQueryFinished(Cursor cursor, Object cookie);
+	void onQueryFinished(Cursor cursor, CursorAdapter cookie);
 	
 //	void onControllerDataChanged();
 //
@@ -19,6 +20,6 @@ public interface DatabaseOperationCompleteListener {
 //
 //	void onRoomDataChanged();
 
-	void onInsertFinished(long parseId);
+	void onInsertFinished(long parseId, int token);
 
 }

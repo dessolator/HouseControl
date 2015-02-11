@@ -96,7 +96,7 @@ public class NetworkSet implements SocketProvider {
 	synchronized public Socket acquireSocket() throws UnknownHostException, IOException {
 		if(kill) return null;
 		if(mSocket==null || mSocket.isClosed())
-			mSocket = new Socket(InetAddress.getByName(ip),port);//TODO apparently throws connectexception as well...
+			mSocket = new Socket(InetAddress.getByName(ip),port);
 		return mSocket;
 	}
 

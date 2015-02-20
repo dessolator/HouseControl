@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.houseremote"
+    package="me.kesler.houseremoteoverhaul"
     android:versionCode="1"
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="11"
         android:targetSdkVersion="21" />
-
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 
     <application
         android:allowBackup="true"
@@ -17,7 +14,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,51 +22,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activities.EditHouseActivity"
-            android:label="@string/app_name" >
-        </activity>
-         <activity
-            android:name=".activities.AutoSearchActivity"
-            android:label="@string/app_name" >
-        </activity>
-        <activity
-            android:name="com.example.houseremote.activities.phone.ControllersActivity"
-            android:label="@string/app_name" >
-        </activity>
-        <activity
-            android:name="com.example.houseremote.activities.phone.RoomsActivity"
-            android:label="@string/app_name" >
-        </activity>
-        <activity
-            android:name=".activities.EditRoomActivity"
-            android:label="@string/app_name" >
-        </activity>
-        <activity
-            android:name=".activities.EditLightSwitchActivity"
-            android:label="@string/app_name" >
-        </activity>
-
-        <provider
-            android:name=".database.DBProvider"
-            android:authorities="com.example.houseremote.database.dbprovider"
-            android:exported="true"
-            android:readPermission="true"
-            android:writePermission="true" />
-
-        <receiver
-            android:name=".appwidgets.MyWidgetProvider"
-            android:icon="@drawable/ic_launcher"
-            android:label="HouseRemote SwitchControl Widget" >
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/widget_info"/>
-        </receiver>
-
     </application>
 
 </manifest>
